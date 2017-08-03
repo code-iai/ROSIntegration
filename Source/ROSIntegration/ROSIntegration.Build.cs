@@ -29,6 +29,9 @@ public class ROSIntegration : ModuleRules
         // Console.WriteLine("");
         Console.WriteLine("BSONPath: " + BSONPath);
 
+        // Include std::string functions for rapidjson
+        Definitions.Add("RAPIDJSON_HAS_STDSTRING=1");
+
 
         PublicIncludePaths.AddRange(
 			new string[] {

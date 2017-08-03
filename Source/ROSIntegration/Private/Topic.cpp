@@ -13,6 +13,7 @@ public:
 	}
 	ROSBridgeHandler _Handler;
 	bool b;
+
 	std::function<void(FROSBaseMsg&)> _callback;
 
 	void ConvertMessage(FROSBaseMsg &BaseMsg, float test) {
