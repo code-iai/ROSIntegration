@@ -51,10 +51,14 @@
 # include <winsock2.h>
 #  ifndef WIN32_LEAN_AND_MEAN
 #   define WIN32_LEAN_AND_MEAN
+#   include "AllowWindowsPlatformTypes.h"
 #   include <windows.h>
+#   include "HideWindowsPlatformTypes.h"
 #   undef  WIN32_LEAN_AND_MEAN
 #  else
+#   include "AllowWindowsPlatformTypes.h"
 #   include <windows.h>
+#   include "HideWindowsPlatformTypes.h"
 # endif
 #include <direct.h>
 #include <io.h>

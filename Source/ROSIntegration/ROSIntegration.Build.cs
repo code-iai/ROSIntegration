@@ -53,6 +53,8 @@ public class ROSIntegration : ModuleRules
 			new string[]
 			{
 				"Core",
+                "Sockets",
+                "Networking"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -65,6 +67,8 @@ public class ROSIntegration : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+                "Sockets",
+                "Networking"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
