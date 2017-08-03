@@ -2,6 +2,7 @@
 #include "std_msgs/String.h"
 #include "bson.h" 
 
+
 void UMyPluginGameInstance::Init() {
 	UE_LOG(LogTemp, Warning, TEXT("Init on GameInstance"));
 	//ROSMessages::std_msgs::String str;
@@ -32,8 +33,14 @@ void UMyPluginGameInstance::Init() {
 	bson_free(str);
 
 	bson_destroy(&parent);
+
+	_Ric = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass());
+	_Ric->Init();
+
 }
 
 void UMyPluginGameInstance::Shutdown() {
 	UE_LOG(LogTemp, Warning, TEXT("Shutdown on GameInstance"));
+	if (_Ric != nullptr)
+		delete _Ric;
 }

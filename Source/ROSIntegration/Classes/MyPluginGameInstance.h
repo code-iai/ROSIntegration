@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "ROSIntegrationCore.h"
 #include "MyPluginGameInstance.generated.h"
 
 UCLASS()
@@ -11,4 +12,7 @@ class ROSINTEGRATION_API UMyPluginGameInstance : public UGameInstance
 
 	virtual void Init() override;
 	virtual void Shutdown() override;
+
+//public:
+	UROSIntegrationCore* _Ric;
 };
