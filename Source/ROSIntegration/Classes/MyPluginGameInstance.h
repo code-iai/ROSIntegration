@@ -12,7 +12,9 @@ class ROSINTEGRATION_API UMyPluginGameInstance : public UGameInstance
 
 	virtual void Init() override;
 	virtual void Shutdown() override;
+	void BeginDestroy() override;
 
 //public:
+	UPROPERTY()
 	UROSIntegrationCore* _Ric;
 };

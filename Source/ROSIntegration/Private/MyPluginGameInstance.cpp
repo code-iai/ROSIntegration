@@ -41,6 +41,11 @@ void UMyPluginGameInstance::Init() {
 
 void UMyPluginGameInstance::Shutdown() {
 	UE_LOG(LogTemp, Warning, TEXT("Shutdown on GameInstance"));
-	if (_Ric != nullptr)
-		delete _Ric;
+	//if (_Ric != nullptr)
+	//	delete _Ric;
+}
+
+void UMyPluginGameInstance::BeginDestroy() {
+	UE_LOG(LogTemp, Warning, TEXT("BeginDestroy on GameInstance"));
+	Super::BeginDestroy();
 }

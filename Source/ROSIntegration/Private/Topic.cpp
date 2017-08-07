@@ -1,6 +1,6 @@
 #include "RI/Topic.h"
 #include "bson.h" 
-#include "rosbridge2cpp/rosbridge_handler.h"
+//#include "rosbridge2cpp/rosbridge_handler.h"
 
 
 
@@ -11,7 +11,7 @@ public:
 	Impl()  : b(true){
 
 	}
-	ROSBridgeHandler _Handler;
+	//ROSBridgeHandler _Handler;
 	bool b;
 
 	std::function<void(FROSBaseMsg&)> _callback;
@@ -47,6 +47,10 @@ public:
 		//Generate BSON from ROSBaseMsg;
 		//_topic.publish(BSON);
 	}
+
+	//void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
+
+	//}
 };
 
 // Interface Implementation
@@ -65,15 +69,15 @@ void UTopic::BeginDestroy() {
 
 void UTopic::doSomething() {
 	UE_LOG(LogTemp, Warning, TEXT("doSomething"));
-	FString HandlerString(_Implementation->_Handler._TestString.c_str());
-	UE_LOG(LogTemp, Warning, TEXT("Handler String is %s"), *HandlerString);
+	//FString HandlerString(_Implementation->_Handler._TestString.c_str());
+	//UE_LOG(LogTemp, Warning, TEXT("Handler String is %s"), *HandlerString);
 	//ROSMessages::std_msgs::String str;
 	//FROSString str;
 
-	_Implementation->_Handler.publish();
+	//_Implementation->_Handler.publish();
 
-	FString HandlerString2(_Implementation->_Handler._TestString.c_str());
-	UE_LOG(LogTemp, Warning, TEXT("Handler String is now %s"), *HandlerString2);
+	//FString HandlerString2(_Implementation->_Handler._TestString.c_str());
+	//UE_LOG(LogTemp, Warning, TEXT("Handler String is now %s"), *HandlerString2);
 	bson_t parent;
 	bson_t child;
 	char *str;

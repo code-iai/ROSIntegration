@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
-#include "rosbridge2cpp/TCPConnection.h"
+
 #include "rosbridge2cpp/ros_bridge.h"
 #include "rosbridge2cpp/ros_topic.h"
 #include "rosbridge2cpp/messages/rosbridge_publish_msg.h"
@@ -21,10 +21,16 @@ public:
 	//void HandlerThread();
 	void BeginDestroy() override;
 	void MessageCallback(const ROSBridgePublishMsg &message);
+	rosbridge2cpp::ROSBridge* GetROSBridge();
+
 private:
 
 	UPROPERTY()
 	bool test;
+
+	// PIMPL
+	class Impl;
+	Impl* _Implementation;
 
 
 	
@@ -33,11 +39,11 @@ private:
 	//bool shutdown_thread_ = false;
 	//bool thread_set_up_ = false;
 
-	TCPConnection _Connection;
-	rosbridge2cpp::ROSTopic* _Topic;
+	//TCPConnection _Connection;
+	//rosbridge2cpp::ROSTopic* _Topic;
 
 public:
-	rosbridge2cpp::ROSBridge _Ros{ _Connection };
+	//rosbridge2cpp::ROSBridge _Ros{ _Connection };
 
 };
 
