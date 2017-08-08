@@ -72,8 +72,7 @@ public:
 
 	void MessageCallback(const ROSBridgePublishMsg &message) {
 		UE_LOG(LogTemp, Warning, TEXT("Topic Message received!"));
-		// TODO Convert Message
-		// Call _Callback with converted message
+
 		// TODO Use factory
 		if (_MessageType == TEXT("std_msgs/String")) {
 			
@@ -90,23 +89,6 @@ public:
 			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
 		}
 
-
-		//std::cout << "Message received: " << std::endl;
-		//std::string data;
-		//if (_bson_test_mode) {
-		//	bool key_found;
-		//	data = rosbridge2cpp::Helper::get_utf8_by_key("msg.data", *message.full_msg_bson_, key_found);
-		//	if (!key_found) {
-		//		std::cout << "Key msg.data not present in data" << std::endl;
-		//	}
-		//	else {
-		//		std::cout << data << std::endl;
-		//	}
-		//}/*
-		// else {
-		// data = message.msg_json_["data"].GetString();
-		// std::cout << data << std::endl;
-		// }*/
 		UE_LOG(LogTemp, Warning, TEXT("Callback done"));
 	}
 };
@@ -183,8 +165,8 @@ void UTopic::Unadvertise() {
 	//Unadvertise() { _topic.unadvertise(); }
 }
 void UTopic::Publish(FROSBaseMsg& msg) {
-	//Generate BSON from ROSBaseMsg;
-	//_topic.publish(BSON);
+	_Implementation->Publish(msg);
+
 }
 
 void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
