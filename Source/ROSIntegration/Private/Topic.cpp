@@ -20,7 +20,7 @@ public:
 	FString _MessageType;
 	rosbridge2cpp::ROSTopic* _ROSTopic;
 
-	std::function<void(FROSBaseMsg&)> _callback;
+	std::function<void(FROSBaseMsg&)> _Callback;
 
 	void ConvertMessage(FROSBaseMsg &BaseMsg, float test) {
 
@@ -38,6 +38,7 @@ public:
 		}
 
 		_ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
+		_Callback = func;
 		/*_topic->Subscribe(std::bind(&FROSTopic:::ConvertMessageCallback, this, std::placeholders::_1));
 		_callback = fun(ROSBaseMsg);*/
 	}
@@ -71,6 +72,25 @@ public:
 
 	void MessageCallback(const ROSBridgePublishMsg &message) {
 		UE_LOG(LogTemp, Warning, TEXT("Topic Message received!"));
+		// TODO Convert Message
+		// Call _Callback with converted message
+		// TODO Use factory
+		if (_MessageType == TEXT("std_msgs/String")) {
+			
+			bool key_found;
+			std::string data = rosbridge2cpp::Helper::get_utf8_by_key("msg.data", *message.full_msg_bson_, key_found);
+			if (!key_found) {
+				std::cout << "Key msg.data not present in data" << std::endl;
+			}else {
+				ROSMessages::std_msgs::String StringMessage(UTF8_TO_TCHAR(data.c_str()));
+				_Callback(StringMessage);
+			}
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
+		}
+
+
 		//std::cout << "Message received: " << std::endl;
 		//std::string data;
 		//if (_bson_test_mode) {
