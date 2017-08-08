@@ -1,6 +1,8 @@
 #include "RI/Topic.h"
 #include "bson.h" 
 //#include "rosbridge2cpp/rosbridge_handler.h"
+#include "rosbridge2cpp/ros_bridge.h"
+#include "rosbridge2cpp/ros_topic.h"
 
 
 
@@ -13,6 +15,10 @@ public:
 	}
 	//ROSBridgeHandler _Handler;
 	bool b;
+	UROSIntegrationCore* _Ric;
+	FString _Topic;
+	FString _MessageType;
+	rosbridge2cpp::ROSTopic* _ROSTopic;
 
 	std::function<void(FROSBaseMsg&)> _callback;
 
@@ -26,6 +32,12 @@ public:
 
 
 	void Subscribe(std::function<void(FROSBaseMsg&)> func) {
+		if (!_ROSTopic) {
+			UE_LOG(LogTemp, Error, TEXT("Rostopic hasn't been initialized before Subscribe() call"));
+			return;
+		}
+
+		_ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
 		/*_topic->Subscribe(std::bind(&FROSTopic:::ConvertMessageCallback, this, std::placeholders::_1));
 		_callback = fun(ROSBaseMsg);*/
 	}
@@ -48,9 +60,35 @@ public:
 		//_topic.publish(BSON);
 	}
 
-	//void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
+	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
+		_Ric = Ric;
+		_Topic = Topic;
+		_MessageType = MessageType;
 
-	//}
+		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, "/newtest", "std_msgs/String");
+		
+	}
+
+	void MessageCallback(const ROSBridgePublishMsg &message) {
+		UE_LOG(LogTemp, Warning, TEXT("Topic Message received!"));
+		//std::cout << "Message received: " << std::endl;
+		//std::string data;
+		//if (_bson_test_mode) {
+		//	bool key_found;
+		//	data = rosbridge2cpp::Helper::get_utf8_by_key("msg.data", *message.full_msg_bson_, key_found);
+		//	if (!key_found) {
+		//		std::cout << "Key msg.data not present in data" << std::endl;
+		//	}
+		//	else {
+		//		std::cout << data << std::endl;
+		//	}
+		//}/*
+		// else {
+		// data = message.msg_json_["data"].GetString();
+		// std::cout << data << std::endl;
+		// }*/
+		UE_LOG(LogTemp, Warning, TEXT("Callback done"));
+	}
 };
 
 // Interface Implementation
@@ -112,6 +150,7 @@ void UTopic::doSomething() {
 void UTopic::Subscribe(std::function<void(FROSBaseMsg&)> func) {
 	/*_topic->Subscribe(std::bind(&FROSTopic:::ConvertMessageCallback, this, std::placeholders::_1));
 	_callback = fun(ROSBaseMsg);*/
+	_Implementation->Subscribe(func);
 }
 void UTopic::Unsubscribe(std::function<void(FROSBaseMsg&)> func) {
 
@@ -126,4 +165,8 @@ void UTopic::Unadvertise() {
 void UTopic::Publish(FROSBaseMsg& msg) {
 	//Generate BSON from ROSBaseMsg;
 	//_topic.publish(BSON);
+}
+
+void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
+	_Implementation->Init(Ric, Topic, MessageType);
 }

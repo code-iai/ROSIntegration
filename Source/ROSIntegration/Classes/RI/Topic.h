@@ -8,7 +8,7 @@
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
 #include "ROSBaseMsg.h"
-//#include "ROSIntegrationCore.h"
+#include "ROSIntegrationCore.h"
 #include "Topic.generated.h"
 
 UCLASS()
@@ -31,7 +31,7 @@ public:
 
 	void BeginDestroy() override;
 
-	//void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType);
+	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType);
 
 private:
 	// PIMPL

@@ -4,9 +4,7 @@
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
 
-#include "rosbridge2cpp/ros_bridge.h"
-#include "rosbridge2cpp/ros_topic.h"
-#include "rosbridge2cpp/messages/rosbridge_publish_msg.h"
+
 
 #include "ROSIntegrationCore.generated.h"
 
@@ -20,8 +18,10 @@ public:
 	void Init();
 	//void HandlerThread();
 	void BeginDestroy() override;
-	void MessageCallback(const ROSBridgePublishMsg &message);
-	rosbridge2cpp::ROSBridge* GetROSBridge();
+	//void MessageCallback(const ROSBridgePublishMsg &message);
+	//rosbridge2cpp::ROSBridge* GetROSBridge();
+	//class ROSBridgeWrapper;
+	//ROSBridgeWrapper* _ROSBridgeWrapper;
 
 private:
 
@@ -31,6 +31,8 @@ private:
 	// PIMPL
 	class Impl;
 	Impl* _Implementation;
+
+	friend class UTopic;
 
 
 	
