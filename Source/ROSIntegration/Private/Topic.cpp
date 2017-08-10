@@ -3,6 +3,7 @@
 //#include "rosbridge2cpp/rosbridge_handler.h"
 #include "rosbridge2cpp/ros_bridge.h"
 #include "rosbridge2cpp/ros_topic.h"
+#include "bson.h"
 
 
 
@@ -10,7 +11,7 @@
 class UTopic::Impl {
 	// hidden implementation details
 public:
-	Impl()  : b(true){
+	Impl() : b(true) {
 
 	}
 	//ROSBridgeHandler _Handler;
@@ -22,8 +23,19 @@ public:
 
 	std::function<void(TSharedPtr<FROSBaseMsg>)> _Callback;
 
-	bool ConvertMessage(TSharedPtr<FROSBaseMsg> BaseMsg, const ROSBridgePublishMsg* message) {
+	bool ConvertMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
+		if (_MessageType == TEXT("std_msgs/String")) {
+			auto StringMessage = StaticCastSharedPtr<ROSMessages::std_msgs::String>(BaseMsg);
+			*message = BCON_NEW(
+				"data", TCHAR_TO_UTF8(*StringMessage->_Data)
+			);
 
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't encode message"));
+		}
+
+		return true;
 	}
 
 	// IN Parameter: message
@@ -61,26 +73,34 @@ public:
 
 		_ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
 		_Callback = func;
-		/*_topic->Subscribe(std::bind(&FROSTopic:::ConvertMessageCallback, this, std::placeholders::_1));
-		_callback = fun(ROSBaseMsg);*/
 	}
 	void Unsubscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
 
 	}
 
 	void Advertise() {
-		//Advertise() { _topic.advertise(); }
+		assert(_ROSTopic);
+		_ROSTopic->Advertise();
 	}
 
 
 	void Unadvertise() {
-		//Unadvertise() { _topic.unadvertise(); }
+		assert(_ROSTopic);
+		_ROSTopic->Unadvertise();
 	}
 
 
 	void Publish(TSharedPtr<FROSBaseMsg> msg) {
-		//Generate BSON from ROSBaseMsg;
-		//_topic.publish(BSON);
+		bson_t *bson_message;
+
+		if (ConvertMessage(msg, &bson_message)) {
+			UE_LOG(LogTemp, Error, TEXT("Publishing Converted Message"));
+			_ROSTopic->Publish(bson_message);
+			//bson_destroy(bson_message); // Not necessary, since bson memory will be freed in the rosbridge core code
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("Failed to ConvertMessage in UTopic::Publish()"));
+		}
 	}
 
 	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
@@ -89,7 +109,6 @@ public:
 		_MessageType = MessageType;
 
 		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, "/newtest", "std_msgs/String");
-		
 	}
 
 	void MessageCallback(const ROSBridgePublishMsg &message) {
@@ -103,22 +122,6 @@ public:
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Couldn't convert incoming Message; Skipping callback"));
 		}
-
-		//// TODO Use factory
-		//if (_MessageType == TEXT("std_msgs/String")) {
-		//	
-		//	bool key_found;
-		//	std::string data = rosbridge2cpp::Helper::get_utf8_by_key("msg.data", *message.full_msg_bson_, key_found);
-		//	if (!key_found) {
-		//		std::cout << "Key msg.data not present in data" << std::endl;
-		//	}else {
-		//		ROSMessages::std_msgs::String StringMessage(UTF8_TO_TCHAR(data.c_str()));
-		//		_Callback(StringMessage);
-		//	}
-		//}
-		//else {
-		//	UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
-		//}
 
 		UE_LOG(LogTemp, Warning, TEXT("Callback done"));
 	}
@@ -140,42 +143,42 @@ void UTopic::BeginDestroy() {
 
 void UTopic::doSomething() {
 	UE_LOG(LogTemp, Warning, TEXT("doSomething"));
-	//FString HandlerString(_Implementation->_Handler._TestString.c_str());
-	//UE_LOG(LogTemp, Warning, TEXT("Handler String is %s"), *HandlerString);
-	//ROSMessages::std_msgs::String str;
-	//FROSString str;
+	////FString HandlerString(_Implementation->_Handler._TestString.c_str());
+	////UE_LOG(LogTemp, Warning, TEXT("Handler String is %s"), *HandlerString);
+	////ROSMessages::std_msgs::String str;
+	////FROSString str;
 
-	//_Implementation->_Handler.publish();
+	////_Implementation->_Handler.publish();
 
-	//FString HandlerString2(_Implementation->_Handler._TestString.c_str());
-	//UE_LOG(LogTemp, Warning, TEXT("Handler String is now %s"), *HandlerString2);
-	bson_t parent;
-	bson_t child;
-	char *str;
-	bson_init(&parent);
-	bson_append_document_begin(&parent, "foo", 3, &child);
-	bson_append_int32(&child, "baz", 3, 1);
-	bson_append_document_end(&parent, &child);
+	////FString HandlerString2(_Implementation->_Handler._TestString.c_str());
+	////UE_LOG(LogTemp, Warning, TEXT("Handler String is now %s"), *HandlerString2);
+	//bson_t parent;
+	//bson_t child;
+	//char *str;
+	//bson_init(&parent);
+	//bson_append_document_begin(&parent, "foo", 3, &child);
+	//bson_append_int32(&child, "baz", 3, 1);
+	//bson_append_document_end(&parent, &child);
 
-	str = bson_as_json(&parent, NULL);
-	//printf("%s\n", str);
-	FString str_in_unreal(str);
-	UE_LOG(LogTemp, Warning, TEXT("something BSON Output is %s"), *str_in_unreal);
+	//str = bson_as_json(&parent, NULL);
+	////printf("%s\n", str);
+	//FString str_in_unreal(str);
+	//UE_LOG(LogTemp, Warning, TEXT("something BSON Output is %s"), *str_in_unreal);
 
-	bson_iter_t iter;
-	bson_iter_t baz;
+	//bson_iter_t iter;
+	//bson_iter_t baz;
 
-	if (bson_iter_init(&iter, &parent) &&
-		bson_iter_find_descendant(&iter, "foo.baz", &baz) &&
-		BSON_ITER_HOLDS_INT32(&baz)) {
-		UE_LOG(LogTemp, Warning, TEXT("foo baz is %d"), bson_iter_int32(&baz));
-		//printf("baz = %d\n", bson_iter_int32(&baz));
-	}
-	bson_free(str);
+	//if (bson_iter_init(&iter, &parent) &&
+	//	bson_iter_find_descendant(&iter, "foo.baz", &baz) &&
+	//	BSON_ITER_HOLDS_INT32(&baz)) {
+	//	UE_LOG(LogTemp, Warning, TEXT("foo baz is %d"), bson_iter_int32(&baz));
+	//	//printf("baz = %d\n", bson_iter_int32(&baz));
+	//}
+	//bson_free(str);
 
-	bson_destroy(&parent);
+	//bson_destroy(&parent);
 
-	
+
 }
 
 
