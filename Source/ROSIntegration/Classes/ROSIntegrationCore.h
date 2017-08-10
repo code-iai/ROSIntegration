@@ -33,6 +33,7 @@ private:
 	Impl* _Implementation;
 
 	friend class UTopic;
+	friend class UService;
 
 
 	

@@ -3,7 +3,7 @@
 //#include "rosbridge2cpp/rosbridge_handler.h"
 #include "rosbridge2cpp/ros_bridge.h"
 #include "rosbridge2cpp/ros_topic.h"
-#include "bson.h"
+//#include "bson.h"
 
 
 
@@ -42,13 +42,9 @@ public:
 	// OUT Parameter: BaseMsg
 	bool ConvertMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
 		// TODO Use factory
+		bool key_found = false;
 		if (_MessageType == TEXT("std_msgs/String")) {
-
-			bool key_found;
 			std::string data = rosbridge2cpp::Helper::get_utf8_by_key("msg.data", *message->full_msg_bson_, key_found);
-
-			UE_LOG(LogTemp, Warning, TEXT("Found %s"), UTF8_TO_TCHAR(data.c_str()));
-
 			if (!key_found) {
 				UE_LOG(LogTemp, Error, TEXT("Key msg.data not present in data"));
 			}
@@ -108,7 +104,7 @@ public:
 		_Topic = Topic;
 		_MessageType = MessageType;
 
-		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, "/newtest", "std_msgs/String");
+		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType));
 	}
 
 	void MessageCallback(const ROSBridgePublishMsg &message) {
