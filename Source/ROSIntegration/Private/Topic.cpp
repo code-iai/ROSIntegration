@@ -20,18 +20,40 @@ public:
 	FString _MessageType;
 	rosbridge2cpp::ROSTopic* _ROSTopic;
 
-	std::function<void(FROSBaseMsg&)> _Callback;
+	std::function<void(TSharedPtr<FROSBaseMsg>)> _Callback;
 
-	void ConvertMessage(FROSBaseMsg &BaseMsg, float test) {
-
-	}
-
-	void ConvertMessage(float test, FROSBaseMsg &BaseMsg) {
+	bool ConvertMessage(TSharedPtr<FROSBaseMsg> BaseMsg, const ROSBridgePublishMsg* message) {
 
 	}
 
+	// IN Parameter: message
+	// OUT Parameter: BaseMsg
+	bool ConvertMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
+		// TODO Use factory
+		if (_MessageType == TEXT("std_msgs/String")) {
 
-	void Subscribe(std::function<void(FROSBaseMsg&)> func) {
+			bool key_found;
+			std::string data = rosbridge2cpp::Helper::get_utf8_by_key("msg.data", *message->full_msg_bson_, key_found);
+
+			UE_LOG(LogTemp, Warning, TEXT("Found %s"), UTF8_TO_TCHAR(data.c_str()));
+
+			if (!key_found) {
+				UE_LOG(LogTemp, Error, TEXT("Key msg.data not present in data"));
+			}
+			else {
+				BaseMsg = TSharedPtr<FROSBaseMsg>(new ROSMessages::std_msgs::String(UTF8_TO_TCHAR(data.c_str())));
+				return true;
+			}
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
+		}
+
+		return false;
+	}
+
+
+	void Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
 		if (!_ROSTopic) {
 			UE_LOG(LogTemp, Error, TEXT("Rostopic hasn't been initialized before Subscribe() call"));
 			return;
@@ -42,7 +64,7 @@ public:
 		/*_topic->Subscribe(std::bind(&FROSTopic:::ConvertMessageCallback, this, std::placeholders::_1));
 		_callback = fun(ROSBaseMsg);*/
 	}
-	void Unsubscribe(std::function<void(FROSBaseMsg&)> func) {
+	void Unsubscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
 
 	}
 
@@ -56,7 +78,7 @@ public:
 	}
 
 
-	void Publish(FROSBaseMsg& msg) {
+	void Publish(TSharedPtr<FROSBaseMsg> msg) {
 		//Generate BSON from ROSBaseMsg;
 		//_topic.publish(BSON);
 	}
@@ -73,21 +95,30 @@ public:
 	void MessageCallback(const ROSBridgePublishMsg &message) {
 		UE_LOG(LogTemp, Warning, TEXT("Topic Message received!"));
 
-		// TODO Use factory
-		if (_MessageType == TEXT("std_msgs/String")) {
-			
-			bool key_found;
-			std::string data = rosbridge2cpp::Helper::get_utf8_by_key("msg.data", *message.full_msg_bson_, key_found);
-			if (!key_found) {
-				std::cout << "Key msg.data not present in data" << std::endl;
-			}else {
-				ROSMessages::std_msgs::String StringMessage(UTF8_TO_TCHAR(data.c_str()));
-				_Callback(StringMessage);
-			}
+		TSharedPtr<FROSBaseMsg> BaseMsg;
+		if (ConvertMessage(&message, BaseMsg)) {
+			UE_LOG(LogTemp, Warning, TEXT("AFTER CONVERT: basemsg is  %s"), *(BaseMsg->_MessageType));
+			_Callback(BaseMsg);
 		}
 		else {
-			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
+			UE_LOG(LogTemp, Error, TEXT("Couldn't convert incoming Message; Skipping callback"));
 		}
+
+		//// TODO Use factory
+		//if (_MessageType == TEXT("std_msgs/String")) {
+		//	
+		//	bool key_found;
+		//	std::string data = rosbridge2cpp::Helper::get_utf8_by_key("msg.data", *message.full_msg_bson_, key_found);
+		//	if (!key_found) {
+		//		std::cout << "Key msg.data not present in data" << std::endl;
+		//	}else {
+		//		ROSMessages::std_msgs::String StringMessage(UTF8_TO_TCHAR(data.c_str()));
+		//		_Callback(StringMessage);
+		//	}
+		//}
+		//else {
+		//	UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
+		//}
 
 		UE_LOG(LogTemp, Warning, TEXT("Callback done"));
 	}
@@ -149,12 +180,12 @@ void UTopic::doSomething() {
 
 
 
-void UTopic::Subscribe(std::function<void(FROSBaseMsg&)> func) {
+void UTopic::Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
 	/*_topic->Subscribe(std::bind(&FROSTopic:::ConvertMessageCallback, this, std::placeholders::_1));
 	_callback = fun(ROSBaseMsg);*/
 	_Implementation->Subscribe(func);
 }
-void UTopic::Unsubscribe(std::function<void(FROSBaseMsg&)> func) {
+void UTopic::Unsubscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
 
 }
 
@@ -164,7 +195,7 @@ void UTopic::Advertise() {
 void UTopic::Unadvertise() {
 	//Unadvertise() { _topic.unadvertise(); }
 }
-void UTopic::Publish(FROSBaseMsg& msg) {
+void UTopic::Publish(TSharedPtr<FROSBaseMsg> msg) {
 	_Implementation->Publish(msg);
 
 }

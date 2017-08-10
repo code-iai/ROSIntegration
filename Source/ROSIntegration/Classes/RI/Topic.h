@@ -19,15 +19,15 @@ class ROSINTEGRATION_API UTopic: public UObject
 public:
 	void doSomething();
 
-	void Subscribe(std::function<void(FROSBaseMsg&)> func);
+	void Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
 
-	void Unsubscribe(std::function<void(FROSBaseMsg&)> func);
+	void Unsubscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
 
 	void Advertise();
 	
 	void Unadvertise();
 	
-	void Publish(FROSBaseMsg& msg);
+	void Publish(TSharedPtr<FROSBaseMsg> msg);
 
 	void BeginDestroy() override;
 

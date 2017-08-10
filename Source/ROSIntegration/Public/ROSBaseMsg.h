@@ -9,6 +9,6 @@ public:
 	FROSBaseMsg() = default;
 	~FROSBaseMsg() = default;
 
-	protected: 
+	//protected: 
 		FString _MessageType;
 };
