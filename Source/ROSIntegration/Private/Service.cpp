@@ -19,6 +19,7 @@ public:
 	FString _ServiceType;
 	rosbridge2cpp::ROSService* _ROSService;
 	std::function<void(TSharedPtr<FROSBaseServiceResponse>)> _LastCallServiceCallback;
+	std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> _LastServiceRequestCallback;
 
 	//std::function<void(TSharedPtr<FROSBaseMsg>)> _Callback;
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
@@ -60,8 +61,55 @@ public:
 		//_LastCallServiceCallback;
 	}
 
+	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req, ROSBridgeServiceResponseMsg &message) {
+		UE_LOG(LogTemp, Warning, TEXT("Received Service request!"));
+		//TSharedPtr<FROSBaseServiceRequest> ServiceRequest;/* = MakeShareable(new FROSBaseServiceRequest);*/
+		TSharedPtr<FROSBaseServiceResponse> ServiceResponse = MakeShareable(new FROSBaseServiceResponse);
+
+		// Convert rosbridge2cpp Service Request Data to Unreal Data Format
+		// TODO similar to Topics (incoming message converted to Unreal Format)
+
+		bool key_found = false;
+
+		if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
+			TSharedPtr<rospy_tutorials::FAddTwoIntsRequest> ServiceRequest = MakeShareable(new rospy_tutorials::FAddTwoIntsRequest);
+
+			int32 data = rosbridge2cpp::Helper::get_int32_by_key("args.a", *(req.full_msg_bson_), key_found);
+			if (!key_found) {
+				UE_LOG(LogTemp, Error, TEXT("Key args.a not present in data"));
+				return;
+			}
+			UE_LOG(LogTemp, Error, TEXT("Request.a is %d"), data);
+
+			ServiceRequest->_b = rosbridge2cpp::Helper::get_int32_by_key("args.b", *(req.full_msg_bson_), key_found);
+			if (!key_found) {
+				UE_LOG(LogTemp, Error, TEXT("Key args.b not present in data"));
+				return;
+			}
+			UE_LOG(LogTemp, Error, TEXT("Request.b is %d"), ServiceRequest->_b);
+			_LastServiceRequestCallback(ServiceRequest, ServiceResponse);
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
+		}
+
+		// Call user callback
+
+		// Convert  Unreal Data Format Service Request Data to rosbridge2cpp
+
+	}
+
+	void Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler) {
+		_LastServiceRequestCallback = ServiceHandler;
+		//typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&)> FunVrROSCallServiceMsgrROSServiceResponseMsg;
+		auto service_request_handler = [this](ROSBridgeCallServiceMsg &message, ROSBridgeServiceResponseMsg &response) { this->ServiceRequestCallback(message, response); };
+		//_ROSService->Advertise(std::bind(&UService::Impl::ServiceRequestCallback, this, std::placeholders::_1, std::placeholders::_2));
+		_ROSService->Advertise(service_request_handler);
+	}
+
 	void CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
 		
+		// Convert Unreal Data Format Service Request to rosbridge2cpp 
 		_LastCallServiceCallback = ServiceResponse;
 		bson_t *service_params;
 		if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
@@ -83,7 +131,7 @@ public:
 
 
 	//typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&, rapidjson::Document::AllocatorType&)> FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator;
-	//typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&)> FunVrROSCallServiceMsgrROSServiceResponseMsg;
+	
 
 };
 
@@ -94,6 +142,10 @@ void UService::doAnything() {
 
 void UService::CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
 	_Implementation->CallService(ServiceRequest, ServiceResponse);
+}
+
+void UService::Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler) {
+	_Implementation->Advertise(ServiceHandler);
 }
 
 UService::UService(const FObjectInitializer& ObjectInitializer)

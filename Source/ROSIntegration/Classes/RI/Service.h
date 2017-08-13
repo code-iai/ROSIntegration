@@ -22,7 +22,7 @@ public:
 
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType);
 
-	//void Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsg callback);
+	void Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler);
 
 	//// Unadvertise an advertised service
 	//// Will do nothing if no service has been advertised before in this instance
