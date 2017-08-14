@@ -4,7 +4,8 @@
 #include "rosbridge2cpp/ros_bridge.h"
 #include "rosbridge2cpp/ros_topic.h"
 //#include "bson.h"
-
+#include "Conversion/Messages/BaseMessageConverter.h"
+#include "Conversion/Messages/std_msgs/StdMsgsStringConverter.h"
 
 
 // PIMPL
@@ -24,12 +25,37 @@ public:
 	std::function<void(TSharedPtr<FROSBaseMsg>)> _Callback;
 
 	bool ConvertMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-		if (_MessageType == TEXT("std_msgs/String")) {
-			auto StringMessage = StaticCastSharedPtr<ROSMessages::std_msgs::String>(BaseMsg);
-			*message = BCON_NEW(
-				"data", TCHAR_TO_UTF8(*StringMessage->_Data)
-			);
+		//TSharedPtr<UBaseMessageConverter> Converter;
+		UBaseMessageConverter *Converter;
 
+			//for (TObjectIterator<UYourObject> Itr; Itr; ++Itr)
+			//{
+			//	//World Check
+			//	if (Itr->GetWorld() != YourGameWorld)
+			//	{
+			//		continue;
+			//	}
+			//	//now do stuff
+			//}
+
+
+		for (TObjectIterator<UClass> It; It; ++It)
+		{
+			
+			if (It->IsChildOf(UBaseMessageConverter::StaticClass()) && *It != UBaseMessageConverter::StaticClass())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ping %s"), *(It->GetDefaultObjectName().ToString()) );
+			}
+			//if (It->IsChildOf(USoundNode::StaticClass())
+			//	&& !It->HasAnyClassFlags(CLASS_Abstract))
+			//{
+			//	SoundNodeClasses.Add(*It);
+			//}
+		}
+
+		if (_MessageType == TEXT("std_msgs/String")) {
+			Converter = NewObject<UStdMsgsStringConverter>(UStdMsgsStringConverter::StaticClass());
+			Converter->ConvertOutgoingMessage(BaseMsg, message);
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't encode message"));

@@ -44,6 +44,7 @@ public class ROSIntegration : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				"ROSIntegration/Private",
+                "ROSIntegration/Private/rosbridge2cpp"
 				// ... add other private include paths required here ...
 			}
 			);

@@ -72,14 +72,17 @@ public:
 		bool key_found = false;
 
 		if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
+			// Get Specific Request Class
 			TSharedPtr<rospy_tutorials::FAddTwoIntsRequest> ServiceRequest = MakeShareable(new rospy_tutorials::FAddTwoIntsRequest);
+			TSharedPtr<rospy_tutorials::FAddTwoIntsResponse> ServiceResponse = MakeShareable(new rospy_tutorials::FAddTwoIntsResponse);
 
-			int32 data = rosbridge2cpp::Helper::get_int32_by_key("args.a", *(req.full_msg_bson_), key_found);
+			// Retrieve attributes from wire-representation of class
+			ServiceRequest->_a = rosbridge2cpp::Helper::get_int32_by_key("args.a", *(req.full_msg_bson_), key_found);
 			if (!key_found) {
 				UE_LOG(LogTemp, Error, TEXT("Key args.a not present in data"));
 				return;
 			}
-			UE_LOG(LogTemp, Error, TEXT("Request.a is %d"), data);
+			UE_LOG(LogTemp, Error, TEXT("Request.a is %d"), ServiceRequest->_a);
 
 			ServiceRequest->_b = rosbridge2cpp::Helper::get_int32_by_key("args.b", *(req.full_msg_bson_), key_found);
 			if (!key_found) {
@@ -87,15 +90,22 @@ public:
 				return;
 			}
 			UE_LOG(LogTemp, Error, TEXT("Request.b is %d"), ServiceRequest->_b);
+
+			// Call the user defined Service Handler with 
 			_LastServiceRequestCallback(ServiceRequest, ServiceResponse);
+
+			// Convert Unreal Data Format Service Request Data to rosbridge2cpp
+			message.result_ = ServiceResponse->_Result;
+			BSON_APPEND_INT32(message.values_bson_, "sum", ServiceResponse->_sum);
+
+
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
+			return;
 		}
 
-		// Call user callback
 
-		// Convert  Unreal Data Format Service Request Data to rosbridge2cpp
 
 	}
 
