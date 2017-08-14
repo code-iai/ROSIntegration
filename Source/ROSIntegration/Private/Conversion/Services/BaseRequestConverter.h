@@ -1,0 +1,26 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "UObject/ObjectMacros.h"
+#include "UObject/Object.h"
+//#include "rosbridge2cpp/messages/rosbridge_publish_msg.h"
+#include "ROSBaseServiceRequest.h"
+#include "bson.h"
+#include "BaseRequestConverter.generated.h"
+
+
+UCLASS()
+class ROSINTEGRATION_API UBaseRequestConverter: public UObject
+{
+	GENERATED_UCLASS_BODY()
+
+public:
+	UPROPERTY()
+	FString _ServiceType;
+
+	//virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
+	virtual bool ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest);
+};
+

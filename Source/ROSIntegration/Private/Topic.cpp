@@ -39,7 +39,7 @@ public:
 	// IN Parameter: message
 	// OUT Parameter: BaseMsg
 	bool ConvertMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-
+		// TODO do this on advertise/call?
 		UBaseMessageConverter** Converter = _ConverterMap.Find(_MessageType);
 		if (!Converter) {
 			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't find Converter to decode message"));
@@ -103,7 +103,7 @@ public:
 			if (It->IsChildOf(UBaseMessageConverter::StaticClass()) && *It != UBaseMessageConverter::StaticClass())
 			{
 				UBaseMessageConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseMessageConverter>();
-				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to ConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
+				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to TopicConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
 				_ConverterMap.Add(*(ConcreteConverter->_MessageType), ConcreteConverter);
 
 

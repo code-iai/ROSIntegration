@@ -4,6 +4,8 @@
 #include "rosbridge2cpp/ros_service.h"
 #include "rospy_tutorials/AddTwoIntsRequest.h"
 #include "rospy_tutorials/AddTwoIntsResponse.h"
+#include "Conversion/Services/BaseRequestConverter.h"
+#include "Conversion/Services/BaseResponseConverter.h"
 
 // PIMPL
 class UService::Impl {
@@ -20,6 +22,8 @@ public:
 	rosbridge2cpp::ROSService* _ROSService;
 	std::function<void(TSharedPtr<FROSBaseServiceResponse>)> _LastCallServiceCallback;
 	std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> _LastServiceRequestCallback;
+	TMap<FString, UBaseRequestConverter*> _RequestConverterMap;
+	TMap<FString, UBaseResponseConverter*> _ResponseConverterMap;
 
 	//std::function<void(TSharedPtr<FROSBaseMsg>)> _Callback;
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
@@ -28,6 +32,27 @@ public:
 		_ServiceType = ServiceType;
 
 		_ROSService = new rosbridge2cpp::ROSService(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*ServiceName), TCHAR_TO_UTF8(*ServiceType));
+
+
+		// Construct ConverterMap
+		for (TObjectIterator<UClass> It; It; ++It)
+		{
+			UClass* ClassItr = *It;
+
+			if (It->IsChildOf(UBaseRequestConverter::StaticClass()) && *It != UBaseRequestConverter::StaticClass())
+			{
+				UBaseRequestConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseRequestConverter>();
+				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to RequestConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
+				_RequestConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
+				continue;
+			}else if (It->IsChildOf(UBaseResponseConverter::StaticClass()) && *It != UBaseResponseConverter::StaticClass())
+			{
+				UBaseResponseConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseResponseConverter>();
+				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to ResponseConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
+				_ResponseConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
+				continue;
+			}
+		}
 	}
 
 	void CallServiceCallback(const ROSBridgeServiceResponseMsg &message) {
@@ -118,21 +143,33 @@ public:
 	}
 
 	void CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
-		
-		// Convert Unreal Data Format Service Request to rosbridge2cpp 
-		_LastCallServiceCallback = ServiceResponse;
-		bson_t *service_params;
-		if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
-			auto AddTwoIntsRequest = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsRequest>(ServiceRequest);
-			service_params = BCON_NEW(
-				"a", BCON_INT32( AddTwoIntsRequest->_a ),
-				"b", BCON_INT32( AddTwoIntsRequest->_b )
-			);
-		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't encode message in CallService"));
+
+		UBaseRequestConverter** Converter = _RequestConverterMap.Find(_ServiceType);
+		if (!Converter) {
+			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
 			return;
 		}
+
+		_LastCallServiceCallback = ServiceResponse;
+		bson_t *service_params;
+
+		if (!(*Converter)->ConvertOutgoingRequest(ServiceRequest, &service_params)) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to Convert Service call to BSON"));
+		}
+		
+		// Convert Unreal Data Format Service Request to rosbridge2cpp 
+
+		//if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
+		//	auto AddTwoIntsRequest = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsRequest>(ServiceRequest);
+		//	service_params = BCON_NEW(
+		//		"a", BCON_INT32( AddTwoIntsRequest->_a ),
+		//		"b", BCON_INT32( AddTwoIntsRequest->_b )
+		//	);
+		//}
+		//else {
+		//	UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't encode message in CallService"));
+		//	return;
+		//}
 
 		//CallServiceCallback
 		_ROSService->CallService(service_params, std::bind(&UService::Impl::CallServiceCallback, this, std::placeholders::_1));
