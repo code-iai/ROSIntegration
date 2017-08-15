@@ -14,3 +14,7 @@ bool UBaseRequestConverter::ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceReq
 bool UBaseRequestConverter::ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request) {
 	return false;
 }
+
+TSharedPtr<FROSBaseServiceRequest> UBaseRequestConverter::AllocateConcreteRequest() {
+	return TSharedPtr<FROSBaseServiceRequest>();
+}

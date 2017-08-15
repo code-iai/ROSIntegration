@@ -1,6 +1,7 @@
 #include "Conversion/Services/rospy_tutorials/RospyTutorialsAddTwoIntsResponseConverter.h"
 
 #include "rospy_tutorials/AddTwoIntsResponse.h"
+#include "bson.h"
 
 
 URospyTutorialsAddTwoIntsResponseConverter::URospyTutorialsAddTwoIntsResponseConverter(const FObjectInitializer& ObjectInitializer)
@@ -24,5 +25,13 @@ bool URospyTutorialsAddTwoIntsResponseConverter::ConvertIncomingResponse(const R
 	return true;
 }
 bool URospyTutorialsAddTwoIntsResponseConverter::ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res) {
+	auto ServiceResponse = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsResponse>(Response);
+
+	res.result_ = ServiceResponse->_Result;
+	BSON_APPEND_INT32(res.values_bson_, "sum", ServiceResponse->_sum);
 	return true;
+}
+
+TSharedPtr<FROSBaseServiceResponse> URospyTutorialsAddTwoIntsResponseConverter::AllocateConcreteResponse() {
+	return MakeShareable(new rospy_tutorials::FAddTwoIntsResponse);
 }

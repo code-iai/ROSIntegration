@@ -22,5 +22,7 @@ public:
 
 	virtual bool ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request);
 	virtual bool ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest);
+
+	virtual TSharedPtr<FROSBaseServiceRequest> AllocateConcreteRequest();
 };
 

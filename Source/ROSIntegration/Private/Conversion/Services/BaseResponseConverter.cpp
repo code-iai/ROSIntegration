@@ -12,3 +12,7 @@ bool UBaseResponseConverter::ConvertIncomingResponse(const ROSBridgeServiceRespo
 bool UBaseResponseConverter::ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res) {
 	return false;
 }
+
+TSharedPtr<FROSBaseServiceResponse> UBaseResponseConverter::AllocateConcreteResponse() {
+	return TSharedPtr<FROSBaseServiceResponse>();
+}

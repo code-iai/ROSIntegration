@@ -21,6 +21,7 @@ bool URospyTutorialsAddTwoIntsRequestConverter::ConvertOutgoingRequest(TSharedPt
 }
 
 bool URospyTutorialsAddTwoIntsRequestConverter::ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request) {
+	//*Request = MakeShareable(new rospy_tutorials::FAddTwoIntsRequest);
 	auto ServiceRequest = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsRequest>(Request);
 	bool key_found = false;
 
@@ -40,4 +41,8 @@ bool URospyTutorialsAddTwoIntsRequestConverter::ConvertIncomingRequest(ROSBridge
 	UE_LOG(LogTemp, Error, TEXT("Request.b is %d"), ServiceRequest->_b);
 
 	return true;
+}
+
+TSharedPtr<FROSBaseServiceRequest> URospyTutorialsAddTwoIntsRequestConverter::AllocateConcreteRequest() {
+	return MakeShareable(new rospy_tutorials::FAddTwoIntsRequest);
 }

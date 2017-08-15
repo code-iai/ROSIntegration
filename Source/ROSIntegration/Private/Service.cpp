@@ -45,7 +45,8 @@ public:
 				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to RequestConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
 				_RequestConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
 				continue;
-			}else if (It->IsChildOf(UBaseResponseConverter::StaticClass()) && *It != UBaseResponseConverter::StaticClass())
+			}
+			else if (It->IsChildOf(UBaseResponseConverter::StaticClass()) && *It != UBaseResponseConverter::StaticClass())
 			{
 				UBaseResponseConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseResponseConverter>();
 				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to ResponseConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
@@ -58,88 +59,68 @@ public:
 	void CallServiceCallback(const ROSBridgeServiceResponseMsg &message) {
 		UE_LOG(LogTemp, Warning, TEXT("RECEIVED SERVICE RESPONSE"));
 
-		bool key_found = false;
+		TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response =
+			TSharedRef<TSharedPtr<FROSBaseServiceResponse>>(new TSharedPtr<FROSBaseServiceResponse>());
 
-		if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
-			//auto ResponseMsg = MakeShareable(new FAddTwoIntsResponse());
-			//TSharedPtr<rospy_tutorials::FAddTwoIntsResponse> ResponseMsg = MakeShareable(new rospy_tutorials::FAddTwoIntsResponse);
-			TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response = TSharedRef<TSharedPtr<FROSBaseServiceResponse>>(new TSharedPtr<FROSBaseServiceResponse>());
-
-			UBaseResponseConverter** Converter = _ResponseConverterMap.Find(_ServiceType);
-			if (!Converter) {
-				UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
-				return;
-			}
-
-			if (!(*Converter)->ConvertIncomingResponse(message, Response)) {
-				UE_LOG(LogTemp, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to Unreal Service Format"));
-			}
-
-
-			/*= MakeShareable(new rospy_tutorials::FAddTwoIntsResponse);
-			ResponseMsg->_Result = message.result_;
-
-			ResponseMsg->_sum = rosbridge2cpp::Helper::get_int32_by_key("values.sum", *message.full_msg_bson_, key_found);
-			if (!key_found) {
-				UE_LOG(LogTemp, Error, TEXT("Key values.sum not present in data"));
-				return;
-			}*/
-			_LastCallServiceCallback(*Response);
+		UBaseResponseConverter** Converter = _ResponseConverterMap.Find(_ServiceType);
+		if (!Converter) {
+			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
+			return;
 		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't decode message"));
+
+		if (!(*Converter)->ConvertIncomingResponse(message, Response)) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to UnrealRI Service Format"));
 		}
-		//ASSERT_EQ(Helper::get_int32_by_key("values.sum",*message.full_msg_bson_,key_found),42);
-		//ASSERT_TRUE(key_found);
 
-		//message.result_
-		// Extract info
-		// Create Concrete Request Type from it
-		// Call user-given callback
+		_LastCallServiceCallback(*Response);
 
-		//_LastCallServiceCallback;
 	}
 
 	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req, ROSBridgeServiceResponseMsg &message) {
 		UE_LOG(LogTemp, Warning, TEXT("Received Service request!"));
-		//TSharedPtr<FROSBaseServiceRequest> ServiceRequest;/* = MakeShareable(new FROSBaseServiceRequest);*/
-		TSharedPtr<FROSBaseServiceResponse> ServiceResponse = MakeShareable(new FROSBaseServiceResponse);
 
-		// Convert rosbridge2cpp Service Request Data to Unreal Data Format
-		// TODO similar to Topics (incoming message converted to Unreal Format)
+		TSharedPtr<FROSBaseServiceRequest> ServiceRequest;
+		TSharedPtr<FROSBaseServiceResponse> ServiceResponse;
 
-		bool key_found = false;
+		// Convert the incoming service request to the UnrealRI format
 
-		if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
-			// Get Specific Request Class
-			TSharedPtr<rospy_tutorials::FAddTwoIntsRequest> ServiceRequest = MakeShareable(new rospy_tutorials::FAddTwoIntsRequest);
-			TSharedPtr<rospy_tutorials::FAddTwoIntsResponse> ServiceResponse = MakeShareable(new rospy_tutorials::FAddTwoIntsResponse);
-
-			UBaseRequestConverter** Converter = _RequestConverterMap.Find(_ServiceType);
-			if (!Converter) {
-				UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
-				return;
-			}
-
-			if (!(*Converter)->ConvertIncomingRequest(req, ServiceRequest)) {
-				UE_LOG(LogTemp, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to Unreal Service Format"));
-			}
-
-			// Call the user defined Service Handler with 
-			_LastServiceRequestCallback(ServiceRequest, ServiceResponse);
-
-			// Convert Unreal Data Format Service Request Data to rosbridge2cpp
-			message.result_ = ServiceResponse->_Result;
-			BSON_APPEND_INT32(message.values_bson_, "sum", ServiceResponse->_sum);
-
-
-		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't decode message"));
+		UBaseRequestConverter** RequestConverter = _RequestConverterMap.Find(_ServiceType);
+		if (!RequestConverter) {
+			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to decode service call"));
 			return;
 		}
 
+		ServiceRequest = (*RequestConverter)->AllocateConcreteRequest();
 
+		if (!(*RequestConverter)->ConvertIncomingRequest(req, ServiceRequest)) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to Unreal Service Format"));
+		}
+
+		if (!ServiceRequest.IsValid()) {
+			UE_LOG(LogTemp, Error, TEXT("ServiceRequest is empty after ConvertIncomingRequest - Check that AllocateConcreteRequest returns a valid instance of your Request class"));
+			return;
+		}
+
+		UBaseResponseConverter** ResponseConverter = _ResponseConverterMap.Find(_ServiceType);
+		if (!ResponseConverter) {
+			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service response"));
+			return;
+		}
+		ServiceResponse = (*ResponseConverter)->AllocateConcreteResponse();
+
+		// Call the user defined Service Handler with 
+		_LastServiceRequestCallback(ServiceRequest, ServiceResponse);
+
+
+		if (!(*ResponseConverter)->ConvertOutgoingResponse(ServiceResponse, message)) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to encode UnrealRI service response"));
+			return;
+		}
+
+		if (!ServiceResponse.IsValid()) {
+			UE_LOG(LogTemp, Error, TEXT("ServiceResponse is empty after ConvertOutgoingResponse - Check that AllocateConcreteResponse returns a valid instance of your Response class"));
+			return;
+		}
 
 	}
 
@@ -165,7 +146,7 @@ public:
 		if (!(*Converter)->ConvertOutgoingRequest(ServiceRequest, &service_params)) {
 			UE_LOG(LogTemp, Error, TEXT("Failed to Convert Service call to BSON"));
 		}
-		
+
 		// Convert Unreal Data Format Service Request to rosbridge2cpp 
 
 		//if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
@@ -187,7 +168,7 @@ public:
 
 
 	//typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&, rapidjson::Document::AllocatorType&)> FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator;
-	
+
 
 };
 

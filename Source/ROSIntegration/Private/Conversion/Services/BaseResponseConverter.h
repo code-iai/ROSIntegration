@@ -24,5 +24,7 @@ public:
 
 	// This method will be used to convert the Response from an self-advertised service to the rosbrige2cpp format
 	virtual bool ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res);
+
+	virtual TSharedPtr<FROSBaseServiceResponse> AllocateConcreteResponse();
 };
 

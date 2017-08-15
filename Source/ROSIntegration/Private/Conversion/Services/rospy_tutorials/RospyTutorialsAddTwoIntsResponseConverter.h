@@ -18,5 +18,7 @@ public:
 
 	virtual bool ConvertIncomingResponse(const ROSBridgeServiceResponseMsg &res, TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response) override;
 	virtual bool ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res) override;
+
+	virtual TSharedPtr<FROSBaseServiceResponse> AllocateConcreteResponse() override;
 };
 
