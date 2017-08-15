@@ -15,6 +15,8 @@ class ROSINTEGRATION_API URospyTutorialsAddTwoIntsRequestConverter: public UBase
 	GENERATED_UCLASS_BODY()
 
 public:
+
+	virtual bool ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request) override;
 	virtual bool ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest) override;
 };
 

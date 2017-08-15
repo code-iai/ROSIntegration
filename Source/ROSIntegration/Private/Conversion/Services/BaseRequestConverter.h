@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
-//#include "rosbridge2cpp/messages/rosbridge_publish_msg.h"
+#include "rosbridge2cpp/messages/rosbridge_call_service_msg.h"
 #include "ROSBaseServiceRequest.h"
 #include "bson.h"
 #include "BaseRequestConverter.generated.h"
@@ -20,7 +20,7 @@ public:
 	UPROPERTY()
 	FString _ServiceType;
 
-	//virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
+	virtual bool ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request);
 	virtual bool ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest);
 };
 

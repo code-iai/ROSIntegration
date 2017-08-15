@@ -5,3 +5,10 @@ UBaseResponseConverter::UBaseResponseConverter(const FObjectInitializer& ObjectI
 	: Super(ObjectInitializer)
 {
 }
+
+bool UBaseResponseConverter::ConvertIncomingResponse(const ROSBridgeServiceResponseMsg &res, TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response) {
+	return false;
+}
+bool UBaseResponseConverter::ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res) {
+	return false;
+}

@@ -10,3 +10,7 @@ UBaseRequestConverter::UBaseRequestConverter(const FObjectInitializer& ObjectIni
 bool UBaseRequestConverter::ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest) {
 	return false;
 }
+
+bool UBaseRequestConverter::ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request) {
+	return false;
+}
