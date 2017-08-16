@@ -25,7 +25,6 @@ public:
 	TMap<FString, UBaseRequestConverter*> _RequestConverterMap;
 	TMap<FString, UBaseResponseConverter*> _ResponseConverterMap;
 
-	//std::function<void(TSharedPtr<FROSBaseMsg>)> _Callback;
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
 		_Ric = Ric;
 		_ServiceName = ServiceName;
@@ -34,7 +33,7 @@ public:
 		_ROSService = new rosbridge2cpp::ROSService(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*ServiceName), TCHAR_TO_UTF8(*ServiceType));
 
 
-		// Construct ConverterMap
+		// Construct Converter Maps
 		for (TObjectIterator<UClass> It; It; ++It)
 		{
 			UClass* ClassItr = *It;
@@ -147,28 +146,9 @@ public:
 			UE_LOG(LogTemp, Error, TEXT("Failed to Convert Service call to BSON"));
 		}
 
-		// Convert Unreal Data Format Service Request to rosbridge2cpp 
-
-		//if (_ServiceType == TEXT("rospy_tutorials/AddTwoInts")) {
-		//	auto AddTwoIntsRequest = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsRequest>(ServiceRequest);
-		//	service_params = BCON_NEW(
-		//		"a", BCON_INT32( AddTwoIntsRequest->_a ),
-		//		"b", BCON_INT32( AddTwoIntsRequest->_b )
-		//	);
-		//}
-		//else {
-		//	UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't encode message in CallService"));
-		//	return;
-		//}
-
 		//CallServiceCallback
 		_ROSService->CallService(service_params, std::bind(&UService::Impl::CallServiceCallback, this, std::placeholders::_1));
 	}
-
-
-
-	//typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&, rapidjson::Document::AllocatorType&)> FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator;
-
 
 };
 
