@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "ROSIntegrationCore.h"
-#include "MyPluginGameInstance.generated.h"
+#include "ROSIntegrationGameInstance.generated.h"
 
 UCLASS()
-class ROSINTEGRATION_API UMyPluginGameInstance : public UGameInstance
+class ROSINTEGRATION_API UROSIntegrationGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 

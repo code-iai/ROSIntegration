@@ -2,7 +2,7 @@
 
 #include "TFBroadcastComponent.h"
 
-#include "MyPluginGameInstance.h"
+#include "ROSIntegrationGameInstance.h"
 #include "tf2_msgs/TFMessage.h"
 #include "ROSTime.h"
 
@@ -34,7 +34,7 @@ void UTFBroadcastComponent::BeginPlay()
 	assert(GetOwner());
 
 	_TFTopic = NewObject<UTopic>(UTopic::StaticClass());
-	UMyPluginGameInstance* rosinst = Cast<UMyPluginGameInstance>(GetOwner()->GetGameInstance());
+	UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetOwner()->GetGameInstance());
 	_TFTopic->Init(rosinst->_Ric, TEXT("/tf"), TEXT("tf2_msgs/TFMessage"));
 
 

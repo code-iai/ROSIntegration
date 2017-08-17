@@ -79,7 +79,7 @@ public:
 		bson_t *bson_message;
 
 		if (ConvertMessage(msg, &bson_message)) {
-			UE_LOG(LogTemp, Error, TEXT("Publishing Converted Message"));
+			//UE_LOG(LogTemp, Error, TEXT("Publishing Converted Message"));
 			_ROSTopic->Publish(bson_message);
 			//bson_destroy(bson_message); // Not necessary, since bson memory will be freed in the rosbridge core code
 		}

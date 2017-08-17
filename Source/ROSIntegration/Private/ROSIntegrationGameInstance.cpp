@@ -1,9 +1,9 @@
-#include "MyPluginGameInstance.h"
+#include "ROSIntegrationGameInstance.h"
 #include "std_msgs/String.h"
 #include "bson.h" 
 
 
-void UMyPluginGameInstance::Init() {
+void UROSIntegrationGameInstance::Init() {
 	UE_LOG(LogTemp, Warning, TEXT("Init on GameInstance"));
 	//ROSMessages::std_msgs::String str;
 	//FROSString str;
@@ -39,13 +39,13 @@ void UMyPluginGameInstance::Init() {
 
 }
 
-void UMyPluginGameInstance::Shutdown() {
+void UROSIntegrationGameInstance::Shutdown() {
 	UE_LOG(LogTemp, Warning, TEXT("Shutdown on GameInstance"));
 	//if (_Ric != nullptr)
 	//	delete _Ric;
 }
 
-void UMyPluginGameInstance::BeginDestroy() {
+void UROSIntegrationGameInstance::BeginDestroy() {
 	UE_LOG(LogTemp, Warning, TEXT("BeginDestroy on GameInstance"));
 	Super::BeginDestroy();
 }
