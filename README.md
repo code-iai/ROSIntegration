@@ -17,10 +17,25 @@ This Plugin utilizes BSON to achieve higher transferrates for binary data.
 It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communication protocol. 
 Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin. 
 Currently, this plugin comes with a pre-compiled libbson for Windows x64. 
+To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite). As of August 2017, the necessary suport for full-duplex BSON transmission is not in a release yet. 
+However, the feature is in the rosbridge_suite codebase since March 15 2017. 
+So right now, you need to install rosbridge from the rosbridge_suite repository. 
+Everything after commit f0844e2 should be fine. 
+When you've rosbridge_suite downloaded and put in your ROS workspace, you can launch rosbridge with BSON-Mode like this:
+```
+roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
+```
 
 ## Usage
 - Add this repository to your Plugins/ Folder in your Unreal Project.
 - Open the Build File of your Unreal Project and add the Plugin to your Public/Private Dependencies
 - Add ‚ROSIntegration’ to your AdditionalDependencies Section of your Unreal Project
-- To hold the ROS communication layer code it will be instanced in a specific GameInstance Class called ‚ROSIntegrationGameInstance‘. Open the Project Settings -> Game Base and Modes  and set ‚ROSIntegrationGameInstance’ as your GameInstance
+- To hold the ROS communication layer code, a specific GameInstance Class called ‚ROSIntegrationGameInstance‘ has to be used. Open the Project Settings -> Game Base and Modes  and set ‚ROSIntegrationGameInstance’ as your GameInstance
 ### Topic Publish Example
+```
+UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
+UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
+ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
+TSharedPtr<ROSMessages::std_msgs::String> StringMessage(new ROSMessages::std_msgs::String("This is an example"));
+ExampleTopic->Publish(StringMessage);
+```
