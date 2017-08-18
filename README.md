@@ -30,7 +30,7 @@ roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 - Add this repository to your Plugins/ Folder in your Unreal Project.
 - Open the Build File of your Unreal Project and add the Plugin to your Public/Private Dependencies
 - Add ‚ROSIntegration’ to your AdditionalDependencies Section of your Unreal Project
-- To hold the ROS communication layer code, a specific GameInstance Class called ‚ROSIntegrationGameInstance‘ has to be used. Open the Project Settings -> Game Base and Modes  and set ‚ROSIntegrationGameInstance’ as your GameInstance
+- To hold the ROS communication layer code, a specific GameInstance Class called ‚ROSIntegrationGameInstance‘ has to be used. Open the Project Settings -> Maps and Modes  and set ‚ROSIntegrationGameInstance’ as your Game Instance Class
 ### Topic Publish Example
 ```
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
