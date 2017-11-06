@@ -21,14 +21,14 @@ To enable the communcation between Unreal and ROS, you will need a running ROSBr
 However, the feature is in the rosbridge_suite codebase since March 15 2017. 
 So right now, you need to install rosbridge from the rosbridge_suite repository. 
 Everything after commit f0844e2 should be fine. 
-When you've rosbridge_suite downloaded and put in your ROS workspace, you can launch rosbridge with BSON-Mode like this:
+When you've downloaded rosbridge_suite and put it into your ROS workspace, you can launch rosbridge with BSON-Mode like this:
 ```
 roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 ```
 
 ## Usage
 - Add this repository to your Plugins/ Folder in your Unreal Project.
-- Open https://github.com/code-iai/ROSIntegration/blob/master/Source/ROSIntegration/Private/ROSIntegrationCore.cpp and change the IP-address to your rosbridge server
+- Open [Source/ROSIntegration/Private/ROSIntegrationCore.cpp](Source/ROSIntegration/Private/ROSIntegrationCore.cpp) and change the IP-address to your rosbridge server
 - Open the Build File of your Unreal Project and add the Plugin to your Public/Private Dependencies
 - Add ‚ROSIntegration’ to your AdditionalDependencies Section of your Unreal Project
 - To hold the ROS communication layer code, a specific GameInstance Class called ‚ROSIntegrationGameInstance‘ has to be used. Open the Project Settings -> Maps and Modes  and set ‚ROSIntegrationGameInstance’ as your Game Instance Class
