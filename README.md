@@ -26,6 +26,8 @@ When you've downloaded rosbridge_suite and put it into your ROS workspace, you c
 roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 ```
 
+This plugin has been tested with Unreal Engine 4.16.2
+
 ## Usage
 - Add this repository to your Plugins/ Folder in your Unreal Project.
 - Open [Source/ROSIntegration/Private/ROSIntegrationCore.cpp](Source/ROSIntegration/Private/ROSIntegrationCore.cpp) and change the IP-address to your rosbridge server
@@ -40,3 +42,4 @@ ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"
 TSharedPtr<ROSMessages::std_msgs::String> StringMessage(new ROSMessages::std_msgs::String("This is an example"));
 ExampleTopic->Publish(StringMessage);
 ```
+
