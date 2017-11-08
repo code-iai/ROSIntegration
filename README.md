@@ -17,11 +17,8 @@ This Plugin utilizes BSON to achieve higher transferrates for binary data.
 It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communication protocol. 
 Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin. 
 Currently, this plugin comes with a pre-compiled libbson for Windows x64. 
-To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite). As of August 2017, the necessary suport for full-duplex BSON transmission is not in a release yet. 
-However, the feature is in the rosbridge_suite codebase since March 15 2017. 
-So right now, you need to install rosbridge from the rosbridge_suite repository. 
-Everything after commit f0844e2 should be fine. 
-When you've downloaded rosbridge_suite and put it into your ROS workspace, you can launch rosbridge with BSON-Mode like this:
+To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As of August 30th 2017, the necessary suport for this full-duplex BSON transmission mode has been officially released. 
+Please use rosbridge with version=>0.8.0 to get this feature. After installing rosbridge, you can enable the bson_mode like this:
 ```
 roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 ```
