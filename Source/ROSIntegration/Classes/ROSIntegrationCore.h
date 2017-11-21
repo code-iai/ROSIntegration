@@ -16,12 +16,14 @@ class ROSINTEGRATION_API UROSIntegrationCore: public UObject
 
 public:
 	void Init();
-	//void HandlerThread();
+
+	// You must call Init() before using this method to set upthe Implmentation correctly
+	void SetWorld(UWorld* World);
+
+	void InitSpawnManager();
+
 	void BeginDestroy() override;
-	//void MessageCallback(const ROSBridgePublishMsg &message);
-	//rosbridge2cpp::ROSBridge* GetROSBridge();
-	//class ROSBridgeWrapper;
-	//ROSBridgeWrapper* _ROSBridgeWrapper;
+
 
 private:
 
@@ -38,15 +40,6 @@ private:
 
 	
 	bool bson_test_mode = true;
-	//std::thread handler_thread_;
-	//bool shutdown_thread_ = false;
-	//bool thread_set_up_ = false;
-
-	//TCPConnection _Connection;
-	//rosbridge2cpp::ROSTopic* _Topic;
-
-public:
-	//rosbridge2cpp::ROSBridge _Ros{ _Connection };
-
+	
 };
 

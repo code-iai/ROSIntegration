@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "ROSIntegrationCore.h"
+
+
 #include "ROSIntegrationGameInstance.generated.h"
 
 UCLASS()
@@ -17,4 +19,5 @@ class ROSINTEGRATION_API UROSIntegrationGameInstance : public UGameInstance
 public:
 	UPROPERTY()
 	UROSIntegrationCore* _Ric;
+
 };
