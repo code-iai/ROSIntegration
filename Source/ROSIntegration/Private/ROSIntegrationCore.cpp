@@ -1,4 +1,5 @@
 #include "ROSIntegrationCore.h"
+#include "ROSIntegrationGameInstance.h"
 #include "rosbridge2cpp/TCPConnection.h"
 #include "rosbridge2cpp/ros_bridge.h"
 #include "rosbridge2cpp/ros_topic.h"
@@ -252,6 +253,7 @@ public:
 	void SetWorld(UWorld* World) {
 		_World = World;
 	}
+
 	void Init(bool bson_test_mode) {
 		_bson_test_mode = bson_test_mode;
 
@@ -260,16 +262,31 @@ public:
 			// OUT_INFO(TEXT("BSON mode enabled"));
 			_Ros.enable_bson_mode();
 		}
-		bool ConnectionSuccessful = _Ros.Init("192.168.178.59", 9090);
-		if (!ConnectionSuccessful) {
-			UE_LOG(LogTemp, Error, TEXT("Failed to connect to server. Abort ROSBridge Init... Please make sure that your rosbridge is running."));
+
+		if (_World == nullptr) {
+			UE_LOG(LogTemp, Error, TEXT("ROSIntegrationCore._World is nullptr. Abort ROSBridge Init."));
 			return;
 		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("rosbridge2cpp init successful"));
+
+		UGameInstance* GI = _World->GetGameInstance();
+		if (GI == nullptr) {
+			UE_LOG(LogTemp, Error, TEXT("Can't get GameInstance reference. Abort ROSBridge Init."));
+			return;
 		}
 
-		
+		UROSIntegrationGameInstance* URGI = Cast<UROSIntegrationGameInstance>(GI);
+		if (URGI == nullptr) {
+			UE_LOG(LogTemp, Error, TEXT("GameInstance must inherit from ROSIntegrationGameInstance. Please check your project settings. Abort ROSBridge Init."));
+			return;
+		}
+
+		bool ConnectionSuccessful = _Ros.Init("192.168.178.59", 9090);
+		if (!ConnectionSuccessful) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to connect to server. Please make sure that your rosbridge is running. Abort ROSBridge Init."));
+			return;
+		}
+
+		UE_LOG(LogTemp, Info, TEXT("rosbridge2cpp init successful"));
 
 		/*_Topic = new rosbridge2cpp::ROSTopic(_Ros, "/newtest", "std_msgs/String");
 		_Topic->Subscribe(std::bind(&UROSIntegrationCore::Impl::MessageCallback, this, std::placeholders::_1));*/
