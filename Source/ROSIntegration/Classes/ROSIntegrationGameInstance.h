@@ -24,5 +24,5 @@ public:
 	FString ROSBridgeServerHost = "192.168.178.59";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	uint32 ROSBridgeServerPort = 9090;
+	int32 ROSBridgeServerPort = 9090;
 };
