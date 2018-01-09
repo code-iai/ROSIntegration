@@ -20,13 +20,12 @@ If you need Vision Support in your Unreal Project, you can also add the ROSInteg
 
 ## Dependencies of this Plugin
 
-This Plugin utilizes BSON to achieve higher transferrates for binary data. 
+This Plugin utilizes BSON to achieve higher transferrates for binary data.
 It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communication protocol. 
 Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin. 
-Currently, this plugin comes with a pre-compiled libbson for Windows x64. 
-To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As of August 30th 2017, the necessary suport for this full-duplex BSON transmission mode has been officially released. 
+Currently, this plugin comes with a pre-compiled libbson for Windows x64.
 
-Please use rosbridge with version=>0.8.0 to get this feature. After installing rosbridge, you can enable the bson_mode like this:
+To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As of August 30th 2017, the necessary suport for this full-duplex BSON transmission mode has been officially released. Please use rosbridge with version=>0.8.0 to get this feature. After installing rosbridge, you can enable the bson_mode like this:
 
 ```
 roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
@@ -39,13 +38,25 @@ This plugin has been tested with Unreal Engine versions;
 
 ## Usage
 
-- Add this repository to your `Plugins/` Folder in your Unreal Project.
-- Open [Source/ROSIntegration/Private/ROSIntegrationCore.cpp](Source/ROSIntegration/Private/ROSIntegrationCore.cpp) and change the IP-address to your rosbridge server
-- Open the Build File of your Unreal Project and add the Plugin to your Public/Private Dependencies
-- Add `ROSIntegration` to your AdditionalDependencies Section of your Unreal Project
-- To hold the ROS communication layer code, a specific GameInstance Class called `ROSIntegrationGameInstance` has to be used. Open the Project Settings -> Maps and Modes  and set `ROSIntegrationGameInstance` as your Game Instance Class
+ * Create a new Unreal Project, or open your existing project
+ * Add this repository to your `Plugins/` Folder in your Unreal Project (copy the folder in so your structure looks like `MyUnrealProject/Plugins/ROSIntegrationPlugin/ROSIntegrationPlugin.uplugin`
+ * To specify your ROSBridge server, you have to create a custom GameInstance that inherits from [`ROSIntegrationGameInstance`](Source/ROSIntegration/Classes/ROSIntegrationGameInstance.h)
+  * Find `ROSIntegrationGameInstance` in the Content browser (you might need to enable 'View Options' > 'Show Plugin Content' in the bottom right of the content browser).
+  * Right click and create a new C++ or Blueprint class based on `ROSIntegrationGameInstance`
+    
+    ![Create a new GameInstance](Documentation/ue4-setup-01.png)
 
-### Topic Publish Example
+  * Open your new C++ class / Blueprint object and change the values of `ROSBridgeSeverHost` and `ROSBridgeServerPort`
+    
+    ![Change host and port to match your server](Documentation/ue4-setup-02.png)
+    
+  * Open Project Settings > Maps and Modes, and set the GameInstance to match **your new GameInstance object**, not `ROSIntegrationGameInstance`
+    
+    ![Change host and port to match your server](Documentation/ue4-setup-03.png)
+   
+ * Don't forget to save everything (Ctrl + Shift + S)
+
+### C++ Topic Publish Example
 
 ```
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
