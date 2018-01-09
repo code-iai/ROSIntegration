@@ -27,7 +27,7 @@ public:
 	rosbridge2cpp::ROSBridge _Ros{ _Connection };
 	
 
-	UWorld* _World;
+	UWorld* _World = nullptr;
 
 	UPROPERTY()
 	USpawnManager* _SpawnManager;
