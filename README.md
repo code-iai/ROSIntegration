@@ -33,6 +33,11 @@ This plugin has been tested with Unreal Engine 4.16.2
 - To hold the ROS communication layer code, a specific GameInstance Class called ‚ROSIntegrationGameInstance‘ has to be used. Open the Project Settings -> Maps and Modes  and set ‚ROSIntegrationGameInstance’ as your Game Instance Class
 ### Topic Publish Example
 ```
+#include "ROSIntegration/Classes/RI/Topic.h"
+#include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
+
+// ...
+
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
 ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
