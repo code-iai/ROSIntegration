@@ -11,12 +11,9 @@
 //       std::cout << "Type of received message: " << pkg_op;
 // }
 
-bool TCPConnection::Init(std::string ip_addr, int port){
-  //FString address = TEXT("127.0.0.1");
-
-  // TODO Use Params
-  FString address = TEXT("192.168.178.59");
-  int32 remote_port = 9090;
+bool TCPConnection::Init(std::string ip_addr, int port) {
+  FString address = FString(ip_addr.c_str());
+  int32 remote_port = port;
   FIPv4Address ip;
   FIPv4Address::Parse(address, ip);
 
