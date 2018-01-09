@@ -59,6 +59,9 @@ This plugin has been tested with Unreal Engine versions;
 ### C++ Topic Publish Example
 
 ```
+#include "ROSIntegration/Classes/RI/Topic.h"
+#include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
+
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
 ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
