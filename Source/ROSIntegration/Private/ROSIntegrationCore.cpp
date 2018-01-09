@@ -254,7 +254,7 @@ public:
 		_World = World;
 	}
 
-	void Init(bool bson_test_mode) {
+	void Init(FString ROSBridgeHost, int32 ROSBridgePort, bool bson_test_mode) {
 		_bson_test_mode = bson_test_mode;
 
 		if (bson_test_mode) {
@@ -263,24 +263,7 @@ public:
 			_Ros.enable_bson_mode();
 		}
 
-		if (_World == nullptr) {
-			UE_LOG(LogTemp, Error, TEXT("ROSIntegrationCore._World is nullptr. Abort ROSBridge Init."));
-			return;
-		}
-
-		UGameInstance* GI = _World->GetGameInstance();
-		if (GI == nullptr) {
-			UE_LOG(LogTemp, Error, TEXT("Can't get GameInstance reference. Abort ROSBridge Init."));
-			return;
-		}
-
-		UROSIntegrationGameInstance* URGI = Cast<UROSIntegrationGameInstance>(GI);
-		if (URGI == nullptr) {
-			UE_LOG(LogTemp, Error, TEXT("GameInstance must inherit from ROSIntegrationGameInstance. Please check your project settings. Abort ROSBridge Init."));
-			return;
-		}
-
-		bool ConnectionSuccessful = _Ros.Init("192.168.178.59", 9090);
+		bool ConnectionSuccessful = _Ros.Init(TCHAR_TO_UTF8(*ROSBridgeHost), ROSBridgePort);
 		if (!ConnectionSuccessful) {
 			UE_LOG(LogTemp, Error, TEXT("Failed to connect to server. Please make sure that your rosbridge is running. Abort ROSBridge Init."));
 			return;
@@ -319,10 +302,10 @@ UROSIntegrationCore::UROSIntegrationCore(const FObjectInitializer& ObjectInitial
 {
 }
 
-void UROSIntegrationCore::Init() {
+void UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
 	UE_LOG(LogTemp, Error, TEXT("CALLING INIT ON RIC IMPL()!"));
 	_Implementation = new UROSIntegrationCore::Impl;
-	_Implementation->Init(bson_test_mode);
+	_Implementation->Init(ROSBridgeHost, ROSBridgePort, bson_test_mode);
 }
 
 void UROSIntegrationCore::SetWorld(UWorld* World) {

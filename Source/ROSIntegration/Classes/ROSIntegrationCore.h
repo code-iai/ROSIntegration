@@ -15,7 +15,7 @@ class ROSINTEGRATION_API UROSIntegrationCore: public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	void Init();
+	void Init(FString ROSBridgeHost, int32 ROSBridgePort);
 
 	// You must call Init() before using this method to set upthe Implmentation correctly
 	void SetWorld(UWorld* World);
