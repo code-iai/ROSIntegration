@@ -12,11 +12,11 @@
 // }
 
 bool TCPConnection::Init(std::string ip_addr, int port) {
+
   FString address = FString(ip_addr.c_str());
   int32 remote_port = port;
   FIPv4Address ip;
   FIPv4Address::Parse(address, ip);
-
 
   auto addr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateInternetAddr();
   bool ipValid = false;
