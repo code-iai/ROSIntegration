@@ -286,7 +286,7 @@ public:
 			return;
 		}
 
-		UE_LOG(LogTemp, Info, TEXT("rosbridge2cpp init successful"));
+		UE_LOG(LogTemp, Log, TEXT("rosbridge2cpp init successful"));
 
 		/*_Topic = new rosbridge2cpp::ROSTopic(_Ros, "/newtest", "std_msgs/String");
 		_Topic->Subscribe(std::bind(&UROSIntegrationCore::Impl::MessageCallback, this, std::placeholders::_1));*/
