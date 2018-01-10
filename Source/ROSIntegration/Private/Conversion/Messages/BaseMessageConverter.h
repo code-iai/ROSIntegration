@@ -66,7 +66,7 @@ protected:
 				"secs", BCON_INT32(header.time._Sec),
 				"nsecs", BCON_INT32(header.time._NSec),
 			"}",
-			"frame_id", BCON_UTF8(TCHAR_TO_ANSI(*ConcreteMessage->frame_id)
+			"frame_id", BCON_UTF8(TCHAR_TO_ANSI(*header.frame_id))
 		);
 		BSON_APPEND_DOCUMENT(b, "header", hdr);
 	}

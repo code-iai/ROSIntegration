@@ -12,5 +12,11 @@ bool UGeometryMsgsQuaternionConverter::ConvertIncomingMessage(const ROSBridgePub
 }
 
 bool UGeometryMsgsQuaternionConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
+
+	auto Quaternion = StaticCastSharedPtr<ROSMessages::geometry_msgs::Quaternion>(BaseMsg);
+
+	bson_init(*message);
+	_bson_append_quaternion(*message, Quaternion.Get());
+
 	return true;
 }
