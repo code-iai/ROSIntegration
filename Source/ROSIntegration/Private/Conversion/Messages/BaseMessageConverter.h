@@ -6,7 +6,9 @@
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
 #include "rosbridge2cpp/messages/rosbridge_publish_msg.h"
+#include <cstring>
 #include "bson.h"
+#include "Public/std_msgs/Header.h"
 #include "BaseMessageConverter.generated.h"
 
 UCLASS()
