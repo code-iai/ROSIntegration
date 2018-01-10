@@ -63,8 +63,10 @@ protected:
 		bson_t *hdr = BCON_NEW(
 			"seq", BCON_INT32(header.seq),
 			"stamp", "{",
-			"secs", BCON_INT32(header.time._Sec),
-			"nsecs", BCON_INT32(header.time._NSec)
+				"secs", BCON_INT32(header.time._Sec),
+				"nsecs", BCON_INT32(header.time._NSec),
+			"}",
+			"frame_id", BCON_UTF8(TCHAR_TO_ANSI(*ConcreteMessage->frame_id)
 		);
 		BSON_APPEND_DOCUMENT(b, "header", hdr);
 	}
