@@ -76,7 +76,7 @@ public:
 
 
 	void Publish(TSharedPtr<FROSBaseMsg> msg) {
-		bson_t *bson_message;
+		bson_t *bson_message = nullptr;
 
 		if (ConvertMessage(msg, &bson_message)) {
 			//UE_LOG(LogTemp, Error, TEXT("Publishing Converted Message"));
