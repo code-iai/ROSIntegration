@@ -53,5 +53,64 @@ public:
 		return value;
 	}
 
+protected:
+
+	// Helper function to append a std_msgs/Header to a bson_t
+	static void _bson_append_header(bson_t *b, ROSMessages::std_msgs::Header header)
+	{
+		bson_t *hdr = BCON_NEW(
+			"seq", BCON_INT32(header.seq),
+			"stamp", "{",
+			"secs", BCON_INT32(header.time._Sec),
+			"nsecs", BCON_INT32(header.time._NSec)
+		);
+		BSON_APPEND_DOCUMENT(b, "header", hdr);
+	}
+
+	// Helper function to append a TArray<float> to a bson_t
+	static void _bson_append_float_tarray(bson_t *b, const char *key, TArray<float> tarray)
+	{
+		// float -> double doesn't loose precision
+		_bson_append_double_tarray(b, key, (TArray<double>)tarray);
+	}
+
+	// Helper function to append a TArray<double> to a bson_t
+	static void _bson_append_double_tarray(bson_t *b, const char *key, TArray<double> tarray)
+	{
+		bson_t arr;
+		const char *element_key;
+		char str[16];
+		BSON_APPEND_ARRAY_BEGIN(b, key, &arr);
+		for (int i = 0; i != tarray.Num(); ++i)
+		{
+			bson_uint32_to_string(i, &element_key, str, sizeof str);
+			BSON_APPEND_DOUBLE(b, element_key, tarray[i]);
+		}
+		bson_append_array_end(b, &arr);
+	}
+
+	// Helper function to append a TArray<uint8> to a bson_t
+	static void _bson_append_uint8_tarray(bson_t *b, const char *key, TArray<uint8> tarray)
+	{
+		// uint8 -> uint32 doesn't loose precision
+		_bson_append_uint32_tarray(b, key, (TArray<uint32>)tarray);
+	}
+
+	// Helper function to append a TArray<uint32> to a bson_t
+	static void _bson_append_uint32_tarray(bson_t *b, const char *key, TArray<uint32> tarray)
+	{
+		bson_t arr;
+		const char *element_key;
+		char str[16];
+		BSON_APPEND_ARRAY_BEGIN(b, key, &arr);
+		for (int i = 0; i != tarray.Num(); ++i)
+		{
+			bson_uint32_to_string(i, &element_key, str, sizeof str);
+			// XXX ajs 10/Jan/2018 Conversion from uint32 to int32 is not safe
+			BSON_APPEND_INT32(b, element_key, tarray[i]);
+		}
+		bson_append_array_end(b, &arr);
+	}
+
 };
 
