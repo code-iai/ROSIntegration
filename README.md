@@ -62,12 +62,49 @@ This plugin has been tested with Unreal Engine versions;
 #include "ROSIntegration/Classes/RI/Topic.h"
 #include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
 
+// Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
 ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
+
+// (Optional) Advertise the topic
+// Currently unimplemented in the plugin
+//ExamplePublishTopic->Advertise();
+
+// Publish a string to the topic
 TSharedPtr<ROSMessages::std_msgs::String> StringMessage(new ROSMessages::std_msgs::String("This is an example"));
 ExampleTopic->Publish(StringMessage);
 ```
+
+### C++ Topic Subscribe Example
+
+```c++
+#include "ROSIntegration/Classes/RI/Topic.h"
+#include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
+
+// Initialize a topic
+UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
+UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
+ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
+
+// Create a std::function callback object
+std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<FROSBaseMsg> msg) -> void 
+{
+	auto Concrete = StaticCastSharedPtr<ROSMessages::std_msgs::String>(msg);
+	if (Concrete.IsValid())
+	{
+		UE_LOG(LogTemp, Log, TEXT("Incoming string was: %s"), (*(Concrete->_Data)));
+	}
+	return;
+};
+
+// Subscribe to the topic
+ExampleTopic->Subscribe(SubscribeCallback);
+```
+
+### C++ Service Request example
+
+TODO
 
 ### Supported Message Types
 
