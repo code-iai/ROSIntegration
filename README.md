@@ -58,7 +58,7 @@ This plugin has been tested with Unreal Engine versions;
 
 ### C++ Topic Publish Example
 
-```
+```c++
 #include "ROSIntegration/Classes/RI/Topic.h"
 #include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
 
