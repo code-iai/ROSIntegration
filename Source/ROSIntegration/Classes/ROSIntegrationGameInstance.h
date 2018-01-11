@@ -20,4 +20,9 @@ public:
 	UPROPERTY()
 	UROSIntegrationCore* _Ric;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	FString ROSBridgeServerHost = "127.0.0.1";
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	int32 ROSBridgeServerPort = 9090;
 };

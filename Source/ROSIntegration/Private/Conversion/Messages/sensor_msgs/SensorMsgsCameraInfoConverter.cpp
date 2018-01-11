@@ -10,6 +10,7 @@ USensorMsgsCameraInfoConverter::USensorMsgsCameraInfoConverter(const FObjectInit
 }
 
 bool USensorMsgsCameraInfoConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
+	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: CameraInfo receiving not implemented yet"));
 	return false;
 }
 

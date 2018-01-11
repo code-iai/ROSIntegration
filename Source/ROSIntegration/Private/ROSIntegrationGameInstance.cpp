@@ -7,7 +7,7 @@ void UROSIntegrationGameInstance::Init() {
 	UE_LOG(LogTemp, Warning, TEXT("Init on GameInstance"));
 
 	_Ric = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass());
-	_Ric->Init();
+	_Ric->Init(ROSBridgeServerHost, ROSBridgeServerPort);
 
 	UWorld* CurrentWorld = GetWorld();
 	if (CurrentWorld) {
