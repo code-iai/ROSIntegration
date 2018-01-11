@@ -90,12 +90,12 @@ ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"
 // Create a std::function callback object
 std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<FROSBaseMsg> msg) -> void 
 {
-	auto Concrete = StaticCastSharedPtr<ROSMessages::std_msgs::String>(msg);
-	if (Concrete.IsValid())
-	{
-		UE_LOG(LogTemp, Log, TEXT("Incoming string was: %s"), (*(Concrete->_Data)));
-	}
-	return;
+    auto Concrete = StaticCastSharedPtr<ROSMessages::std_msgs::String>(msg);
+    if (Concrete.IsValid())
+    {
+        UE_LOG(LogTemp, Log, TEXT("Incoming string was: %s"), (*(Concrete->_Data)));
+    }
+    return;
 };
 
 // Subscribe to the topic
