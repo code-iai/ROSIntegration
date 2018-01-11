@@ -10,6 +10,7 @@ USensorMsgsImageConverter::USensorMsgsImageConverter(const FObjectInitializer& O
 }
 
 bool USensorMsgsImageConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
+	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: Image receiving not implemented yet"));
 	return false;
 }
 

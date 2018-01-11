@@ -10,7 +10,8 @@ UGeometryMsgsTransformStampedConverter::UGeometryMsgsTransformStampedConverter(c
 }
 
 bool UGeometryMsgsTransformStampedConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-	return true;
+	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: TransformStamped receiving not implemented yet"));
+	return false;
 }
 
 bool UGeometryMsgsTransformStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {

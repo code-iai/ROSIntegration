@@ -8,7 +8,8 @@ UGeometryMsgsQuaternionConverter::UGeometryMsgsQuaternionConverter(const FObject
 }
 
 bool UGeometryMsgsQuaternionConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-	return true;
+	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: Quaternion receiving not implemented yet"));
+	return false;
 }
 
 bool UGeometryMsgsQuaternionConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {

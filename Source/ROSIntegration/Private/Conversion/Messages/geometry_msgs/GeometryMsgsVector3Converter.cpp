@@ -9,7 +9,8 @@ UGeometryMsgsVector3Converter::UGeometryMsgsVector3Converter(const FObjectInitia
 }
 
 bool UGeometryMsgsVector3Converter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-	return true;
+	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: Vector3 receiving not implemented yet"));
+	return false;
 }
 
 bool UGeometryMsgsVector3Converter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {

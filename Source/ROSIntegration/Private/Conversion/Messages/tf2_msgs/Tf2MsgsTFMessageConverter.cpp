@@ -10,6 +10,7 @@ UTf2MsgsTFMessageConverter::UTf2MsgsTFMessageConverter(const FObjectInitializer&
 }
 
 bool UTf2MsgsTFMessageConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
+	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: TFMessage receiving not implemented yet"));
 	return false;
 }
 
