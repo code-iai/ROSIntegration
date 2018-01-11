@@ -75,14 +75,14 @@ Topic Message Type                 | ROS to UE4 | UE4 to ROS
 ---------------------------------- | ---------- | ----------
 std_msgs/Header                    | ✓          | ✓
 std_msgs/String                    | ✓          | ✓
-tf2_msgs/TFMessage                 |            | ✓
-geometry_msgs/Quaternion           |            | ✓
-geometry_msgs/Transform            |            | ✓
-geometry_msgs/TransformStamped     |            | ✓
-geometry_msgs/Vector3              |            | ✓
-sensor_msgs/CameraInfo             |            | ✓
-sensor_msgs/Image                  |            | ✓
-sensor_msgs/RegionOfInterest       |            |  
+tf2_msgs/TFMessage                 | ✘          | ✓
+geometry_msgs/Quaternion           | ✘          | ✓
+geometry_msgs/Transform            | ✘          | ✓
+geometry_msgs/TransformStamped     | ✘          | ✓
+geometry_msgs/Vector3              | ✘          | ✓
+sensor_msgs/CameraInfo             | ✘          | ✓
+sensor_msgs/Image                  | ✘          | ✓
+sensor_msgs/RegionOfInterest       | ✘          | ✘
 
 
 Service Message Type               | ROS to UE4 | UE4 to ROS
