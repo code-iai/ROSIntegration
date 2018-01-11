@@ -32,15 +32,7 @@ bool UStdMsgsHeaderConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* 
 bool UStdMsgsHeaderConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
 
 	auto ConcreteMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Header>(BaseMsg);
-	*message = BCON_NEW(
-		"seq", BCON_INT32(ConcreteMessage->seq),
-		"stamp", "{",
-			"secs", BCON_INT32(ConcreteMessage->time._Sec),
-			"nsecs", BCON_INT32(ConcreteMessage->time._NSec),
-		"}",
-		"frame_id", BCON_UTF8(TCHAR_TO_ANSI(*ConcreteMessage->frame_id))
-
-	);
+	_bson_append_header(*message, ConcreteMessage.Get());
 
 	return true;
 

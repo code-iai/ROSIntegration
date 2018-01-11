@@ -1,5 +1,6 @@
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsTransformStampedConverter.h"
 
+#include "Conversion/Messages/std_msgs/StdMsgsHeaderConverter.h"
 #include "geometry_msgs/TransformStamped.h"
 
 
@@ -19,7 +20,7 @@ bool UGeometryMsgsTransformStampedConverter::ConvertOutgoingMessage(TSharedPtr<F
 	auto TransformStamped = StaticCastSharedPtr<ROSMessages::geometry_msgs::TransformStamped>(BaseMsg);
 
 	bson_init(*message);
-	_bson_append_header(*message, TransformStamped->header);
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(TransformStamped->header));
 	BSON_APPEND_UTF8(*message, "child_frame_id", TCHAR_TO_UTF8(*TransformStamped->child_frame_id));
 	UGeometryMsgsTransformConverter::_bson_append_child_transform(*message, "transform", &(TransformStamped->transform));
 
