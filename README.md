@@ -1,7 +1,5 @@
 # ROSIntegration Plugin for Unreal Engine 4
-This plugin adds ROS Support to your Unreal Engine Project.
-
-It is designed to be used on different common Platforms.
+This plugin adds ROS Support to your Unreal Engine Project. It is designed to be used on different common Platforms.
 
 The connection to the ROS world will be accomplished through http://wiki.ros.org/rosbridge_suite and https://github.com/sanic/rosbridge2cpp
 
@@ -37,6 +35,8 @@ This plugin has been tested with Unreal Engine versions;
  * 4.18.2
 
 ## Usage
+
+### Setting up the plugin
 
  * Create a new Unreal Project, or open your existing project
  * Add this repository to your `Plugins/` Folder in your Unreal Project (copy the folder in so your structure looks like `MyUnrealProject/Plugins/ROSIntegrationPlugin/ROSIntegrationPlugin.uplugin`
