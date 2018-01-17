@@ -38,7 +38,8 @@ bool TCPConnection::Init(std::string ip_addr, int port) {
 
   // // Setting up the receiver thread
   std::cout << "Setting up receiver thread..." << std::endl;
-  receiverThread = std::move(std::thread([=]() {ReceiverThreadFunction(); return 1; }));
+  //receiverThread = std::move(std::thread([=]() {ReceiverThreadFunction(); return 1; }));
+  receiverThread = std::thread(&TCPConnection::ReceiverThreadFunction, this);
   receiverThreadSetUp = true;
 
   return true;
@@ -369,7 +370,7 @@ int TCPConnection::ReceiverThreadFunction(){
           // UE_LOG(LogTemp, Log, TEXT("Received text %s"), dest);
           // UE_LOG(LogTemp, Log, TEXT("Result is %s"), *result);
 
-          delete dest;
+          delete[] dest;
         }
         // UE_LOG(LogTemp, Log, TEXT("Result is %s"), *result);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));

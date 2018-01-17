@@ -89,6 +89,11 @@ public class ROSIntegration : ModuleRules
             Console.WriteLine("Using Windows BSON files");
             PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "bson-static-1.0.lib"));
             PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "windows")); 
+        }else if (Target.Platform == UnrealTargetPlatform.Linux)
+        {
+            Console.WriteLine("Using Linux BSON files");
+            PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "libbson-1.0.a"));
+            PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "linux")); 
         }
 
     }
