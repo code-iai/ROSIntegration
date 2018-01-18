@@ -1,5 +1,6 @@
 # ROSIntegration Plugin for Unreal Engine 4
-This plugin adds ROS Support to your Unreal Engine Project. It is designed to be used on different common Platforms.
+This plugin adds ROS support to your Unreal Engine Project. It is designed to be used on different common platforms.
+Currently, Windows and Linux are directly supported.
 
 The connection to the ROS world will be accomplished through http://wiki.ros.org/rosbridge_suite and https://github.com/sanic/rosbridge2cpp
 
@@ -21,7 +22,7 @@ If you need Vision Support in your Unreal Project, you can also add the ROSInteg
 This Plugin utilizes BSON to achieve higher transferrates for binary data.
 It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communication protocol. 
 Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin. 
-Currently, this plugin comes with a pre-compiled libbson for Windows x64.
+Currently, this plugin comes with a pre-compiled libbson for Windows x64 and Linux x64 which doesn't need any additional configuration.
 
 To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. Please use rosbridge with version=>0.8.0 to get this feature. After installing rosbridge, you can enable the bson_mode like this:
 
