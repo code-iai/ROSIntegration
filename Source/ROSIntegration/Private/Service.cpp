@@ -76,8 +76,6 @@ public:
 	}
 
 	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req, ROSBridgeServiceResponseMsg &message) {
-		UE_LOG(LogTemp, Verbose, TEXT("Received Service request!"));
-
 		TSharedPtr<FROSBaseServiceRequest> ServiceRequest;
 		TSharedPtr<FROSBaseServiceResponse> ServiceResponse;
 
@@ -154,7 +152,6 @@ public:
 
 
 void UService::doAnything() {
-	UE_LOG(LogTemp, Verbose, TEXT("Do Anything in Service"));
 }
 
 void UService::CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {

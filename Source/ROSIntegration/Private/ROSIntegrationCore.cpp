@@ -36,8 +36,6 @@ public:
 	std::unique_ptr<rosbridge2cpp::ROSTopic> _SpawnArrayMessageListener;
 
 	void SpawnArrayMessageCallback(const ROSBridgePublishMsg& message) {
-		UE_LOG(LogTemp, Verbose, TEXT("RECEIVED SPAWN _ARRAY_ MESSAGE"));
-
 		if (!rosbridge2cpp::Helper::bson_has_key(*message.full_msg_bson_, "msg.markers")) {
 			UE_LOG(LogTemp, Warning, TEXT("msg.markers field missing from SpawnArray Message"));
 			return;
@@ -258,7 +256,6 @@ public:
 		_bson_test_mode = bson_test_mode;
 
 		if (bson_test_mode) {
-			UE_LOG(LogTemp, Verbose, TEXT("BSON mode enabled"));
 			// OUT_INFO(TEXT("BSON mode enabled"));
 			_Ros.enable_bson_mode();
 		}
@@ -277,8 +274,6 @@ public:
 
 
 	void InitSpawnManager() {
-		UE_LOG(LogTemp, Verbose, TEXT("Initializing Spawn Manager"));
-
 		// Listen to the object spawning thread
 		_SpawnMessageListener = std::unique_ptr<rosbridge2cpp::ROSTopic>(
 			new rosbridge2cpp::ROSTopic(_Ros, "/unreal_ros/spawn_objects", "visualization_msgs/Marker"));
