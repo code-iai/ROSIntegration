@@ -269,74 +269,9 @@ int TCPConnection::ReceiverThreadFunction(){
           }else{
             std::cerr << "Failed to recv() in message retreival mode even though data is pending. Count vs. bytes_read:" << count << "," << bytes_read << std::endl;
           }
-
-
         }
-
-
-
-      //   int32 bytes_read = 0;
-      //   // read pending data into the Data array reader
-      //   FArrayReader binary_data;
-      //   binary_data.SetNumUninitialized(count);
-      //   if( _sock->Recv(binary_data.GetData(), binary_data.Num(), bytes_read) )
-      //   {
-      //     std::cout << "yayrecv";
-      //     std::cout.flush();
-      //     UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
-      //     UE_LOG(LogTemp, Verbose, TEXT("bytes_read is %d"), bytes_read);
-      //     std::cout << "REceived data:" << std::endl;
-      //     for (int i = 0; i < bytes_read; i++) {
-      //       std::cout << "0x" << std::setw(2) << std::setfill('0') << std::hex << (int)( binary_data.GetData()[i] );
-      //     }
-      //     if(bytes_read >= 4){
-      //         // TODO endian awareness
-      //         int32_t msg_length = 0;
-      //         msg_length = ( 
-      //             binary_data.GetData()[3] << 24 |
-      //             binary_data.GetData()[2] << 16 | 
-      //             binary_data.GetData()[1] << 8  |
-      //             binary_data.GetData()[0]
-      //         );
-      //         std::cout << std::dec << "We should read bytes: " << msg_length << std::endl;
-      //     }
-      //   }else{
-      //     std::cout << "NoTrecv";
-      //     std::cout.flush();
-      //   }
-      // }
-        // int32 bytes_read = 0;
-        // read pending data into the Data array reader
-        // FArrayReader binary_data;
-        // binary_data.SetNumUninitialized(count);
-        // if( _sock->Recv(binary_data.GetData(), binary_data.Num(), bytes_read) )
-        // {
-        //   std::cout << "yayrecv";
-        //   std::cout.flush();
-        //   UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
-        //   UE_LOG(LogTemp, Verbose, TEXT("bytes_read is %d"), bytes_read);
-        //   std::cout << "REceived data:" << std::endl;
-        //   for (int i = 0; i < bytes_read; i++) {
-        //     std::cout << "0x" << std::setw(2) << std::setfill('0') << std::hex << (int)( binary_data.GetData()[i] );
-        //   }
-        //   if(bytes_read >= 4){
-        //       // TODO endian awareness
-        //       int32_t msg_length = 0;
-        //       msg_length = ( 
-        //           binary_data.GetData()[3] << 24 |
-        //           binary_data.GetData()[2] << 16 | 
-        //           binary_data.GetData()[1] << 8  |
-        //           binary_data.GetData()[0]
-        //       );
-        //       std::cout << std::dec << "We should read bytes: " << msg_length << std::endl;
-        //   }
-        // }else{
-        //   std::cout << "NoTrecv";
-        //   std::cout.flush();
-        // }
       }
       if(count == 0){
-        // std::cout << ".";
         std::cout.flush();
       }
       // std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -360,15 +295,10 @@ int TCPConnection::ReceiverThreadFunction(){
           dest[dest_len]='\0';
 
           result += dest;
-          // UE_LOG(LogTemp, Verbose, TEXT("Received text %s"), dest);
-          // UE_LOG(LogTemp, Verbose, TEXT("Result is %s"), *result);
-
           delete dest;
         }
-        // UE_LOG(LogTemp, Log, TEXT("Result is %s"), *result);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
       }
-      // UE_LOG(LogTemp, Log, TEXT("Result is %s"), *result);
       std::string received_data(TCHAR_TO_UTF8(*result));
       if(received_data.length()==0){
         continue;
@@ -386,39 +316,10 @@ int TCPConnection::ReceiverThreadFunction(){
         _incoming_message_callback(j);
 
     }
-
-    // std::cout << "Received data (" << count << "): " << received_data << std::endl;
-    // UE_LOG(LogTemp, Verbose, TEXT("Result str is %s"), received_data);
-    // std::cout << "Outside" << std::endl;
-    // std::string received_data(TCHAR_TO_UTF8(*result));
-    // int count = recv(sock, recv_buffer.get(), buf_size, 0);
-    // UE_LOG(LogTemp, Verbose, TEXT("next count is %d"), count);
-
-
-
-    // TODO Implement Transport Errors
-    // if(count == 0){
-    //   report_error(R2C_CONNECTION_CLOSED);
-    //   return 1; // connection closed
-    // }
-    // if(count < 0){
-    //   report_error(R2C_SOCKET_ERROR);
-    //   return 2; // error while receiving from socket
-    // }
-
-    // recv_buffer.get()[count] = 0; // null-terminate to handle it like a c-string
-    // printf("%.*s", count, recv_buffer.get());
-    // std::cout << std::endl;
-
-    // TODO Implement
-    // if(bson_only_mode_){
-    // }else{
-    //   // std::cout.flush();
-
-    // }
-
   }
-  return 0; // Everything went OK - terminateReceiverThread is now true
+
+  // Everything went OK - terminateReceiverThread is now true
+  return 0;
 }
 
 
@@ -439,7 +340,7 @@ void TCPConnection::ReportError(rosbridge2cpp::TransportError err){
   if(_error_callback)
     _error_callback(err);
 }
-// /
+
 
 void TCPConnection::SetTransportMode(rosbridge2cpp::ITransportLayer::TransportMode mode){
   switch(mode){
