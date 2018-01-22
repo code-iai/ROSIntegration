@@ -29,7 +29,7 @@ using json = rapidjson::Document;
 #include "rapidjson/stringbuffer.h"
 
 
-
+#pragma warning(disable:4265)
 class TCPConnection : public rosbridge2cpp::ITransportLayer{
 public:
   TCPConnection (){
@@ -80,3 +80,4 @@ private:
   std::function<void(bson_t&)> incoming_message_callback_bson_; 
   std::function<void(rosbridge2cpp::TransportError)> _error_callback;
 };
+#pragma warning(default:4265)
