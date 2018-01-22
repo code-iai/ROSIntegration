@@ -143,14 +143,14 @@ void UTopic::BeginDestroy() {
 void UTopic::doSomething() {
 	UE_LOG(LogTemp, Verbose, TEXT("doSomething"));
 	////FString HandlerString(_Implementation->_Handler._TestString.c_str());
-	////UE_LOG(LogTemp, Warning, TEXT("Handler String is %s"), *HandlerString);
+	////UE_LOG(LogTemp, Verbose, TEXT("Handler String is %s"), *HandlerString);
 	////ROSMessages::std_msgs::String str;
 	////FROSString str;
 
 	////_Implementation->_Handler.publish();
 
 	////FString HandlerString2(_Implementation->_Handler._TestString.c_str());
-	////UE_LOG(LogTemp, Warning, TEXT("Handler String is now %s"), *HandlerString2);
+	////UE_LOG(LogTemp, Verbose, TEXT("Handler String is now %s"), *HandlerString2);
 	//bson_t parent;
 	//bson_t child;
 	//char *str;
@@ -162,7 +162,7 @@ void UTopic::doSomething() {
 	//str = bson_as_json(&parent, NULL);
 	////printf("%s\n", str);
 	//FString str_in_unreal(str);
-	//UE_LOG(LogTemp, Warning, TEXT("something BSON Output is %s"), *str_in_unreal);
+	//UE_LOG(LogTemp, Verbose, TEXT("something BSON Output is %s"), *str_in_unreal);
 
 	//bson_iter_t iter;
 	//bson_iter_t baz;
