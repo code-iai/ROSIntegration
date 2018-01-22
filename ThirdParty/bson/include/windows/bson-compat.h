@@ -52,12 +52,12 @@
 #  ifndef WIN32_LEAN_AND_MEAN
 #   define WIN32_LEAN_AND_MEAN
 #   include "AllowWindowsPlatformTypes.h"
-#   include <windows.h>
+#   include "MinWindows.h"
 #   include "HideWindowsPlatformTypes.h"
 #   undef  WIN32_LEAN_AND_MEAN
 #  else
 #   include "AllowWindowsPlatformTypes.h"
-#   include <windows.h>
+#   include "MinWindows.h"
 #   include "HideWindowsPlatformTypes.h"
 # endif
 #include <direct.h>
@@ -111,12 +111,14 @@ BSON_BEGIN_DECLS
 #  endif
 #  pragma warning (default :4142)
 # endif
+#  pragma warning (disable :4005)
 # define PRIi32 "d"
 # define PRId32 "d"
 # define PRIu32 "u"
 # define PRIi64 "I64i"
 # define PRId64 "I64i"
 # define PRIu64 "I64u"
+#  pragma warning (default :4005)
 #else
 # include "bson-stdint.h"
 # include <inttypes.h>
