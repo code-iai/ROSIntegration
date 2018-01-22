@@ -36,7 +36,7 @@ public:
 	std::unique_ptr<rosbridge2cpp::ROSTopic> _SpawnArrayMessageListener;
 
 	void SpawnArrayMessageCallback(const ROSBridgePublishMsg& message) {
-		UE_LOG(LogTemp, Warning, TEXT("RECEIVED SPAWN _ARRAY_ MESSAGE"));
+		UE_LOG(LogTemp, Verbose, TEXT("RECEIVED SPAWN _ARRAY_ MESSAGE"));
 
 		if (!rosbridge2cpp::Helper::bson_has_key(*message.full_msg_bson_, "msg.markers")) {
 			UE_LOG(LogTemp, Warning, TEXT("msg.markers field missing from SpawnArray Message"));
@@ -48,9 +48,9 @@ public:
 
 		if (bson_iter_init(&iter, message.full_msg_bson_) && bson_iter_find_descendant(&iter, "msg.markers", &val) &&
 			BSON_ITER_HOLDS_ARRAY(&val) ) {
-			UE_LOG(LogTemp, Warning, TEXT("Marker is included and is an array!"));
+			UE_LOG(LogTemp, Verbose, TEXT("Marker is included and is an array!"));
 		} else {
-			UE_LOG(LogTemp, Warning, TEXT("Marker is not included or isn't an array!"));
+			UE_LOG(LogTemp, Verbose, TEXT("Marker is not included or isn't an array!"));
 		}
 
 		const char* key;
@@ -234,9 +234,9 @@ public:
 			UNREAL_ROS_CHECK_KEY_FOUND
 				Message._MeshResource = FString(MeshResource.c_str());
 
-			UE_LOG(LogTemp, Warning, TEXT("Enqueue Message"));
+			UE_LOG(LogTemp, Verbose, TEXT("Enqueue Message"));
 			_SpawnManager->_SpawnObjectMessageQueue.Enqueue(Message);
-			UE_LOG(LogTemp, Warning, TEXT("Enqueue Message Done"));
+			UE_LOG(LogTemp, Verbose, TEXT("Enqueue Message Done"));
 		}
 
 	}
@@ -258,7 +258,7 @@ public:
 		_bson_test_mode = bson_test_mode;
 
 		if (bson_test_mode) {
-			UE_LOG(LogTemp, Warning, TEXT("BSON mode enabled"));
+			UE_LOG(LogTemp, Verbose, TEXT("BSON mode enabled"));
 			// OUT_INFO(TEXT("BSON mode enabled"));
 			_Ros.enable_bson_mode();
 		}
@@ -277,7 +277,7 @@ public:
 
 
 	void InitSpawnManager() {
-		UE_LOG(LogTemp, Warning, TEXT("Initializing Spawn Manager"));
+		UE_LOG(LogTemp, Verbose, TEXT("Initializing Spawn Manager"));
 
 		// Listen to the object spawning thread
 		_SpawnMessageListener = std::unique_ptr<rosbridge2cpp::ROSTopic>(
@@ -303,7 +303,7 @@ UROSIntegrationCore::UROSIntegrationCore(const FObjectInitializer& ObjectInitial
 }
 
 void UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
-	UE_LOG(LogTemp, Error, TEXT("CALLING INIT ON RIC IMPL()!"));
+	UE_LOG(LogTemp, Verbose, TEXT("CALLING INIT ON RIC IMPL()!"));
 	_Implementation = new UROSIntegrationCore::Impl;
 	_Implementation->Init(ROSBridgeHost, ROSBridgePort, bson_test_mode);
 }
@@ -320,7 +320,7 @@ void UROSIntegrationCore::InitSpawnManager() {
 
 
 void UROSIntegrationCore::BeginDestroy() {
-	UE_LOG(LogTemp, Warning, TEXT("Begin Destroy on UROSIntegrationCore called"));
+	UE_LOG(LogTemp, Verbose, TEXT("Begin Destroy on UROSIntegrationCore called"));
 	Super::BeginDestroy();
 
 	if (_Implementation) delete _Implementation;

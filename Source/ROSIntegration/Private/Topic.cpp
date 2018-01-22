@@ -77,7 +77,7 @@ public:
 		bson_t *bson_message = nullptr;
 
 		if (ConvertMessage(msg, &bson_message)) {
-			//UE_LOG(LogTemp, Error, TEXT("Publishing Converted Message"));
+			//UE_LOG(LogTemp, Verbose, TEXT("Publishing Converted Message"));
 			_ROSTopic->Publish(bson_message);
 			//bson_destroy(bson_message); // Not necessary, since bson memory will be freed in the rosbridge core code
 		}
@@ -111,18 +111,18 @@ public:
 	}
 
 	void MessageCallback(const ROSBridgePublishMsg &message) {
-		UE_LOG(LogTemp, Warning, TEXT("Topic Message received!"));
+		UE_LOG(LogTemp, Verbose, TEXT("Topic Message received!"));
 
 		TSharedPtr<FROSBaseMsg> BaseMsg;
 		if (ConvertMessage(&message, BaseMsg)) {
-			UE_LOG(LogTemp, Warning, TEXT("AFTER CONVERT: basemsg is  %s"), *(BaseMsg->_MessageType));
+			UE_LOG(LogTemp, Verbose, TEXT("AFTER CONVERT: basemsg is  %s"), *(BaseMsg->_MessageType));
 			_Callback(BaseMsg);
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Couldn't convert incoming Message; Skipping callback"));
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("Callback done"));
+		UE_LOG(LogTemp, Verbose, TEXT("Callback done"));
 	}
 };
 
@@ -141,7 +141,7 @@ void UTopic::BeginDestroy() {
 }
 
 void UTopic::doSomething() {
-	UE_LOG(LogTemp, Warning, TEXT("doSomething"));
+	UE_LOG(LogTemp, Verbose, TEXT("doSomething"));
 	////FString HandlerString(_Implementation->_Handler._TestString.c_str());
 	////UE_LOG(LogTemp, Warning, TEXT("Handler String is %s"), *HandlerString);
 	////ROSMessages::std_msgs::String str;

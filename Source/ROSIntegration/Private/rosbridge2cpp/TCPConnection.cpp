@@ -287,9 +287,9 @@ int TCPConnection::ReceiverThreadFunction(){
       //   {
       //     std::cout << "yayrecv";
       //     std::cout.flush();
-      //     // UE_LOG(LogTemp, Log, TEXT("count is %d"), count);
-      //     UE_LOG(LogTemp, Log, TEXT("count is %d"), count);
-      //     UE_LOG(LogTemp, Log, TEXT("bytes_read is %d"), bytes_read);
+      //     // UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
+      //     UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
+      //     UE_LOG(LogTemp, Verbose, TEXT("bytes_read is %d"), bytes_read);
       //     std::cout << "REceived data:" << std::endl;
       //     for (int i = 0; i < bytes_read; i++) {
       //       std::cout << "0x" << std::setw(2) << std::setfill('0') << std::hex << (int)( binary_data.GetData()[i] );
@@ -318,9 +318,9 @@ int TCPConnection::ReceiverThreadFunction(){
         // {
         //   std::cout << "yayrecv";
         //   std::cout.flush();
-        //   // UE_LOG(LogTemp, Log, TEXT("count is %d"), count);
-        //   UE_LOG(LogTemp, Log, TEXT("count is %d"), count);
-        //   UE_LOG(LogTemp, Log, TEXT("bytes_read is %d"), bytes_read);
+        //   // UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
+        //   UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
+        //   UE_LOG(LogTemp, Verbose, TEXT("bytes_read is %d"), bytes_read);
         //   std::cout << "REceived data:" << std::endl;
         //   for (int i = 0; i < bytes_read; i++) {
         //     std::cout << "0x" << std::setw(2) << std::setfill('0') << std::hex << (int)( binary_data.GetData()[i] );
@@ -358,16 +358,16 @@ int TCPConnection::ReceiverThreadFunction(){
         if( _sock->Recv(data.GetData(), data.Num(), bytes_read) )
         {
           int32 dest_len = TStringConvert<ANSICHAR,TCHAR>::ConvertedLength((char*)(data.GetData()),data.Num());
-          UE_LOG(LogTemp, Log, TEXT("count is %d"), count);
-          UE_LOG(LogTemp, Log, TEXT("bytes_read is %d"), bytes_read);
-          UE_LOG(LogTemp, Log, TEXT("dest_len will be %i"), dest_len);
+          UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
+          UE_LOG(LogTemp, Verbose, TEXT("bytes_read is %d"), bytes_read);
+          UE_LOG(LogTemp, Verbose, TEXT("dest_len will be %i"), dest_len);
           TCHAR* dest = new TCHAR[dest_len+1];
           TStringConvert<ANSICHAR,TCHAR>::Convert(dest, dest_len, (char*)(data.GetData()), data.Num());
           dest[dest_len]='\0';
 
           result += dest;
-          // UE_LOG(LogTemp, Log, TEXT("Received text %s"), dest);
-          // UE_LOG(LogTemp, Log, TEXT("Result is %s"), *result);
+          // UE_LOG(LogTemp, Verbose, TEXT("Received text %s"), dest);
+          // UE_LOG(LogTemp, Verbose, TEXT("Result is %s"), *result);
 
           delete dest;
         }
@@ -394,11 +394,11 @@ int TCPConnection::ReceiverThreadFunction(){
     }
 
     // std::cout << "Received data (" << count << "): " << received_data << std::endl;
-    // UE_LOG(LogTemp, Log, TEXT("Result str is %s"), received_data);
+    // UE_LOG(LogTemp, Verbose, TEXT("Result str is %s"), received_data);
     // std::cout << "Outside" << std::endl;
     // std::string received_data(TCHAR_TO_UTF8(*result));
     // int count = recv(sock, recv_buffer.get(), buf_size, 0);
-    // UE_LOG(LogTemp, Log, TEXT("next count is %d"), count);
+    // UE_LOG(LogTemp, Verbose, TEXT("next count is %d"), count);
 
 
 
