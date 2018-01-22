@@ -22,7 +22,6 @@ bool TCPConnection::Init(std::string ip_addr, int port) {
   bool ipValid = false;
   addr->SetIp(*address, ipValid);
   addr->SetPort(remote_port);
-  // UE_LOG(LogTemp, Warning, TEXT("IP Valid is %d"), (int) ipValid);
 
   // FSocket * sock = nullptr;
   _sock = FTcpSocketBuilder(TEXT("test ros tcp"))
@@ -30,9 +29,6 @@ bool TCPConnection::Init(std::string ip_addr, int port) {
 
   // _sock->SetReceiveBufferSize(4000000, NewSize); // TODO what is the default?
   _sock->Connect(*addr);
-  
-//  UE_LOG(LogTemp, Warning, TEXT("FROM TC: Connect is %d"), (int) InitialConnectSuccesful);
-//  UE_LOG(LogTemp, Warning, TEXT("Connection state is %d"), (int) _sock->GetConnectionState();
   
   // TODO Wait for successful connection? How? ConnectionState always returns CLOSED. Even after waiting a bit.
 
@@ -287,7 +283,6 @@ int TCPConnection::ReceiverThreadFunction(){
       //   {
       //     std::cout << "yayrecv";
       //     std::cout.flush();
-      //     // UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
       //     UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
       //     UE_LOG(LogTemp, Verbose, TEXT("bytes_read is %d"), bytes_read);
       //     std::cout << "REceived data:" << std::endl;
@@ -318,7 +313,6 @@ int TCPConnection::ReceiverThreadFunction(){
         // {
         //   std::cout << "yayrecv";
         //   std::cout.flush();
-        //   // UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
         //   UE_LOG(LogTemp, Verbose, TEXT("count is %d"), count);
         //   UE_LOG(LogTemp, Verbose, TEXT("bytes_read is %d"), bytes_read);
         //   std::cout << "REceived data:" << std::endl;
