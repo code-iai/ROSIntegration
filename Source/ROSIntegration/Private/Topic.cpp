@@ -101,7 +101,7 @@ public:
 			if (It->IsChildOf(UBaseMessageConverter::StaticClass()) && *It != UBaseMessageConverter::StaticClass())
 			{
 				UBaseMessageConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseMessageConverter>();
-				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to TopicConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
+				UE_LOG(LogTemp, Log, TEXT("Added %s with type %s to TopicConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
 				_ConverterMap.Add(*(ConcreteConverter->_MessageType), ConcreteConverter);
 
 
