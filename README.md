@@ -38,7 +38,7 @@ This plugin has been tested with Unreal Engine versions;
 
 ### Setting up the plugin
 
- * Create a new Unreal Project, or open your existing project
+ * Create a new C++ Unreal Project, or open your existing project. Please note that the Plugin might not get compiled automatically in BP-only Projects (see [this Issue](https://github.com/code-iai/ROSIntegration/issues/19)).
  * Add this repository to your `Plugins/` Folder in your Unreal project (copy the folder in so your structure looks like `MyUnrealProject/Plugins/ROSIntegration/ROSIntegration.uplugin`
  * Activate the Plugin in your UE4 project by opening your project and go to Edit -> Plugins. Search for ROSIntegration in the "other" section and activate it.
  * Restart the editor and check that the code for the new plugin is built.
