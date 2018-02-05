@@ -65,6 +65,7 @@ Add the following code into the BeginPlay() method of any actor that is put into
 ```c++
 #include "ROSIntegration/Classes/RI/Topic.h"
 #include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
+#include "ROSIntegration/Public/std_msgs/String.h"
 
 // Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
@@ -85,6 +86,7 @@ ExampleTopic->Publish(StringMessage);
 ```c++
 #include "ROSIntegration/Classes/RI/Topic.h"
 #include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
+#include "ROSIntegration/Public/std_msgs/String.h"
 
 // Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
