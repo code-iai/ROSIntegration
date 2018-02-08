@@ -16,7 +16,7 @@ bool URospyTutorialsAddTwoIntsRequestConverter::ConvertOutgoingRequest(TSharedPt
 		"b", BCON_INT32(AddTwoIntsRequest->_b)
 	);
 
-	UE_LOG(LogTemp, Warning, TEXT("This is rospy tut req converter"));
+	UE_LOG(LogTemp, Verbose, TEXT("This is rospy tut req converter"));
 	return true;
 }
 
@@ -31,14 +31,14 @@ bool URospyTutorialsAddTwoIntsRequestConverter::ConvertIncomingRequest(ROSBridge
 		UE_LOG(LogTemp, Error, TEXT("Key args.a not present in data"));
 		return false;
 	}
-	UE_LOG(LogTemp, Error, TEXT("Request.a is %d"), ServiceRequest->_a);
+	UE_LOG(LogTemp, Verbose, TEXT("Request.a is %d"), ServiceRequest->_a);
 
 	ServiceRequest->_b = rosbridge2cpp::Helper::get_int32_by_key("args.b", *(req.full_msg_bson_), key_found);
 	if (!key_found) {
 		UE_LOG(LogTemp, Error, TEXT("Key args.b not present in data"));
 		return false;
 	}
-	UE_LOG(LogTemp, Error, TEXT("Request.b is %d"), ServiceRequest->_b);
+	UE_LOG(LogTemp, Verbose, TEXT("Request.b is %d"), ServiceRequest->_b);
 
 	return true;
 }

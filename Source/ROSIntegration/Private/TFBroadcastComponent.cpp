@@ -65,7 +65,6 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
     TimePassed -= FrameTime;
 
     TickCounter++;
-    //UE_LOG(LogTemp,Warning, TEXT("Update TF on %s"));
 
 	bool GlobalSettingTFBroadcastEnabled = false;
 

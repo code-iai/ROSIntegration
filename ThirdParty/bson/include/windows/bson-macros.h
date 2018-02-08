@@ -18,6 +18,13 @@
 #ifndef BSON_MACROS_H
 #define BSON_MACROS_H
 
+/* Disable C4668: "XXX is not defined as a preprocessor macro"
+ * The prolific use of the defined() operator within a macro in this file
+ * is actually undefined behaviour according to the C++ spec, and causes 
+ * many C4668 warnings under Visual C++
+ */
+#pragma warning(disable:4668)
+
 
 #if !defined (BSON_INSIDE) && !defined (BSON_COMPILATION)
 #  error "Only <bson.h> can be included directly."
@@ -235,5 +242,6 @@
 # define BSON_GNUC_DEPRECATED_FOR(f) BSON_GNUC_DEPRECATED
 #endif
 
+#pragma warning(default:4668)
 
 #endif /* BSON_MACROS_H */

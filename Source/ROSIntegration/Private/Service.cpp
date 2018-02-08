@@ -41,14 +41,14 @@ public:
 			if (It->IsChildOf(UBaseRequestConverter::StaticClass()) && *It != UBaseRequestConverter::StaticClass())
 			{
 				UBaseRequestConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseRequestConverter>();
-				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to RequestConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
+				UE_LOG(LogTemp, Verbose, TEXT("Added %s with type %s to RequestConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
 				_RequestConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
 				continue;
 			}
 			else if (It->IsChildOf(UBaseResponseConverter::StaticClass()) && *It != UBaseResponseConverter::StaticClass())
 			{
 				UBaseResponseConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseResponseConverter>();
-				UE_LOG(LogTemp, Warning, TEXT("Added %s with type %s to ResponseConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
+				UE_LOG(LogTemp, Verbose, TEXT("Added %s with type %s to ResponseConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
 				_ResponseConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
 				continue;
 			}
@@ -56,7 +56,7 @@ public:
 	}
 
 	void CallServiceCallback(const ROSBridgeServiceResponseMsg &message) {
-		UE_LOG(LogTemp, Warning, TEXT("RECEIVED SERVICE RESPONSE"));
+		UE_LOG(LogTemp, Verbose, TEXT("RECEIVED SERVICE RESPONSE"));
 
 		TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response =
 			TSharedRef<TSharedPtr<FROSBaseServiceResponse>>(new TSharedPtr<FROSBaseServiceResponse>());
@@ -76,8 +76,6 @@ public:
 	}
 
 	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req, ROSBridgeServiceResponseMsg &message) {
-		UE_LOG(LogTemp, Warning, TEXT("Received Service request!"));
-
 		TSharedPtr<FROSBaseServiceRequest> ServiceRequest;
 		TSharedPtr<FROSBaseServiceResponse> ServiceResponse;
 
@@ -154,7 +152,6 @@ public:
 
 
 void UService::doAnything() {
-	UE_LOG(LogTemp, Warning, TEXT("Do Anything in Service"));
 }
 
 void UService::CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {

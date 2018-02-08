@@ -27,29 +27,21 @@ using json = rapidjson::Document;
 
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
-//#include <bson.h>
 
 
-
+#pragma warning(disable:4265)
 class TCPConnection : public rosbridge2cpp::ITransportLayer{
 public:
   TCPConnection (){
-	  UE_LOG(LogTemp, Warning, TEXT("TCPConnection Constructor"));
   }
   ~TCPConnection (){
-	UE_LOG(LogTemp, Warning, TEXT("Connection Destructor called now"));
-
     if(_sock!=nullptr){
-      UE_LOG(LogTemp, Warning, TEXT("Socket is not nullptr. Closing ..."));
       _sock->Close();
     }
     terminateReceiverThread = true;
-	UE_LOG(LogTemp, Warning, TEXT("Waiting for Thread to join"));
     if(receiverThreadSetUp){
       receiverThread.join(); // Wait for the receiver thread to finish
-	  UE_LOG(LogTemp, Warning, TEXT("join() in Connection Destructor done"));
     }else{
-	  UE_LOG(LogTemp, Warning, TEXT("receiverThread hasn't been set up. Skipping join() on it"));
     }
   }
 
@@ -81,3 +73,4 @@ private:
   std::function<void(bson_t&)> incoming_message_callback_bson_; 
   std::function<void(rosbridge2cpp::TransportError)> _error_callback;
 };
+#pragma warning(default:4265)
