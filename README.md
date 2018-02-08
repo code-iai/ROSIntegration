@@ -1,11 +1,12 @@
 # ROSIntegration Plugin for Unreal Engine 4
-This plugin adds ROS Support to your Unreal Engine Project. It is designed to be used on different common Platforms.
+This plugin adds ROS support to your Unreal Engine Project. It is designed to be used on different common platforms.
+Currently, Windows and Linux are directly supported.
 
 The connection to the ROS world will be accomplished through http://wiki.ros.org/rosbridge_suite and https://github.com/sanic/rosbridge2cpp
 
 ## Description
 
-This Plugin contains the basic Data Structures to enable the user to communicate with a running roscore. 
+This Plugin contains the basic data structures to enable the user to communicate with a running roscore. 
 Currently, ROS Topics and ROS Services are supported.
 
 To boost the performance for big messages (Image Streams for example), this plugin utilizes http://bsonspec.org/ to transfer binary data in a compact manner.
@@ -21,9 +22,9 @@ If you need Vision Support in your Unreal Project, you can also add the ROSInteg
 This Plugin utilizes BSON to achieve higher transferrates for binary data.
 It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communication protocol. 
 Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin. 
-Currently, this plugin comes with a pre-compiled libbson for Windows x64.
+Currently, this plugin comes with a pre-compiled libbson for Windows x64 and Linux x64 which doesn't need any additional configuration.
 
-To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As of August 30th 2017, the necessary suport for this full-duplex BSON transmission mode has been officially released. Please use rosbridge with version=>0.8.0 to get this feature. After installing rosbridge, you can enable the bson_mode like this:
+To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. Please use rosbridge with version=>0.8.0 to get this feature. After installing rosbridge, you can enable the bson_mode like this:
 
 ```
 roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
@@ -31,15 +32,16 @@ roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 
 This plugin has been tested with Unreal Engine versions;
 
- * 4.16.2
  * 4.18.2
 
 ## Usage
 
 ### Setting up the plugin
 
- * Create a new Unreal Project, or open your existing project
- * Add this repository to your `Plugins/` Folder in your Unreal Project (copy the folder in so your structure looks like `MyUnrealProject/Plugins/ROSIntegrationPlugin/ROSIntegrationPlugin.uplugin`
+ * Create a new C++ Unreal Project, or open your existing project. Please note that the Plugin might not get compiled automatically in BP-only Projects (see [this Issue](https://github.com/code-iai/ROSIntegration/issues/19)).
+ * Add this repository to your `Plugins/` Folder in your Unreal project (copy the folder in so your structure looks like `MyUnrealProject/Plugins/ROSIntegration/ROSIntegration.uplugin`
+ * Activate the Plugin in your UE4 project by opening your project and go to Edit -> Plugins. Search for ROSIntegration in the "other" section and activate it.
+ * Restart the editor and check that the code for the new plugin is built.
  * To specify your ROSBridge server, you have to create a custom GameInstance that inherits from [`ROSIntegrationGameInstance`](Source/ROSIntegration/Classes/ROSIntegrationGameInstance.h)
   * Find `ROSIntegrationGameInstance` in the Content browser (you might need to enable 'View Options' > 'Show Plugin Content' in the bottom right of the content browser).
   * Right click and create a new C++ or Blueprint class based on `ROSIntegrationGameInstance`
@@ -57,10 +59,13 @@ This plugin has been tested with Unreal Engine versions;
  * Don't forget to save everything (Ctrl + Shift + S)
 
 ### C++ Topic Publish Example
+To get started, you can create a new C++ Actor and let it publish a message once at the BeginPlay Event.
+Add the following code into the BeginPlay() method of any actor that is put into to your world to see if the connection to ROS works:
 
 ```c++
 #include "ROSIntegration/Classes/RI/Topic.h"
 #include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
+#include "ROSIntegration/Public/std_msgs/String.h"
 
 // Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
@@ -81,6 +86,7 @@ ExampleTopic->Publish(StringMessage);
 ```c++
 #include "ROSIntegration/Classes/RI/Topic.h"
 #include "ROSIntegration/Classes/ROSIntegrationGameInstance.h"
+#include "ROSIntegration/Public/std_msgs/String.h"
 
 // Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());

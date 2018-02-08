@@ -6,6 +6,7 @@
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
 #include "Conversion/Messages/BaseMessageConverter.h"
+#include "std_msgs/String.h"
 #include "StdMsgsStringConverter.generated.h"
 
 
