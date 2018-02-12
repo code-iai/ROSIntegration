@@ -17,6 +17,7 @@ bool UGeometryMsgsVector3Converter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMs
 	
 	auto Vector3 = StaticCastSharedPtr<ROSMessages::geometry_msgs::Vector3>(BaseMsg);
 
+	*message = new bson_t;
 	bson_init(*message);
 	_bson_append_vector3(*message, Vector3.Get());
 	
