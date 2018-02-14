@@ -18,6 +18,9 @@ ULookAtScanComponent::ULookAtScanComponent()
 void ULookAtScanComponent::BeginPlay()
 {
 	Super::BeginPlay();
+  // Read current parameters - They might have been changed in the editor
+	CurrentOffsetY = MinOffSetY;
+	CurrentOffsetZ = MinOffSetZ;
 
 	AActor *OwningActor = GetOwner();
 	if (!OwningActor) {
@@ -56,7 +59,8 @@ void ULookAtScanComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	//UE_LOG(LogTemp, Warning, TEXT("Actor is now at %f, %f, %f"), ThisActorLocation.X, ThisActorLocation.Y, ThisActorLocation.Z)
 	//UE_LOG(LogTemp, Warning, TEXT("Rotation is now at %f, %f, %f"), ThisActorRotation.Roll, ThisActorRotation.Pitch, ThisActorRotation.Yaw);
-	//UE_LOG(LogTemp, Warning, TEXT("offsets %f, %f"), CurrentOffsetY, CurrentOffsetZ);
+	UE_LOG(LogTemp, Warning, TEXT("max z offsets %f, %f"), MinOffSetZ, MaxOffSetZ);
+	UE_LOG(LogTemp, Warning, TEXT("offsets %f, %f"), CurrentOffsetY, CurrentOffsetZ);
 
 
 

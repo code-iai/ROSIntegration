@@ -35,41 +35,41 @@ protected:
 
 	// Boundary for Y to offset the owning actor
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		float MinOffSetY = -50.0f;
+	float MinOffSetY = -50.0f;
 	float CurrentOffsetY = MinOffSetY;
 
 	// Boundary for Y to offset the owning actor
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		float MaxOffSetY = 50.0f;
+	float MaxOffSetY = 50.0f;
 
 	// Boundary for Z to offset the owning actor
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		float MinOffSetZ = -50.0f;
+	float MinOffSetZ = -50.0f;
 	float CurrentOffsetZ = MinOffSetZ;
 
 	// Boundary for Z to offset the owning actor
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		float MaxOffSetZ = 50.0f;
+	float MaxOffSetZ = 50.0f;
 
 	// Movement step size on the Y axis
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		float YStepSize = 1.0f;
+	float YStepSize = 1.0f;
 
 	// Movement step size on the Z axis
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		float ZStepSize = 1.0f;
+	float ZStepSize = 1.0f;
 
 	// On the first TickComponent() with Translation enabled , the owning Actor will be set to: FVector(TargetActorLocation.X + DistanceX, TargetActorLocation.Y + CurrentOffsetY, TargetActorLocation.Z + CurrentOffsetZ)
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		float DistanceX = 100.0f;
+	float DistanceX = 100.0f;
 
 	// If true, the owning Actor will be translated step by step according to the Y/Z offset settings
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		bool TranslationActive = true;
+	bool TranslationActive = true;
 
 	// If true, the owning Actor will be only translated after a "ping" has been sent to Topic set by CommandTopic
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		bool WaitForTopicPingBeforeIncrement = false;
+	bool WaitForTopicPingBeforeIncrement = false;
 
 	bool DoNextMovement = false;
 
