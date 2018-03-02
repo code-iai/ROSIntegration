@@ -41,7 +41,7 @@ namespace rosbridge2cpp{
       // the json result to the local variable
       // When this happens, other callbacks that receive the same message
       // will read 'Null' on msg_json_
-      void Subscribe(FunVrROSPublishMsg callback);
+      bool Subscribe(FunVrROSPublishMsg callback);
 
       // Unsubscribe from a given topic
       // If multiple callbacks for this topic have been registered,
@@ -50,13 +50,13 @@ namespace rosbridge2cpp{
       // If you're passing the last registered callback to this function,
       // it will be unregistered in the ROSBridge instance
       // AND 'unsubscribe' will be send to the server
-      void Unsubscribe(FunVrROSPublishMsg callback);
+      bool Unsubscribe(FunVrROSPublishMsg callback);
 
       // Advertise as a publisher for this topic
-      void Advertise();
+      bool Advertise();
 
       // Unadvertise as a publisher for this topic
-      void Unadvertise();
+      bool Unadvertise();
 
       // Publish a message over this topic.
       // If advertise() has not been called before, this will be done in this method beforehand.
@@ -70,8 +70,8 @@ namespace rosbridge2cpp{
       // If advertise() has not been called before, this will be done in this method beforehand.
       // Please make sure that the message matches the type of the topic,
       // since this will NOT be valided before sending it to the rosbridge.
-      void Publish(rapidjson::Value &message);
-      void Publish(bson_t *message);
+      bool Publish(rapidjson::Value &message);
+      bool Publish(bson_t *message);
 
       std::string GeneratePublishID();
 
