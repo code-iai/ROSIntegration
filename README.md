@@ -119,6 +119,7 @@ Topic Message Type                 | ROS to UE4 | UE4 to ROS
 ---------------------------------- | ---------- | ----------
 std_msgs/Header                    | ✓          | ✓
 std_msgs/String                    | ✓          | ✓
+std_msgs/Float32                   | ✓          | ✓
 tf2_msgs/TFMessage                 | ✘          | ✓
 geometry_msgs/Quaternion           | ✘          | ✓
 geometry_msgs/Transform            | ✘          | ✓
