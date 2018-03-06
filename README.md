@@ -24,7 +24,7 @@ It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communicat
 Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin. 
 Currently, this plugin comes with a pre-compiled libbson for Windows x64 and Linux x64 which doesn't need any additional configuration.
 
-To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As an example for ROS kinetic, you can install with:
+To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As an example for ROS kinetic, you can install it with:
 ```
 sudo apt-get install ros-kinetic-rosbridge-suite
 ```
