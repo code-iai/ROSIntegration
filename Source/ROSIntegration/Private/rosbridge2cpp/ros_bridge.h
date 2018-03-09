@@ -127,6 +127,8 @@ namespace rosbridge2cpp{
       std::unordered_map<std::string, FunVrROSCallServiceMsgrROSServiceResponseMsg> registered_service_request_callbacks_bson_;
       bool bson_only_mode_ = false;
 
+      FCriticalSection ChangeTopicsMutex;
+
       // template<typename T>
       //   size_t get_address(std::function<void (T &)> f) {
       //     typedef void (fnType)(T &);

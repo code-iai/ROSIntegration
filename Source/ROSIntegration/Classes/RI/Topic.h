@@ -20,7 +20,7 @@ public:
 	
     bool Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
 
-    bool Unsubscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
+    bool Unsubscribe();
 
     bool Advertise();
 	

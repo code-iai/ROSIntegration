@@ -2,6 +2,8 @@
 #include "ros_topic.h"
 #include "bson.h"
 
+#include "Misc/ScopeLock.h"
+
 namespace rosbridge2cpp{
   bool ROSBridge::SendMessage(std::string data){
     return transport_layer_.SendMessage(data);
@@ -76,14 +78,12 @@ namespace rosbridge2cpp{
   }
 
   void ROSBridge::HandleIncomingPublishMessage(ROSBridgePublishMsg &data){
+    FScopeLock Lock(&ChangeTopicsMutex);
+
     //Incoming topic message - dispatch to correct callback
     std::string &incoming_topic_name = data.topic_;
     if ( registered_topic_callbacks_.find(incoming_topic_name) == registered_topic_callbacks_.end()) {
-      std::cerr << "[ROSBridge] Received message for topic " << incoming_topic_name << "where no callback has been registered before" <<std::endl;
-      return;
-    }
-    if ( registered_topic_callbacks_.empty()) {
-      std::cerr << "[ROSBridge] Received message for topic " << incoming_topic_name << "where no callback is currently registered" <<std::endl;
+      std::cerr << "[ROSBridge] Received message for topic " << incoming_topic_name << " where no callback has been registered before" <<std::endl;
       return;
     }
 
@@ -242,8 +242,6 @@ namespace rosbridge2cpp{
       m.FromJSON(data);
       HandleIncomingServiceRequestMessage(m.id_, m);
     }
-
-
   }
 
   bool ROSBridge::Init(std::string ip_addr, int port){
@@ -264,6 +262,7 @@ namespace rosbridge2cpp{
   }
 
   void ROSBridge::RegisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
+    FScopeLock Lock(&ChangeTopicsMutex);
     registered_topic_callbacks_[topic_name].push_back(fun);
   }
 
@@ -279,14 +278,12 @@ namespace rosbridge2cpp{
     registered_service_request_callbacks_bson_[service_name] = fun;
   }
 
-
   bool ROSBridge::UnregisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
+
+    FScopeLock Lock(&ChangeTopicsMutex);
+
     if ( registered_topic_callbacks_.find(topic_name) == registered_topic_callbacks_.end()) {
-      std::cerr << "[ROSBridge] UnregisterTopicCallback called but given topic name" << topic_name << " not in map." <<std::endl;
-      return false;
-    }
-    if ( registered_topic_callbacks_.empty()) {
-      std::cerr << "[ROSBridge] UnregisterTopicCallback called but given topic name" << topic_name << " is empty in map." <<std::endl;
+      std::cerr << "[ROSBridge] UnregisterTopicCallback called but given topic name '" << topic_name << "' not in map." <<std::endl;
       return false;
     }
 
@@ -295,8 +292,10 @@ namespace rosbridge2cpp{
     for(std::list<FunVrROSPublishMsg>::iterator topic_callback_it = r_list_of_callbacks.begin(); 
         topic_callback_it!= r_list_of_callbacks.end();
         ++topic_callback_it){
-      // if(get_address(*topic_callback_it) == get_address(fun)){
-      if(1 == 0){ // TODO refactor unsubscribe
+     
+      // the following compare only works with the UE4 ROSIntegration because the topic class has only one callback method
+      typedef void(fnType)(ROSBridgePublishMsg&);
+      if(topic_callback_it->target<fnType>() == fun.target<fnType>()) {
         std::cout << "[ROSBridge] Found CB in UnregisterTopicCallback. Deleting it ... " << std::endl;
         r_list_of_callbacks.erase(topic_callback_it);
         return true;

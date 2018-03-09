@@ -161,11 +161,15 @@ int TCPConnection::ReceiverThreadFunction(){
     // Checking the connection state alone doesn't catch simple interruptions 
     // like a crashed server etc.
     //
-
-    if(_sock->GetConnectionState()!=ESocketConnectionState::SCS_Connected){
-      std::cout << "Error on connection" << std::endl;
-      ReportError(rosbridge2cpp::TransportError::R2C_SOCKET_ERROR);
-      return 2; // error while receiving from socket
+    ESocketConnectionState ConnectionState = _sock->GetConnectionState();
+    if( ConnectionState != ESocketConnectionState::SCS_Connected ){
+        if (ConnectionState == SCS_NotConnected) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        } else {
+            std::cout << "Error on connection" << std::endl;
+            ReportError(rosbridge2cpp::TransportError::R2C_SOCKET_ERROR);
+            return 2; // error while receiving from socket
+        }
     }else{
       // std::cout << "c";
       // std::cout.flush();
