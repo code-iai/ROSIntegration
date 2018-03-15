@@ -12,6 +12,7 @@ class ROSINTEGRATION_API UROSIntegrationGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
+public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
 	void BeginDestroy() override;
@@ -25,4 +26,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	int32 ROSBridgeServerPort = 9090;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	bool bConnectToROS = true;
+
+	UPROPERTY(BlueprintReadOnly, Category = "ROS")
+	bool bIsConnected = false;
 };

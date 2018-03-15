@@ -24,12 +24,15 @@ bool TCPConnection::Init(std::string ip_addr, int port) {
   addr->SetPort(remote_port);
 
   // FSocket * sock = nullptr;
-  _sock = FTcpSocketBuilder(TEXT("test ros tcp"))
-    .AsReusable().AsNonBlocking();
+  //_sock = FTcpSocketBuilder(TEXT("test ros tcp"))
+  //  .AsReusable().AsNonBlocking();
+
+  _sock = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("test ros tcp"), false);
 
   // _sock->SetReceiveBufferSize(4000000, NewSize); // TODO what is the default?
-  _sock->Connect(*addr);
-  
+
+  if (!_sock->Connect(*addr))
+	  return false;
   // TODO Wait for successful connection? How? ConnectionState always returns CLOSED. Even after waiting a bit.
 
   // // Setting up the receiver thread

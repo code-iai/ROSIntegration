@@ -252,7 +252,7 @@ public:
 		_World = World;
 	}
 
-	void Init(FString ROSBridgeHost, int32 ROSBridgePort, bool bson_test_mode) {
+	bool Init(FString ROSBridgeHost, int32 ROSBridgePort, bool bson_test_mode) {
 		_bson_test_mode = bson_test_mode;
 
 		if (bson_test_mode) {
@@ -263,13 +263,15 @@ public:
 		bool ConnectionSuccessful = _Ros.Init(TCHAR_TO_UTF8(*ROSBridgeHost), ROSBridgePort);
 		if (!ConnectionSuccessful) {
 			UE_LOG(LogTemp, Error, TEXT("Failed to connect to server. Please make sure that your rosbridge is running. Abort ROSBridge Init."));
-			return;
+			return false;
 		}
 
 		UE_LOG(LogTemp, Log, TEXT("rosbridge2cpp init successful"));
 
 		/*_Topic = new rosbridge2cpp::ROSTopic(_Ros, "/newtest", "std_msgs/String");
 		_Topic->Subscribe(std::bind(&UROSIntegrationCore::Impl::MessageCallback, this, std::placeholders::_1));*/
+
+		return true;
 	}
 
 
@@ -297,10 +299,10 @@ UROSIntegrationCore::UROSIntegrationCore(const FObjectInitializer& ObjectInitial
 {
 }
 
-void UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
+bool UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
 	UE_LOG(LogTemp, Verbose, TEXT("CALLING INIT ON RIC IMPL()!"));
 	_Implementation = new UROSIntegrationCore::Impl;
-	_Implementation->Init(ROSBridgeHost, ROSBridgePort, bson_test_mode);
+	return _Implementation->Init(ROSBridgeHost, ROSBridgePort, bson_test_mode);
 }
 
 void UROSIntegrationCore::SetWorld(UWorld* World) {
