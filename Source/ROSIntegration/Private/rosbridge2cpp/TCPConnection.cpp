@@ -107,12 +107,6 @@ bool TCPConnection::SendMessage(const uint8_t *data, unsigned int length){
     
     total_bytes_to_send -= bytes_sent;
   }
-  
-  
-  // for (int i = 0; i < bytes_sent; i++) {
-  //   std::cout << "0x" << std::setw(2) << std::setfill('0') << std::hex << (int)( data[i] );
-  // }
-  std::cout << std::dec << "<SendDataEnd:" << checksum << ">" << std::endl;
   return true;
 }
 

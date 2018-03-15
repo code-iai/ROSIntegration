@@ -19,8 +19,15 @@ namespace rosbridge2cpp{
   class ROSTopic {
     public:
       // TODO: Implement setter of other options
-      ROSTopic (ROSBridge &ros, std::string topic_name, std::string message_type) : 
-        ros_(ros), topic_name_(topic_name), message_type_(message_type){
+      ROSTopic (ROSBridge &ros, 
+          std::string topic_name, 
+          std::string message_type,
+          int queue_size = 100)
+          : ros_(ros)
+          , topic_name_(topic_name)
+          , message_type_(message_type)
+          , queue_size_(queue_size)
+        {
         }
 
       // Subscribes to a ROS Topic and registers a callback function
@@ -89,7 +96,11 @@ namespace rosbridge2cpp{
       std::string compression_ = "none";
       int throttle_rate_ = 0;
       bool latch_ = false;
+
+      // queue size for local queue AND remote publisher within rosbridge
       int queue_size_ = 100;
+
+      // queue length for incoming messages
       int queue_length_ = 0;
 
       // Householding variables

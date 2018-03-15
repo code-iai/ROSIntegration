@@ -6,6 +6,7 @@
 #include <functional>
 #include <unordered_map>
 #include <list>
+#include <queue>
 
 #include <stdio.h>
 #include "types.h"
@@ -28,6 +29,8 @@
 #include "messages/rosbridge_unadvertise_service_msg.h"
 #include "messages/rosbridge_unsubscribe_msg.h"
 
+#include "HAL/Runnable.h"
+
 using json = rapidjson::Document;
 
 namespace rosbridge2cpp{
@@ -37,7 +40,7 @@ namespace rosbridge2cpp{
    * The library is inspired by [roslibjs](http://wiki.ros.org/roslibjs), 
    * which is a feature-rich client-side implementation of the rosbridge protocol in java script.
    */
-  class ROSBridge {
+  class ROSBridge : FRunnable {
 
     public:
       ROSBridge(ITransportLayer &transport) : transport_layer_(transport){
@@ -45,6 +48,8 @@ namespace rosbridge2cpp{
 
       ROSBridge(ITransportLayer &transport, bool bson_only_mode) : transport_layer_(transport), bson_only_mode_(bson_only_mode){
       }
+
+      ~ROSBridge();
 
       // Init the underlying transport layer and everything thats required
       // to initialized in this class.
@@ -59,6 +64,8 @@ namespace rosbridge2cpp{
       bool SendMessage(json &data);
 
       bool SendMessage(ROSBridgeMsg &msg);
+
+      bool QueueMessage(const std::string& topic_name, int queue_size, ROSBridgePublishMsg& msg);
 
 
       // Registration function for topic callbacks.
@@ -101,6 +108,14 @@ namespace rosbridge2cpp{
       // will be in BSON, instead of JSON
       void enable_bson_mode(){ bson_only_mode_ = true; }
 
+  protected :
+
+    //~ FRunnable interface
+    virtual bool Init() override;
+    virtual uint32 Run() override;
+    virtual void Stop() override;
+    virtual void Exit() override;
+
     private:
       // Callback function for the used ITransportLayer.
       // It receives the received json that was contained
@@ -127,14 +142,18 @@ namespace rosbridge2cpp{
       std::unordered_map<std::string, FunVrROSCallServiceMsgrROSServiceResponseMsg> registered_service_request_callbacks_bson_;
       bool bson_only_mode_ = false;
 
-      FCriticalSection ChangeTopicsMutex;
 
-      // template<typename T>
-      //   size_t get_address(std::function<void (T &)> f) {
-      //     typedef void (fnType)(T &);
-      //     fnType ** fnPointer = f.template target<fnType*>();
-      //     return (size_t) *fnPointer;
-      //   }
+      FCriticalSection transport_layer_access_mutex_;
 
+      FCriticalSection change_topics_mutex_;
+
+      FRunnableThread* publisher_queue_thread_ = nullptr;
+      FCriticalSection change_publisher_queues_mutex_;
+      std::unordered_map<std::string, int> publisher_topics_; // points to index in publisher_queues_
+      std::vector<std::queue<bson_t>> publisher_queues_;
+      int current_publisher_queue_ = 0;
+
+      /** For the publisher queue thread */
+      bool bStopping = false;
   };
 }

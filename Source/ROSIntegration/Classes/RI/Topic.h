@@ -30,7 +30,7 @@ public:
 
 	void BeginDestroy() override;
 
-	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType);
+	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize = 10);
 
 private:
 	// PIMPL

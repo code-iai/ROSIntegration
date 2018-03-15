@@ -111,12 +111,12 @@ public:
 		}
 	}
 
-	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
+	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize) {
 		_Ric = Ric;
 		_Topic = Topic;
 		_MessageType = MessageType;
 
-		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType));
+		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize);
 
 		// Construct ConverterMap
 		for (TObjectIterator<UClass> It; It; ++It)
@@ -176,6 +176,6 @@ bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg) {
 	return _Implementation->Publish(msg);
 }
 
-void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
-	_Implementation->Init(Ric, Topic, MessageType);
+void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize) {
+	_Implementation->Init(Ric, Topic, MessageType, QueueSize);
 }

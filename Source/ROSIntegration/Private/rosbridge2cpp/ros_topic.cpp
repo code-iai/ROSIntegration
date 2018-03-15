@@ -137,7 +137,7 @@ namespace rosbridge2cpp{
     cmd.msg_json_ =  message;
     cmd.latch_ =  latch_;
 
-    return ros_.SendMessage(cmd);
+    return ros_.QueueMessage(topic_name_, queue_size_, cmd);
   }
 
     bool ROSTopic::Publish(bson_t *message){
@@ -157,7 +157,7 @@ namespace rosbridge2cpp{
         cmd.msg_bson_ =  message;
         cmd.latch_ =  latch_;
 
-        return ros_.SendMessage(cmd);
+        return ros_.QueueMessage(topic_name_, queue_size_, cmd);
     }
 
   std::string ROSTopic::GeneratePublishID(){
