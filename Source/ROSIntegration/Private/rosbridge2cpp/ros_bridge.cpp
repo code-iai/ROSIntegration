@@ -9,12 +9,19 @@ namespace rosbridge2cpp{
 
     ROSBridge::~ROSBridge()
     {
-        FScopeLock Lock(&change_publisher_queues_mutex_);
         if (publisher_queue_thread_ != nullptr)
         {
-            bStopping = true;
             publisher_queue_thread_->Kill(true);
             delete publisher_queue_thread_;
+        }
+
+        for(auto& queue : publisher_queues_)
+        {
+            while(queue.size())
+            {
+                bson_destroy(queue.front());
+                queue.pop();
+            }
         }
     }
 
@@ -97,21 +104,27 @@ namespace rosbridge2cpp{
   {
       assert(bson_only_mode_); // queueing is not supported for json data
 
-      bson_t message;
-      bson_init(&message);
-      msg.ToBSON(message);
+      if (!run_publisher_queue_thread_)
+      {
+          return false;
+      }
+
+      bson_t* message = bson_new();
+      bson_init(message);
+      msg.ToBSON(*message);
 
       {
           FScopeLock Lock(&change_publisher_queues_mutex_);
           if (publisher_topics_.find(topic_name) == publisher_topics_.end())
           {
               publisher_topics_[topic_name] = publisher_queues_.size();
-              publisher_queues_.push_back(std::queue<bson_t>());
+              publisher_queues_.push_back(std::queue<bson_t*>());
           }
 
           auto& queue = publisher_queues_[publisher_topics_[topic_name]];
-          if (queue_size > 0 && queue.size() >= queue_size)
+          if (queue_size > 0 && queue.size() >= queue_size) // make space if necessary
           {
+              bson_destroy(queue.front());
               queue.pop();
           }
 
@@ -363,20 +376,20 @@ namespace rosbridge2cpp{
   uint32 ROSBridge::Run()
   {
       int num_skips = 0;
+      int num_retries_left = 0;
 
-      while (!bStopping)
+      while (run_publisher_queue_thread_)
       {
           if (num_skips >= publisher_queues_.size())
           {
               // nothing to publish
               FPlatformProcess::Sleep(0.01f);
               num_skips = 0;
+              num_retries_left = 10;
               continue;
           }
 
-          bool bSleep = true;
-
-          bson_t msg;
+          bson_t* msg;
           {
               FScopeLock Lock(&change_publisher_queues_mutex_);
               current_publisher_queue_++;
@@ -387,9 +400,8 @@ namespace rosbridge2cpp{
               auto& queue = publisher_queues_[current_publisher_queue_];
               if (queue.size())
               {
-                  msg = queue.back();
+                  msg = queue.front();
                   queue.pop();
-                  bSleep = false;
               }
               else
               {
@@ -398,21 +410,21 @@ namespace rosbridge2cpp{
               }
           }
 
-          const uint8_t* bson_data = bson_get_data(&msg);
-          uint32_t bson_size = msg.len;
+          const uint8_t* bson_data = bson_get_data(msg);
+          uint32_t bson_size = msg->len;
           {
               FScopeLock Lock(&transport_layer_access_mutex_);
-              bStopping = !transport_layer_.SendMessage(bson_data, bson_size);
-              if (bStopping)
+              const bool success = transport_layer_.SendMessage(bson_data, bson_size);
+              bson_destroy(msg);
+              if (!success)
               {
-                  printf("Unable to send data to ROSBridge\n");
+                  num_retries_left--;
+                  FPlatformProcess::Sleep(0.2f);
+                  if (num_retries_left <= 0) {
+                      run_publisher_queue_thread_ = false;
+                      printf("Unable to send data to ROSBridge\n");
+                  }
               }
-          }
-          bson_destroy(&msg);
-
-          if (bSleep)
-          {
-              FPlatformProcess::Sleep(0.01f);
           }
       }
 
@@ -421,7 +433,7 @@ namespace rosbridge2cpp{
 
   void ROSBridge::Stop()
   {
-      bStopping = true;
+      run_publisher_queue_thread_ = false;
   }
 
   void ROSBridge::Exit()

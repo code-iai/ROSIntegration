@@ -150,10 +150,8 @@ namespace rosbridge2cpp{
       FRunnableThread* publisher_queue_thread_ = nullptr;
       FCriticalSection change_publisher_queues_mutex_;
       std::unordered_map<std::string, int> publisher_topics_; // points to index in publisher_queues_
-      std::vector<std::queue<bson_t>> publisher_queues_;
+      std::vector<std::queue<bson_t*>> publisher_queues_;   // data to publish on the queue thread
       int current_publisher_queue_ = 0;
-
-      /** For the publisher queue thread */
-      bool bStopping = false;
+      bool run_publisher_queue_thread_ = true;
   };
 }
