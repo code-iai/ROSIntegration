@@ -1,13 +1,13 @@
 #include "ros_topic.h"
 
 namespace rosbridge2cpp{
-  void ROSTopic::Subscribe(FunVrROSPublishMsg callback){
+  bool ROSTopic::Subscribe(FunVrROSPublishMsg callback){
     ros_.RegisterTopicCallback(topic_name_, callback); // Register callback in ROSBridge
     subscription_counter_++;
 
     // Only send subscribe when this ROSTopic hasn't sent this command before
     if(subscribe_id_!="")
-      return;
+      return true;
 
     subscribe_id_ = "";
     subscribe_id_.append("subscribe:");
@@ -23,24 +23,28 @@ namespace rosbridge2cpp{
     cmd.throttle_rate_ = throttle_rate_;
     cmd.queue_length_ = queue_length_;
 
-    ros_.SendMessage(cmd);
+    if (!ros_.SendMessage(cmd))
+    {
+        subscribe_id_ = "";
+    }
+    return subscribe_id_ != "";
   }
 
-  void ROSTopic::Unsubscribe(FunVrROSPublishMsg callback){
+  bool ROSTopic::Unsubscribe(FunVrROSPublishMsg callback){
     // We've no active subscription
     if(subscribe_id_ == "") 
-      return;
+      return false;
 
     if(!ros_.UnregisterTopicCallback(topic_name_, callback)){ // Unregister callback in ROSBridge
       // failed to unregister callback - maybe the method is different from already registered callbacks
       std::cerr << "[ROSTopic] Passed unknown callback to ROSTopic::unsubscribe. This callback is not registered in the ROSBridge instance. Aborting..." << std::endl;
-      return;
+      return false;
     }
 
     subscription_counter_--;
 
     if(subscription_counter_ > 0)
-      return;
+      return true;
 
     std::cout << "[ROSTopic] No callbacks registered anymore - unsubscribe from topic" << std::endl;
     // Handle unsubscription when no callback is registered anymore
@@ -51,15 +55,17 @@ namespace rosbridge2cpp{
     cmd.id_ = subscribe_id_;
     cmd.topic_ =  topic_name_;
 
-    ros_.SendMessage(cmd);
-
-    subscribe_id_ = "";
-    subscription_counter_ = 0; // shouldn't be necessary ...
+    if (ros_.SendMessage(cmd)) {
+        subscribe_id_ = "";
+        subscription_counter_ = 0; // shouldn't be necessary ...
+        return true;
+    }
+    return false;
   }
 
-  void ROSTopic::Advertise(){
+  bool ROSTopic::Advertise(){
     if(is_advertised_) 
-      return;
+      return true;
 
     advertise_id_ = "";
     advertise_id_.append("advertise:");
@@ -74,21 +80,23 @@ namespace rosbridge2cpp{
     cmd.latch_ =  latch_;
     cmd.queue_size_ =  queue_size_;
 
-    ros_.SendMessage(cmd);
-
-    is_advertised_ = true;
+    if (ros_.SendMessage(cmd)) {
+        is_advertised_ = true;
+    }
+    return is_advertised_;
   }
-  void ROSTopic::Unadvertise(){
+  bool ROSTopic::Unadvertise(){
     if(!is_advertised_)
-      return;
+      return true;
 
     ROSBridgeUnadvertiseMsg cmd(true);
     cmd.id_ = advertise_id_;
     cmd.topic_ =  topic_name_;
 
-    ros_.SendMessage(cmd);
-
-    is_advertised_ = false;
+    if (ros_.SendMessage(cmd)) {
+        is_advertised_ = false;
+    }
+    return !is_advertised_;
   }
   // void ROSTopic::Publish(json &message){
   //   if(!is_advertised_)
@@ -114,10 +122,13 @@ namespace rosbridge2cpp{
   //   ros_.SendMessage(cmd);
   // }
 
-  void ROSTopic::Publish(rapidjson::Value &message){
-    if(!is_advertised_)
-      Advertise();
-
+  bool ROSTopic::Publish(rapidjson::Value &message){
+    if (!is_advertised_) {
+        if (!Advertise()) {
+            return false;
+        }
+    }
+    
     std::string publish_id = GeneratePublishID();
 
     ROSBridgePublishMsg cmd(true);
@@ -126,25 +137,28 @@ namespace rosbridge2cpp{
     cmd.msg_json_ =  message;
     cmd.latch_ =  latch_;
 
-    ros_.SendMessage(cmd);
+    return ros_.SendMessage(cmd);
   }
 
-  void ROSTopic::Publish(bson_t *message){
-    if(!is_advertised_)
-      Advertise();
+    bool ROSTopic::Publish(bson_t *message){
+        if (!is_advertised_) {
+            if (!Advertise()) {
+                return false;
+            }
+        }
 
-    assert(message);
+        assert(message);
 
-    std::string publish_id = GeneratePublishID();
+        std::string publish_id = GeneratePublishID();
 
-    ROSBridgePublishMsg cmd(true);
-    cmd.id_ =  publish_id;
-    cmd.topic_ =  topic_name_;
-    cmd.msg_bson_ =  message;
-    cmd.latch_ =  latch_;
+        ROSBridgePublishMsg cmd(true);
+        cmd.id_ =  publish_id;
+        cmd.topic_ =  topic_name_;
+        cmd.msg_bson_ =  message;
+        cmd.latch_ =  latch_;
 
-    ros_.SendMessage(cmd);
-  }
+        return ros_.SendMessage(cmd);
+    }
 
   std::string ROSTopic::GeneratePublishID(){
     std::string publish_id;

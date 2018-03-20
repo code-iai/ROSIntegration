@@ -3,6 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#if PLATFORM_WINDOWS
+#include "WindowsHWrapper.h"
+#endif
+
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
 #include "rosbridge2cpp/messages/rosbridge_publish_msg.h"

@@ -24,12 +24,15 @@ bool TCPConnection::Init(std::string ip_addr, int port) {
   addr->SetPort(remote_port);
 
   // FSocket * sock = nullptr;
-  _sock = FTcpSocketBuilder(TEXT("test ros tcp"))
-    .AsReusable().AsNonBlocking();
+  //_sock = FTcpSocketBuilder(TEXT("test ros tcp"))
+  //  .AsReusable().AsNonBlocking();
+
+  _sock = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("test ros tcp"), false);
 
   // _sock->SetReceiveBufferSize(4000000, NewSize); // TODO what is the default?
-  _sock->Connect(*addr);
-  
+
+  if (!_sock->Connect(*addr))
+	  return false;
   // TODO Wait for successful connection? How? ConnectionState always returns CLOSED. Even after waiting a bit.
 
   // // Setting up the receiver thread
@@ -161,11 +164,15 @@ int TCPConnection::ReceiverThreadFunction(){
     // Checking the connection state alone doesn't catch simple interruptions 
     // like a crashed server etc.
     //
-
-    if(_sock->GetConnectionState()!=ESocketConnectionState::SCS_Connected){
-      std::cout << "Error on connection" << std::endl;
-      ReportError(rosbridge2cpp::TransportError::R2C_SOCKET_ERROR);
-      return 2; // error while receiving from socket
+    ESocketConnectionState ConnectionState = _sock->GetConnectionState();
+    if( ConnectionState != ESocketConnectionState::SCS_Connected ){
+        if (ConnectionState == SCS_NotConnected) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        } else {
+            std::cout << "Error on connection" << std::endl;
+            ReportError(rosbridge2cpp::TransportError::R2C_SOCKET_ERROR);
+            return 2; // error while receiving from socket
+        }
     }else{
       // std::cout << "c";
       // std::cout.flush();

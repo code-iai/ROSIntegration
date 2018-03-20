@@ -17,17 +17,16 @@ class ROSINTEGRATION_API UTopic: public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	void doSomething();
-
-	void Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
-
-	void Unsubscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
-
-	void Advertise();
 	
-	void Unadvertise();
+    bool Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
+
+    bool Unsubscribe();
+
+    bool Advertise();
 	
-	void Publish(TSharedPtr<FROSBaseMsg> msg);
+    bool Unadvertise();
+	
+    bool Publish(TSharedPtr<FROSBaseMsg> msg);
 
 	void BeginDestroy() override;
 
@@ -37,9 +36,5 @@ private:
 	// PIMPL
 	class Impl;
 	Impl* _Implementation;
-
-	UPROPERTY()
-	bool test;
-
 };
 

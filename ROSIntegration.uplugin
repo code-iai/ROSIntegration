@@ -1,24 +1,24 @@
 {
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "ROSIntegration",
-	"Description": "",
-	"Category": "Other",
-	"CreatedBy": "",
-	"CreatedByURL": "",
-	"DocsURL": "",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"Installed": false,
-	"EnabledByDefault" : true,
-	"Modules": [
-		{
-			"Name": "ROSIntegration",
-			"Type": "Developer",
-			"LoadingPhase": "Default"
-		}
-	]
+    "FileVersion": 3,
+    "Version": 1,
+    "VersionName": "1.0",
+    "FriendlyName": "ROS Integration",
+    "Description": "Adds ROS support without adding ROS dependencies.",
+    "Category": "Simulation",
+    "CreatedBy": "Institute for Artificial Intelligence - University of Bremen",
+    "CreatedByURL": "https://github.com/code-iai/ROSIntegration",
+    "DocsURL": "https://github.com/code-iai/ROSIntegration",
+    "MarketplaceURL": "",
+    "SupportURL": "https://github.com/code-iai/ROSIntegration",
+    "CanContainContent": true,
+    "IsBetaVersion": false,
+    "Installed": false,
+    "EnabledByDefault": true,
+    "Modules": [
+        {
+            "Name": "ROSIntegration",
+            "Type": "Developer",
+            "LoadingPhase": "Default"
+        }
+    ]
 }

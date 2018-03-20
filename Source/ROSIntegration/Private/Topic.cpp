@@ -10,11 +10,22 @@
 class UTopic::Impl {
 	// hidden implementation details
 public:
-	Impl() : b(true) {
-
+	Impl()
+    : _Ric(nullptr)
+    , _ROSTopic(nullptr) 
+    {
 	}
+
+    ~Impl() {
+
+        if (_Callback) {
+            Unsubscribe();
+        }
+
+        delete _ROSTopic;
+    }
+
 	//ROSBridgeHandler _Handler;
-	bool b;
 	UROSIntegrationCore* _Ric;
 	FString _Topic;
 	FString _MessageType;
@@ -27,7 +38,7 @@ public:
 		// TODO do this on advertise/call?
 		UBaseMessageConverter** Converter = _ConverterMap.Find(_MessageType);
 		if (!Converter) {
-			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't find Converter to encode message"));
+			UE_LOG(LogTemp, Error, TEXT("MessageType %s is unknown. Can't find Converter to encode message"), *_MessageType);
 			return false;
 		}
 
@@ -40,7 +51,7 @@ public:
 		// TODO do this on advertise/call?
 		UBaseMessageConverter** Converter = _ConverterMap.Find(_MessageType);
 		if (!Converter) {
-			UE_LOG(LogTemp, Error, TEXT("MessageType is unknown. Can't find Converter to decode message"));
+			UE_LOG(LogTemp, Error, TEXT("MessageType %s is unknown. Can't find Converter to decode message"), *_MessageType);
 			return false;
 		}
 
@@ -48,40 +59,55 @@ public:
 	}
 
 
-	void Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
+	bool Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
 		if (!_ROSTopic) {
 			UE_LOG(LogTemp, Error, TEXT("Rostopic hasn't been initialized before Subscribe() call"));
-			return;
+			return false;
 		}
+        if (_Callback) {
+            UE_LOG(LogTemp, Warning, TEXT("Rostopic was already subscribed"));
+            Unsubscribe();
+        }
 
-		_ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
+		bool result = _ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
 		_Callback = func;
+        return result;
 	}
-	void Unsubscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
+    bool Unsubscribe() {
+        if (!_ROSTopic) {
+            UE_LOG(LogTemp, Error, TEXT("Rostopic hasn't been initialized before Unsubscribe() call"));
+            return false;
+        }
 
+        bool result = _ROSTopic->Unsubscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
+        if (result) {
+            _Callback = nullptr;
+        }
+        return result;
 	}
 
-	void Advertise() {
+	bool Advertise() {
 		assert(_ROSTopic);
-		_ROSTopic->Advertise();
+        return _ROSTopic->Advertise();
 	}
 
 
-	void Unadvertise() {
+    bool Unadvertise() {
 		assert(_ROSTopic);
-		_ROSTopic->Unadvertise();
+		return _ROSTopic->Unadvertise();
 	}
 
 
-	void Publish(TSharedPtr<FROSBaseMsg> msg) {
+	bool Publish(TSharedPtr<FROSBaseMsg> msg) {
 		bson_t *bson_message = nullptr;
 
 		if (ConvertMessage(msg, &bson_message)) {
-			_ROSTopic->Publish(bson_message);
+			return _ROSTopic->Publish(bson_message);
 			//bson_destroy(bson_message); // Not necessary, since bson memory will be freed in the rosbridge core code
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Failed to ConvertMessage in UTopic::Publish()"));
+            return false;
 		}
 	}
 
@@ -102,8 +128,6 @@ public:
 				UBaseMessageConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseMessageConverter>();
 				UE_LOG(LogTemp, Log, TEXT("Added %s with type %s to TopicConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
 				_ConverterMap.Add(*(ConcreteConverter->_MessageType), ConcreteConverter);
-
-
 			}
 		}
 
@@ -134,28 +158,22 @@ void UTopic::BeginDestroy() {
 	delete _Implementation;
 }
 
-void UTopic::doSomething() {
 
+bool UTopic::Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
+	return _Implementation->Subscribe(func);
+}
+bool UTopic::Unsubscribe() {
+    return _Implementation->Unsubscribe();
 }
 
-
-
-void UTopic::Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
-	_Implementation->Subscribe(func);
+bool UTopic::Advertise() {
+    return _Implementation->Advertise();
 }
-void UTopic::Unsubscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
-
+bool UTopic::Unadvertise() {
+    return _Implementation->Unadvertise();
 }
-
-void UTopic::Advertise() {
-	//Advertise() { _topic.advertise(); }
-}
-void UTopic::Unadvertise() {
-	//Unadvertise() { _topic.unadvertise(); }
-}
-void UTopic::Publish(TSharedPtr<FROSBaseMsg> msg) {
-	_Implementation->Publish(msg);
-
+bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg) {
+	return _Implementation->Publish(msg);
 }
 
 void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType) {
