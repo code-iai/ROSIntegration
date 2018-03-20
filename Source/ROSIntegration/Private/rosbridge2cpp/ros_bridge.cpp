@@ -375,18 +375,16 @@ namespace rosbridge2cpp{
 
   uint32 ROSBridge::Run()
   {
-      int num_skips = 0;
       int num_retries_left = 0;
+      float sleep_duration = 0.2f;
 
       while (run_publisher_queue_thread_)
       {
-          if (num_skips >= publisher_queues_.size())
+          if (sleep_duration > 0.0f)
           {
-              // nothing to publish
-              FPlatformProcess::Sleep(0.01f);
-              num_skips = 0;
+              FPlatformProcess::Sleep(sleep_duration);
               num_retries_left = 10;
-              continue;
+              sleep_duration = 0.0f;
           }
 
           bson_t* msg;
@@ -396,6 +394,15 @@ namespace rosbridge2cpp{
               if (current_publisher_queue_ >= publisher_queues_.size())
               {
                   current_publisher_queue_ = 0;
+                  // Enforce sleep once every topic was handled to allow
+                  // synchronous ROSBridge calls (e.g. Subscribe, Advertise).
+                  sleep_duration = 0.01f;
+
+                  if (publisher_queues_.size() == 0)
+                  {
+                      sleep_duration = 0.1f;
+                      continue;
+                  }
               }
               auto& queue = publisher_queues_[current_publisher_queue_];
               if (queue.size())
@@ -405,7 +412,6 @@ namespace rosbridge2cpp{
               }
               else
               {
-                  num_skips++;
                   continue;
               }
           }
@@ -419,10 +425,10 @@ namespace rosbridge2cpp{
               if (!success)
               {
                   num_retries_left--;
-                  FPlatformProcess::Sleep(0.2f);
+                  sleep_duration = 0.2f;
                   if (num_retries_left <= 0) {
                       run_publisher_queue_thread_ = false;
-                      printf("Unable to send data to ROSBridge\n");
+                      std::cout << "[ROSBridge] Lost connection to ROSBridge!" << std::endl;
                   }
               }
           }
