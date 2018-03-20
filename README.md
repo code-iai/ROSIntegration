@@ -37,6 +37,7 @@ roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 This plugin has been tested with Unreal Engine versions;
 
  * 4.18.2
+ * 4.18.3
 
 ## Usage
 
