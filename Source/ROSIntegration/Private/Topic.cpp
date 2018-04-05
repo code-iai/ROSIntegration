@@ -148,14 +148,24 @@ public:
 
 UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+    , _Implementation(new UTopic::Impl())
+    , _SelfPtr(this)
 {
-	_Implementation = new UTopic::Impl;
+}
+
+void UTopic::PostInitProperties()
+{
+    Super::PostInitProperties();
+
+    OnConstruct();
 }
 
 void UTopic::BeginDestroy() {
-	Super::BeginDestroy();
+    Super::BeginDestroy();
 
 	delete _Implementation;
+
+    _SelfPtr.Reset();
 }
 
 
@@ -178,4 +188,72 @@ bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg) {
 
 void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize) {
 	_Implementation->Init(Ric, Topic, MessageType, QueueSize);
+}
+
+
+
+void UTopic::Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize)
+{
+    UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(GWorld->GetGameInstance());
+    if (ROSInstance)
+    {
+        if (ROSInstance->bIsConnected)
+        {
+            TMap<EMessageType, FString> SupportedMessageTypes;
+            SupportedMessageTypes.Add(EMessageType::String, TEXT("std_msgs/String"));
+            SupportedMessageTypes.Add(EMessageType::Float32, TEXT("std_msgs/Float32"));
+
+            Init(ROSInstance->_Ric, TopicName, SupportedMessageTypes[MessageType], QueueSize);
+
+            std::function<void(TSharedPtr<FROSBaseMsg>)> Callback = [this, MessageType](TSharedPtr<FROSBaseMsg> msg) -> void
+            {
+                switch (MessageType)
+                {
+                case EMessageType::String:
+                {
+                    auto ConcreteStringMessage = StaticCastSharedPtr<ROSMessages::std_msgs::String>(msg);
+                    if (ConcreteStringMessage.IsValid())
+                    {
+                        const FString Data = ConcreteStringMessage->_Data;
+                        TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+                        AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+                        {
+                            if (!SelfPtr.IsValid()) return;
+                            OnStringMessage(Data);
+                        });
+                    }
+                    break;
+                }
+                case EMessageType::Float32:
+                {
+                    auto ConcreteFloatMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Float32>(msg);
+                    if (ConcreteFloatMessage.IsValid())
+                    {
+                        const float Data = ConcreteFloatMessage->_Data;
+                        TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+                        AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+                        {
+                            if (!SelfPtr.IsValid()) return;
+                            OnFloat32Message(Data);
+                        });
+                        
+                    }
+                    break;
+                }
+                default:
+                    unimplemented();
+                    break;
+                }
+            };
+
+            if (!Subscribe(Callback))
+            {
+                UE_LOG(LogTemp, Error, TEXT("Unable to subscribe to topic %s."), *TopicName);
+            }
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ROSIntegrationGameInstance does not exist."));
+    }
 }
