@@ -32,7 +32,10 @@ roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 
 This plugin has been tested with Unreal Engine versions;
 
+ * 4.17.3
  * 4.18.2
+ * 4.18.3
+ * 4.19.1
 
 ## Usage
 
@@ -108,6 +111,19 @@ std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<F
 // Subscribe to the topic
 ExampleTopic->Subscribe(SubscribeCallback);
 ```
+
+### Blueprint Topic Subscribe Example
+
+* Create a Blueprint based on `Topic` class.
+* Subscribe to a topic.
+* Define what happens when a message arrives.
+
+![Create Blueprint based on Topic class](Documentation/bp_topic-01.png)
+
+* Open Level Bluprint or any other you want to use the topic in.
+* Instantiate the blueprint via `Construct Object from Class` with a meaningful outer to define its lifetime and affiliation.
+
+![Use the bluprint topic instance](Documentation/bp_topic-02.png)
 
 ### C++ Service Request example
 
