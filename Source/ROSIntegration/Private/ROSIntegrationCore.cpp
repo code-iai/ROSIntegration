@@ -307,6 +307,12 @@ bool UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
 	return _Implementation->Init(ROSBridgeHost, ROSBridgePort, bson_test_mode);
 }
 
+
+bool UROSIntegrationCore::IsHealthy() const
+{
+    return true; // TODO implement
+}
+
 void UROSIntegrationCore::SetWorld(UWorld* World) {
 	assert(_Implementation);
 	_Implementation->SetWorld(World);

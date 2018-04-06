@@ -19,7 +19,7 @@ public:
 
 public:
 	UPROPERTY()
-	UROSIntegrationCore* _Ric;
+	UROSIntegrationCore* ROSIntegrationCore;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	FString ROSBridgeServerHost = "127.0.0.1";
@@ -32,4 +32,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "ROS")
 	bool bIsConnected = false;
+
+protected:
+    void CheckROSBridgeHealth();
+
+    FTimerHandle TimerHandle_CheckHealth;
 };

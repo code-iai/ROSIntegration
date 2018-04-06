@@ -203,7 +203,7 @@ void UTopic::Subscribe(const FString& TopicName, EMessageType MessageType, int32
             SupportedMessageTypes.Add(EMessageType::String, TEXT("std_msgs/String"));
             SupportedMessageTypes.Add(EMessageType::Float32, TEXT("std_msgs/Float32"));
 
-            Init(ROSInstance->_Ric, TopicName, SupportedMessageTypes[MessageType], QueueSize);
+            Init(ROSInstance->ROSIntegrationCore, TopicName, SupportedMessageTypes[MessageType], QueueSize);
 
             std::function<void(TSharedPtr<FROSBaseMsg>)> Callback = [this, MessageType](TSharedPtr<FROSBaseMsg> msg) -> void
             {

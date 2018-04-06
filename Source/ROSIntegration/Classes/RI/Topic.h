@@ -62,7 +62,7 @@ private:
     * Subscribe to the given topic
     */
     UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
-    void Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize);
+    void Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
 
 	// PIMPL
 	class Impl;

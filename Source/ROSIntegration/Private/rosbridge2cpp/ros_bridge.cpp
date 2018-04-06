@@ -375,7 +375,7 @@ namespace rosbridge2cpp{
 
   uint32 ROSBridge::Run()
   {
-      int num_retries_left = 0;
+      int num_retries_left = 10;
       float sleep_duration = 0.2f;
 
       while (run_publisher_queue_thread_)
@@ -383,7 +383,6 @@ namespace rosbridge2cpp{
           if (sleep_duration > 0.0f)
           {
               FPlatformProcess::Sleep(sleep_duration);
-              num_retries_left = 10;
               sleep_duration = 0.0f;
           }
 
@@ -430,6 +429,10 @@ namespace rosbridge2cpp{
                       run_publisher_queue_thread_ = false;
                       std::cout << "[ROSBridge] Lost connection to ROSBridge!" << std::endl;
                   }
+              }
+              else
+              {
+                  num_retries_left = 10;
               }
           }
       }
