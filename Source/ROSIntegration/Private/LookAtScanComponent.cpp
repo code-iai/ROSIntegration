@@ -30,8 +30,8 @@ void ULookAtScanComponent::BeginPlay()
 
 	ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 
-	UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(OwningActor->GetGameInstance());
-	ExampleTopic->Init(rosinst->_Ric, CommandTopic, TEXT("std_msgs/String"));
+	UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(OwningActor->GetGameInstance());
+	ExampleTopic->Init(ROSInstance->ROSIntegrationCore, CommandTopic, TEXT("std_msgs/String"));
 	ExampleTopic->Subscribe(SubscribeCallback);
 	
 }

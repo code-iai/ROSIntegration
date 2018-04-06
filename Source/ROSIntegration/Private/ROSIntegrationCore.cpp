@@ -258,20 +258,15 @@ public:
 		_bson_test_mode = bson_test_mode;
 
 		if (bson_test_mode) {
-			// OUT_INFO(TEXT("BSON mode enabled"));
 			_Ros.enable_bson_mode();
 		}
 
 		bool ConnectionSuccessful = _Ros.Init(TCHAR_TO_UTF8(*ROSBridgeHost), ROSBridgePort);
 		if (!ConnectionSuccessful) {
-			UE_LOG(LogROS, Error, TEXT("Failed to connect to server %s:%u. Please make sure that your rosbridge is running. Abort ROSBridge Init."), *ROSBridgeHost, ROSBridgePort);
 			return false;
 		}
 
 		UE_LOG(LogROS, Log, TEXT("rosbridge2cpp init successful"));
-
-		/*_Topic = new rosbridge2cpp::ROSTopic(_Ros, "/newtest", "std_msgs/String");
-		_Topic->Subscribe(std::bind(&UROSIntegrationCore::Impl::MessageCallback, this, std::placeholders::_1));*/
 
 		return true;
 	}
@@ -305,6 +300,12 @@ bool UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
 	UE_LOG(LogROS, Verbose, TEXT("CALLING INIT ON RIC IMPL()!"));
 	_Implementation = new UROSIntegrationCore::Impl;
 	return _Implementation->Init(ROSBridgeHost, ROSBridgePort, bson_test_mode);
+}
+
+
+bool UROSIntegrationCore::IsHealthy() const
+{
+    return true; // TODO implement
 }
 
 void UROSIntegrationCore::SetWorld(UWorld* World) {

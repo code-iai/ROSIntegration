@@ -33,7 +33,6 @@ bool TCPConnection::Init(std::string ip_addr, int port) {
 
   if (!_sock->Connect(*addr))
 	  return false;
-  // TODO Wait for successful connection? How? ConnectionState always returns CLOSED. Even after waiting a bit.
 
   // // Setting up the receiver thread
   std::cout << "Setting up receiver thread..." << std::endl;
@@ -60,54 +59,30 @@ bool TCPConnection::SendMessage(std::string data){
 
 
 bool TCPConnection::SendMessage(const uint8_t *data, unsigned int length){
-  // std::cerr << "SendMessage for binary not implemented" << std::endl;
+ 
+  // Simple checksum
+  //uint16_t checksum = Fletcher16(data, length);
+  
   int32 bytes_sent = 0;
   unsigned int total_bytes_to_send = length;
-  // TODO what happens when not all data can be sent in one call?
-  
-  // Simple checksum
-  uint16_t checksum = Fletcher16(data, length);
-  
-  // Use a timeout if necessary
-  FDateTime GraceTimeStart;
-  bool GraceTimeActive = false;
-  
-  while(total_bytes_to_send > 0){
+  int32 num_tries = 0;
+  while(total_bytes_to_send > 0 && num_tries < 3)
+  {
     bool SendResult = _sock->Send(data, total_bytes_to_send, bytes_sent);
 
-    if(bytes_sent == -1){
-        std::cout << "#";
-        if(!GraceTimeActive){
-            std::cerr << "Send returned -1 bytes. Grace Time started" << std::endl; 
-            GraceTimeStart = FDateTime::UtcNow();
-            GraceTimeActive = true;
-        }else{
-            // Check elapsed time in Grace Period
-            uint8 ElapsedSeconds = FDateTime::UtcNow().ToUnixTimestamp() - GraceTimeStart.ToUnixTimestamp();
-            if(ElapsedSeconds >= 4){
-                // Cancel this send process
-                std::cerr << "Grace Time passed for sending packet. Discarding it." << std::endl; 
-                return false;
-            }
-        }
-        
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
-        continue;
-        // TODO check for send timeout
-    }else{
-        GraceTimeActive = false;
+    if(SendResult)
+    {
+        data += bytes_sent;
     }
-    
-    std::cout << "Send " << bytes_sent << " bytes from (" << total_bytes_to_send << "/" << length <<") Bytes ";
-    if(SendResult){
-        std::cout << " T ";
-    }else{
-        std::cout << " F ";        
+    else
+    {
+        num_tries++;
     }
     
     total_bytes_to_send -= bytes_sent;
   }
-  return true;
+
+  return total_bytes_to_send == 0;
 }
 
 uint16_t TCPConnection::Fletcher16( const uint8_t *data, int count ){

@@ -3,29 +3,69 @@
 #include "bson.h" 
 
 
-void UROSIntegrationGameInstance::Init() {
+void UROSIntegrationGameInstance::Init()
+{
 	if (bConnectToROS)
 	{
-		_Ric = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass());
-		bIsConnected = _Ric->Init(ROSBridgeServerHost, ROSBridgeServerPort);
+        ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass());
+		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerHost, ROSBridgeServerPort);
 
 		if (bIsConnected)
 		{
 			UWorld* CurrentWorld = GetWorld();
-			if (CurrentWorld) {
-				_Ric->SetWorld(CurrentWorld);
-				_Ric->InitSpawnManager();
+			if (CurrentWorld) 
+            {
+                ROSIntegrationCore->SetWorld(CurrentWorld);
+                ROSIntegrationCore->InitSpawnManager();
 			}
-			else {
+			else 
+            {
 				UE_LOG(LogROS, Error, TEXT("World not available in UROSIntegrationGameInstance::Init()!"));
 			}
+
+            GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth, 1.0f, true, 5.0f);
 		}
+        else if(!bReconnect)
+        {
+            UE_LOG(LogROS, Error, TEXT("Failed to connect to server %s:%u. Please make sure that your rosbridge is running."), *ROSBridgeServerHost, ROSBridgeServerPort);
+        }
 	}
 }
 
-void UROSIntegrationGameInstance::Shutdown() {
+void UROSIntegrationGameInstance::CheckROSBridgeHealth()
+{
+    if (ROSIntegrationCore->IsHealthy())
+    {
+        return;
+    }
+
+    if (bIsConnected)
+    {
+        UE_LOG(LogROS, Error, TEXT("Connection to rosbridge %s:%u was interrupted."), *ROSBridgeServerHost, ROSBridgeServerPort);
+    }
+
+    // reconnect again
+    bIsConnected = false;
+    bReconnect = true;
+    Init();
+    bReconnect = false;
+
+    if(bConnectToROS && !bIsConnected)
+    {
+        return; // Let timer call this method again to retry connection attempt
+    }
+
+    // TODO: tell everyone (Topics, Services, etc.) they lost connection and need to reconnect (subscribe and advertise)
+
+    UE_LOG(LogROS, Display, TEXT("Successfully reconnected to rosbridge %s:%u."), *ROSBridgeServerHost, ROSBridgeServerPort);
 }
 
-void UROSIntegrationGameInstance::BeginDestroy() {
+void UROSIntegrationGameInstance::Shutdown() 
+{
+    GetTimerManager().ClearTimer(TimerHandle_CheckHealth);
+}
+
+void UROSIntegrationGameInstance::BeginDestroy() 
+{
 	Super::BeginDestroy();
 }
