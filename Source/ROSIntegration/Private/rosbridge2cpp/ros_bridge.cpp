@@ -3,9 +3,30 @@
 #include "bson.h"
 
 #include "Misc/ScopeLock.h"
+#include "HAL/RunnableThread.h"
 
 namespace rosbridge2cpp{
+
+    ROSBridge::~ROSBridge()
+    {
+        if (publisher_queue_thread_ != nullptr)
+        {
+            publisher_queue_thread_->Kill(true);
+            delete publisher_queue_thread_;
+        }
+
+        for(auto& queue : publisher_queues_)
+        {
+            while(queue.size())
+            {
+                bson_destroy(queue.front());
+                queue.pop();
+            }
+        }
+    }
+
   bool ROSBridge::SendMessage(std::string data){
+    FScopeLock Lock(&transport_layer_access_mutex_);
     return transport_layer_.SendMessage(data);
   }
 
@@ -25,6 +46,7 @@ namespace rosbridge2cpp{
       }
       const uint8_t *bson_data = bson_get_data (&bson);
       uint32_t bson_size = bson.len;
+      FScopeLock Lock(&transport_layer_access_mutex_);
       bool retval = transport_layer_.SendMessage(bson_data,bson_size);
       bson_destroy(&bson);
       return retval;
@@ -44,6 +66,7 @@ namespace rosbridge2cpp{
       const uint8_t *bson_data = bson_get_data (&message);
       uint32_t bson_size = message.len;
       std::cout << "[ROSBridge] Sending data from ROSBridgeMsg ("<< (uint32_t) bson_size <<" Bytes)" << std::endl;
+      FScopeLock Lock(&transport_layer_access_mutex_);
       bool retval = transport_layer_.SendMessage(bson_data,bson_size);
       bson_destroy(&message); // TODO needed?
       return retval;
@@ -77,8 +100,42 @@ namespace rosbridge2cpp{
     return SendMessage(str_repr);
   }
 
+  bool ROSBridge::QueueMessage(const std::string& topic_name, int queue_size, ROSBridgePublishMsg& msg)
+  {
+      assert(bson_only_mode_); // queueing is not supported for json data
+
+      if (!run_publisher_queue_thread_)
+      {
+          return false;
+      }
+
+      bson_t* message = bson_new();
+      bson_init(message);
+      msg.ToBSON(*message);
+
+      {
+          FScopeLock Lock(&change_publisher_queues_mutex_);
+          if (publisher_topics_.find(topic_name) == publisher_topics_.end())
+          {
+              publisher_topics_[topic_name] = publisher_queues_.size();
+              publisher_queues_.push_back(std::queue<bson_t*>());
+          }
+
+          auto& queue = publisher_queues_[publisher_topics_[topic_name]];
+          if (queue_size > 0 && queue.size() >= queue_size) // make space if necessary
+          {
+              bson_destroy(queue.front());
+              queue.pop();
+          }
+
+          queue.push(message);
+      }
+
+      return true;
+  }
+
   void ROSBridge::HandleIncomingPublishMessage(ROSBridgePublishMsg &data){
-    FScopeLock Lock(&ChangeTopicsMutex);
+    FScopeLock Lock(&change_topics_mutex_);
 
     //Incoming topic message - dispatch to correct callback
     std::string &incoming_topic_name = data.topic_;
@@ -258,11 +315,13 @@ namespace rosbridge2cpp{
       transport_layer_.RegisterIncomingMessageCallback(fun);
     }
 
+    publisher_queue_thread_ = FRunnableThread::Create(this, TEXT("ROSBridgePublisherQueue"), 128 * 1024, TPri_Normal);
+
     return transport_layer_.Init(ip_addr,port);
   }
 
   void ROSBridge::RegisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
-    FScopeLock Lock(&ChangeTopicsMutex);
+    FScopeLock Lock(&change_topics_mutex_);
     registered_topic_callbacks_[topic_name].push_back(fun);
   }
 
@@ -280,7 +339,7 @@ namespace rosbridge2cpp{
 
   bool ROSBridge::UnregisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
 
-    FScopeLock Lock(&ChangeTopicsMutex);
+    FScopeLock Lock(&change_topics_mutex_);
 
     if ( registered_topic_callbacks_.find(topic_name) == registered_topic_callbacks_.end()) {
       std::cerr << "[ROSBridge] UnregisterTopicCallback called but given topic name '" << topic_name << "' not in map." <<std::endl;
@@ -302,5 +361,89 @@ namespace rosbridge2cpp{
       }
     }
     return false;
+  }
+
+
+
+  /* FRunnable interface
+  *****************************************************************************/
+
+  bool ROSBridge::Init()
+  {
+      return true;
+  }
+
+  uint32 ROSBridge::Run()
+  {
+      int num_retries_left = 0;
+      float sleep_duration = 0.2f;
+
+      while (run_publisher_queue_thread_)
+      {
+          if (sleep_duration > 0.0f)
+          {
+              FPlatformProcess::Sleep(sleep_duration);
+              num_retries_left = 10;
+              sleep_duration = 0.0f;
+          }
+
+          bson_t* msg;
+          {
+              FScopeLock Lock(&change_publisher_queues_mutex_);
+              current_publisher_queue_++;
+              if (current_publisher_queue_ >= publisher_queues_.size())
+              {
+                  current_publisher_queue_ = 0;
+                  // Enforce sleep once every topic was handled to allow
+                  // synchronous ROSBridge calls (e.g. Subscribe, Advertise).
+                  sleep_duration = 0.01f;
+
+                  if (publisher_queues_.size() == 0)
+                  {
+                      sleep_duration = 0.1f;
+                      continue;
+                  }
+              }
+              auto& queue = publisher_queues_[current_publisher_queue_];
+              if (queue.size())
+              {
+                  msg = queue.front();
+                  queue.pop();
+              }
+              else
+              {
+                  continue;
+              }
+          }
+
+          const uint8_t* bson_data = bson_get_data(msg);
+          uint32_t bson_size = msg->len;
+          {
+              FScopeLock Lock(&transport_layer_access_mutex_);
+              const bool success = transport_layer_.SendMessage(bson_data, bson_size);
+              bson_destroy(msg);
+              if (!success)
+              {
+                  num_retries_left--;
+                  sleep_duration = 0.2f;
+                  if (num_retries_left <= 0) {
+                      run_publisher_queue_thread_ = false;
+                      std::cout << "[ROSBridge] Lost connection to ROSBridge!" << std::endl;
+                  }
+              }
+          }
+      }
+
+      return 0;
+  }
+
+  void ROSBridge::Stop()
+  {
+      run_publisher_queue_thread_ = false;
+  }
+
+  void ROSBridge::Exit()
+  {
+      // do nothing
   }
 }
