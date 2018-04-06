@@ -41,14 +41,14 @@ public:
 			if (It->IsChildOf(UBaseRequestConverter::StaticClass()) && *It != UBaseRequestConverter::StaticClass())
 			{
 				UBaseRequestConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseRequestConverter>();
-				UE_LOG(LogTemp, Verbose, TEXT("Added %s with type %s to RequestConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
+				UE_LOG(LogROS, Verbose, TEXT("Added %s with type %s to RequestConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
 				_RequestConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
 				continue;
 			}
 			else if (It->IsChildOf(UBaseResponseConverter::StaticClass()) && *It != UBaseResponseConverter::StaticClass())
 			{
 				UBaseResponseConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseResponseConverter>();
-				UE_LOG(LogTemp, Verbose, TEXT("Added %s with type %s to ResponseConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
+				UE_LOG(LogROS, Verbose, TEXT("Added %s with type %s to ResponseConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
 				_ResponseConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
 				continue;
 			}
@@ -56,19 +56,19 @@ public:
 	}
 
 	void CallServiceCallback(const ROSBridgeServiceResponseMsg &message) {
-		UE_LOG(LogTemp, Verbose, TEXT("RECEIVED SERVICE RESPONSE"));
+		UE_LOG(LogROS, Verbose, TEXT("RECEIVED SERVICE RESPONSE"));
 
 		TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response =
 			TSharedRef<TSharedPtr<FROSBaseServiceResponse>>(new TSharedPtr<FROSBaseServiceResponse>());
 
 		UBaseResponseConverter** Converter = _ResponseConverterMap.Find(_ServiceType);
 		if (!Converter) {
-			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
+			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
 			return;
 		}
 
 		if (!(*Converter)->ConvertIncomingResponse(message, Response)) {
-			UE_LOG(LogTemp, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to UnrealRI Service Format"));
+			UE_LOG(LogROS, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to UnrealRI Service Format"));
 		}
 
 		_LastCallServiceCallback(*Response);
@@ -83,24 +83,24 @@ public:
 
 		UBaseRequestConverter** RequestConverter = _RequestConverterMap.Find(_ServiceType);
 		if (!RequestConverter) {
-			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to decode service call"));
+			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to decode service call"));
 			return;
 		}
 
 		ServiceRequest = (*RequestConverter)->AllocateConcreteRequest();
 
 		if (!(*RequestConverter)->ConvertIncomingRequest(req, ServiceRequest)) {
-			UE_LOG(LogTemp, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to Unreal Service Format"));
+			UE_LOG(LogROS, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to Unreal Service Format"));
 		}
 
 		if (!ServiceRequest.IsValid()) {
-			UE_LOG(LogTemp, Error, TEXT("ServiceRequest is empty after ConvertIncomingRequest - Check that AllocateConcreteRequest returns a valid instance of your Request class"));
+			UE_LOG(LogROS, Error, TEXT("ServiceRequest is empty after ConvertIncomingRequest - Check that AllocateConcreteRequest returns a valid instance of your Request class"));
 			return;
 		}
 
 		UBaseResponseConverter** ResponseConverter = _ResponseConverterMap.Find(_ServiceType);
 		if (!ResponseConverter) {
-			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service response"));
+			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service response"));
 			return;
 		}
 		ServiceResponse = (*ResponseConverter)->AllocateConcreteResponse();
@@ -110,12 +110,12 @@ public:
 
 
 		if (!(*ResponseConverter)->ConvertOutgoingResponse(ServiceResponse, message)) {
-			UE_LOG(LogTemp, Error, TEXT("Failed to encode UnrealRI service response"));
+			UE_LOG(LogROS, Error, TEXT("Failed to encode UnrealRI service response"));
 			return;
 		}
 
 		if (!ServiceResponse.IsValid()) {
-			UE_LOG(LogTemp, Error, TEXT("ServiceResponse is empty after ConvertOutgoingResponse - Check that AllocateConcreteResponse returns a valid instance of your Response class"));
+			UE_LOG(LogROS, Error, TEXT("ServiceResponse is empty after ConvertOutgoingResponse - Check that AllocateConcreteResponse returns a valid instance of your Response class"));
 			return;
 		}
 
@@ -133,7 +133,7 @@ public:
 
 		UBaseRequestConverter** Converter = _RequestConverterMap.Find(_ServiceType);
 		if (!Converter) {
-			UE_LOG(LogTemp, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
+			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
 			return;
 		}
 
@@ -141,7 +141,7 @@ public:
 		bson_t *service_params;
 
 		if (!(*Converter)->ConvertOutgoingRequest(ServiceRequest, &service_params)) {
-			UE_LOG(LogTemp, Error, TEXT("Failed to Convert Service call to BSON"));
+			UE_LOG(LogROS, Error, TEXT("Failed to Convert Service call to BSON"));
 		}
 
 		//CallServiceCallback

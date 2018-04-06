@@ -38,7 +38,7 @@ public:
 		// TODO do this on advertise/call?
 		UBaseMessageConverter** Converter = _ConverterMap.Find(_MessageType);
 		if (!Converter) {
-			UE_LOG(LogTemp, Error, TEXT("MessageType %s is unknown. Can't find Converter to encode message"), *_MessageType);
+			UE_LOG(LogROS, Error, TEXT("MessageType %s is unknown. Can't find Converter to encode message"), *_MessageType);
 			return false;
 		}
 
@@ -51,7 +51,7 @@ public:
 		// TODO do this on advertise/call?
 		UBaseMessageConverter** Converter = _ConverterMap.Find(_MessageType);
 		if (!Converter) {
-			UE_LOG(LogTemp, Error, TEXT("MessageType %s is unknown. Can't find Converter to decode message"), *_MessageType);
+			UE_LOG(LogROS, Error, TEXT("MessageType %s is unknown. Can't find Converter to decode message"), *_MessageType);
 			return false;
 		}
 
@@ -61,11 +61,11 @@ public:
 
 	bool Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
 		if (!_ROSTopic) {
-			UE_LOG(LogTemp, Error, TEXT("Rostopic hasn't been initialized before Subscribe() call"));
+			UE_LOG(LogROS, Error, TEXT("Rostopic hasn't been initialized before Subscribe() call"));
 			return false;
 		}
         if (_Callback) {
-            UE_LOG(LogTemp, Warning, TEXT("Rostopic was already subscribed"));
+            UE_LOG(LogROS, Warning, TEXT("Rostopic was already subscribed"));
             Unsubscribe();
         }
 
@@ -75,7 +75,7 @@ public:
 	}
     bool Unsubscribe() {
         if (!_ROSTopic) {
-            UE_LOG(LogTemp, Error, TEXT("Rostopic hasn't been initialized before Unsubscribe() call"));
+            UE_LOG(LogROS, Error, TEXT("Rostopic hasn't been initialized before Unsubscribe() call"));
             return false;
         }
 
@@ -106,7 +106,7 @@ public:
 			//bson_destroy(bson_message); // Not necessary, since bson memory will be freed in the rosbridge core code
 		}
 		else {
-			UE_LOG(LogTemp, Error, TEXT("Failed to ConvertMessage in UTopic::Publish()"));
+			UE_LOG(LogROS, Error, TEXT("Failed to ConvertMessage in UTopic::Publish()"));
             return false;
 		}
 	}
@@ -126,7 +126,7 @@ public:
 			if (It->IsChildOf(UBaseMessageConverter::StaticClass()) && *It != UBaseMessageConverter::StaticClass())
 			{
 				UBaseMessageConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseMessageConverter>();
-				UE_LOG(LogTemp, Log, TEXT("Added %s with type %s to TopicConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
+				UE_LOG(LogROS, Log, TEXT("Added %s with type %s to TopicConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
 				_ConverterMap.Add(*(ConcreteConverter->_MessageType), ConcreteConverter);
 			}
 		}
@@ -139,7 +139,7 @@ public:
 			_Callback(BaseMsg);
 		}
 		else {
-			UE_LOG(LogTemp, Error, TEXT("Couldn't convert incoming Message; Skipping callback"));
+			UE_LOG(LogROS, Error, TEXT("Couldn't convert incoming Message; Skipping callback"));
 		}
 	}
 };
@@ -248,12 +248,12 @@ void UTopic::Subscribe(const FString& TopicName, EMessageType MessageType, int32
 
             if (!Subscribe(Callback))
             {
-                UE_LOG(LogTemp, Error, TEXT("Unable to subscribe to topic %s."), *TopicName);
+                UE_LOG(LogROS, Error, TEXT("Unable to subscribe to topic %s."), *TopicName);
             }
         }
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("ROSIntegrationGameInstance does not exist."));
+        UE_LOG(LogROS, Warning, TEXT("ROSIntegrationGameInstance does not exist."));
     }
 }

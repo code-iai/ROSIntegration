@@ -17,7 +17,7 @@ void UROSIntegrationGameInstance::Init() {
 				_Ric->InitSpawnManager();
 			}
 			else {
-				UE_LOG(LogTemp, Error, TEXT("World not available in UROSIntegrationGameInstance::Init()!"));
+				UE_LOG(LogROS, Error, TEXT("World not available in UROSIntegrationGameInstance::Init()!"));
 			}
 		}
 	}

@@ -8,6 +8,7 @@
 
 #include "ROSIntegrationCore.generated.h"
 
+ROSINTEGRATION_API DECLARE_LOG_CATEGORY_EXTERN(LogROS, Display, All);
 
 UCLASS()
 class ROSINTEGRATION_API UROSIntegrationCore: public UObject
