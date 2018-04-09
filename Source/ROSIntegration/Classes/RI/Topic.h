@@ -49,6 +49,8 @@ public:
 
 protected:
 
+    virtual FString GetDetailedInfoInternal() const override;
+
     UFUNCTION(BlueprintImplementableEvent, Category = ROS)
         void OnConstruct();
 
@@ -77,7 +79,10 @@ private:
 	// PIMPL
 	class Impl;
 	Impl* _Implementation;
+
+    TWeakObjectPtr<UROSIntegrationCore> ROSIntegrationCore;
     
+    // Helper to keep track of self-destruction for async functions
     TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
 };
 

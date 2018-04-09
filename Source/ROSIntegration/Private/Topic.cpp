@@ -19,7 +19,7 @@ public:
 
     ~Impl() {
 
-        if (_Callback) {
+        if (_Callback && _Ric) {
             Unsubscribe();
         }
 
@@ -170,6 +170,11 @@ void UTopic::PostInitProperties()
 void UTopic::BeginDestroy() {
     Super::BeginDestroy();
 
+    if (!ROSIntegrationCore.Get())
+    {
+        _Implementation->_Ric = nullptr;
+    }
+
 	delete _Implementation;
 
     _SelfPtr.Reset();
@@ -194,10 +199,17 @@ bool UTopic::Unadvertise() {
     return _Implementation->Unadvertise();
 }
 bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg) {
+    
+    if (!ROSIntegrationCore.Get()) // TODO: check why this is necessary (An active Topic should always point to a valid ROSIntegrationCore)
+    {
+        return false;
+    }
+
 	return _Implementation->Publish(msg);
 }
 
 void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize) {
+    ROSIntegrationCore = Ric;
 	_Implementation->Init(Ric, Topic, MessageType, QueueSize);
 }
 
@@ -209,11 +221,13 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
     Impl* oldImplementation = _Implementation;
     _Implementation = new UTopic::Impl();
 
+    this->ROSIntegrationCore = ROSIntegrationCore;
+
     if (_State.Subscribed && _State.Blueprint)
     {
         success = Subscribe(oldImplementation->_Topic, _State.BlueprintMessageType, oldImplementation->_QueueSize);
     }
-    else
+    else if(_State.Subscribed || _State.Advertised)
     {
         _Implementation->Init(ROSIntegrationCore, oldImplementation->_Topic, oldImplementation->_MessageType, oldImplementation->_QueueSize);
 
@@ -231,6 +245,11 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
     return success;
 }
 
+FString UTopic::GetDetailedInfoInternal() const
+{
+    return _Implementation->_Topic;
+}
+
 bool UTopic::Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize)
 {
     bool success = false;
@@ -238,10 +257,12 @@ bool UTopic::Subscribe(const FString& TopicName, EMessageType MessageType, int32
     _State.Blueprint = true;
     _State.BlueprintMessageType = MessageType;
 
+    ROSIntegrationCore = nullptr;
+
     UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(GWorld->GetGameInstance());
     if (ROSInstance)
     {
-        if (ROSInstance->bIsConnected)
+        if (ROSInstance->bConnectToROS)
         {
             TMap<EMessageType, FString> SupportedMessageTypes;
             SupportedMessageTypes.Add(EMessageType::String, TEXT("std_msgs/String"));
@@ -291,10 +312,6 @@ bool UTopic::Subscribe(const FString& TopicName, EMessageType MessageType, int32
             };
 
             success = Subscribe(Callback);
-            if (!success)
-            {
-                UE_LOG(LogROS, Error, TEXT("Unable to subscribe to topic %s."), *TopicName);
-            }
         }
     }
     else

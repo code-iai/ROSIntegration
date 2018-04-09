@@ -7,11 +7,14 @@
 
 namespace rosbridge2cpp{
 
+    static const FTimespan SendThreadFreezeTimeout = FTimespan::FromSeconds(5);
+
     ROSBridge::~ROSBridge()
     {
         if (publisher_queue_thread_ != nullptr)
         {
-            publisher_queue_thread_->Kill(true);
+            bool waitForThread = (FDateTime::UtcNow() - LastDataSendTime < SendThreadFreezeTimeout);
+            publisher_queue_thread_->Kill(waitForThread);
             delete publisher_queue_thread_;
         }
 
@@ -315,14 +318,17 @@ namespace rosbridge2cpp{
       transport_layer_.RegisterIncomingMessageCallback(fun);
     }
 
-    publisher_queue_thread_ = FRunnableThread::Create(this, TEXT("ROSBridgePublisherQueue"), 128 * 1024, TPri_Normal);
+    static uint32 ThreadIndex = 0;
+    publisher_queue_thread_ = FRunnableThread::Create(this, *FString::Printf(TEXT("ROSBridgePublisherQueue_%u"), ThreadIndex), 128 * 1024, TPri_Normal);
+    ThreadIndex++;
 
     return transport_layer_.Init(ip_addr,port);
   }
 
   bool ROSBridge::IsHealthy() const
   {
-      return run_publisher_queue_thread_;
+      return run_publisher_queue_thread_ &&
+          (FDateTime::UtcNow() - LastDataSendTime < SendThreadFreezeTimeout);
   }
 
   void ROSBridge::RegisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
@@ -386,6 +392,8 @@ namespace rosbridge2cpp{
 
       while (run_publisher_queue_thread_)
       {
+          LastDataSendTime = FDateTime::UtcNow();
+
           if (sleep_duration > 0.0f)
           {
               FPlatformProcess::Sleep(sleep_duration);

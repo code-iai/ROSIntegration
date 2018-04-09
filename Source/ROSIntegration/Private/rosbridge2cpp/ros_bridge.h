@@ -155,5 +155,6 @@ namespace rosbridge2cpp{
       std::vector<std::queue<bson_t*>> publisher_queues_;   // data to publish on the queue thread
       int current_publisher_queue_ = 0;
       bool run_publisher_queue_thread_ = true;
+      FDateTime LastDataSendTime;                           // watchdog for send thread. Socket sometimes blocks infinitely.
   };
 }

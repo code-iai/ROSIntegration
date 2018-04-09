@@ -60,10 +60,12 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
         for (TObjectIterator<UTopic> It; It; ++It)
         {
             UTopic* Topic = *It;
-            if (!Topic->Reconnect(ROSIntegrationCore))
+
+            bool success = Topic->Reconnect(ROSIntegrationCore);
+            if (!success)
             {
                 bIsConnected = false;
-                break;
+                UE_LOG(LogROS, Error, TEXT("Unable to re-establish topic %s."), *Topic->GetDetailedInfo());
             }
         }
         // TODO: also tell Services, etc.
