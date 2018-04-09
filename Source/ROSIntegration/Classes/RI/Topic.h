@@ -45,6 +45,8 @@ public:
 
     virtual void PostInitProperties() override;
 
+    bool Reconnect(UROSIntegrationCore* ROSIntegrationCore);
+
 protected:
 
     UFUNCTION(BlueprintImplementableEvent, Category = ROS)
@@ -58,11 +60,19 @@ protected:
 
 private:
 
+    struct State
+    {
+        bool Advertised;
+        bool Subscribed;
+        bool Blueprint;
+        EMessageType BlueprintMessageType;
+    } _State;
+
     /*
     * Subscribe to the given topic
     */
     UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
-    void Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
+    bool Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
 
 	// PIMPL
 	class Impl;

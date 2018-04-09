@@ -50,12 +50,24 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
     Init();
     bReconnect = false;
 
-    if(bConnectToROS && !bIsConnected)
+    if(!bIsConnected)
     {
         return; // Let timer call this method again to retry connection attempt
     }
 
-    // TODO: tell everyone (Topics, Services, etc.) they lost connection and need to reconnect (subscribe and advertise)
+    // tell everyone (Topics, Services, etc.) they lost connection and need to reconnect (subscribe and advertise)
+    {
+        for (TObjectIterator<UTopic> It; It; ++It)
+        {
+            UTopic* Topic = *It;
+            if (!Topic->Reconnect(ROSIntegrationCore))
+            {
+                bIsConnected = false;
+                break;
+            }
+        }
+        // TODO: also tell Services, etc.
+    }
 
     UE_LOG(LogROS, Display, TEXT("Successfully reconnected to rosbridge %s:%u."), *ROSBridgeServerHost, ROSBridgeServerPort);
 }
