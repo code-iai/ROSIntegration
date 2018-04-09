@@ -37,6 +37,8 @@ bool TCPConnection::Init(std::string ip_addr, int port) {
   // // Setting up the receiver thread
   std::cout << "Setting up receiver thread..." << std::endl;
   //receiverThread = std::move(std::thread([=]() {ReceiverThreadFunction(); return 1; }));
+
+  run_receiver_thread = true;
   receiverThread = std::thread(&TCPConnection::ReceiverThreadFunction, this);
   receiverThreadSetUp = true;
 
@@ -118,8 +120,9 @@ int TCPConnection::ReceiverThreadFunction(){
   binary_buffer.Reserve(buffer_size);
   bool bson_state_read_length = true; // indicate that the receiver shall only get 4 bytes to start with
   int32_t bson_msg_length = 0;
+  int return_value = 0;
 
-  while(!terminateReceiverThread){
+  while(run_receiver_thread){
     std::this_thread::sleep_for(std::chrono::milliseconds(2));
     // std::cout << "!";
     // std::cout.flush();
@@ -140,14 +143,11 @@ int TCPConnection::ReceiverThreadFunction(){
         } else {
             std::cout << "Error on connection" << std::endl;
             ReportError(rosbridge2cpp::TransportError::R2C_SOCKET_ERROR);
-            return 2; // error while receiving from socket
+            run_receiver_thread = false;
+            return_value = 2; // error while receiving from socket
+            continue;
         }
-    }else{
-      // std::cout << "c";
-      // std::cout.flush();
     }
-
-
 
     int32 bytes_read = 0;
     // std::cout << "o";
@@ -296,8 +296,7 @@ int TCPConnection::ReceiverThreadFunction(){
     }
   }
 
-  // Everything went OK - terminateReceiverThread is now true
-  return 0;
+  return return_value;
 }
 
 
@@ -332,4 +331,9 @@ void TCPConnection::SetTransportMode(rosbridge2cpp::ITransportLayer::TransportMo
       std::cerr << "Given TransportMode Not implemented " << std::endl;
   }
 
+}
+
+bool TCPConnection::IsHealthy() const
+{
+    return run_receiver_thread;
 }

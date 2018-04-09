@@ -38,7 +38,7 @@ public:
     if(_sock!=nullptr){
       _sock->Close();
     }
-    terminateReceiverThread = true;
+    run_receiver_thread = false;
     if(receiverThreadSetUp){
       receiverThread.join(); // Wait for the receiver thread to finish
     }else{
@@ -56,6 +56,7 @@ public:
   void ReportError(rosbridge2cpp::TransportError err);
   void SetTransportMode(rosbridge2cpp::ITransportLayer::TransportMode);
 
+  bool IsHealthy() const;
 
 private:
   std::string _ip_addr;
@@ -65,7 +66,7 @@ private:
   // int sock = socket(AF_INET , SOCK_STREAM , 0);
   // struct sockaddr_in connect_to;
   std::thread receiverThread;
-  bool terminateReceiverThread = false;
+  bool run_receiver_thread = true;
   bool receiverThreadSetUp = false;
   bool _callback_function_defined = false;
   bool bson_only_mode_ = false;

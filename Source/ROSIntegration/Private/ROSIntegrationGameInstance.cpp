@@ -10,6 +10,8 @@ void UROSIntegrationGameInstance::Init()
         ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass());
 		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerHost, ROSBridgeServerPort);
 
+        GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth, 1.0f, true, 5.0f);
+
 		if (bIsConnected)
 		{
 			UWorld* CurrentWorld = GetWorld();
@@ -22,8 +24,6 @@ void UROSIntegrationGameInstance::Init()
             {
 				UE_LOG(LogROS, Error, TEXT("World not available in UROSIntegrationGameInstance::Init()!"));
 			}
-
-            GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth, 1.0f, true, 5.0f);
 		}
         else if(!bReconnect)
         {
@@ -34,7 +34,7 @@ void UROSIntegrationGameInstance::Init()
 
 void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 {
-    if (ROSIntegrationCore->IsHealthy())
+    if (bIsConnected && ROSIntegrationCore->IsHealthy())
     {
         return;
     }

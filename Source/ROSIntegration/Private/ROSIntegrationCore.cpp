@@ -250,6 +250,10 @@ public:
 
 	}
 
+    bool IsHealthy() const {
+        return _Connection.IsHealthy() && _Ros.IsHealthy();
+    }
+
 	void SetWorld(UWorld* World) {
 		_World = World;
 	}
@@ -305,7 +309,7 @@ bool UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
 
 bool UROSIntegrationCore::IsHealthy() const
 {
-    return true; // TODO implement
+    return _Implementation->IsHealthy();
 }
 
 void UROSIntegrationCore::SetWorld(UWorld* World) {

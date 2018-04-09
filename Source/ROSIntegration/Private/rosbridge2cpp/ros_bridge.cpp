@@ -320,6 +320,11 @@ namespace rosbridge2cpp{
     return transport_layer_.Init(ip_addr,port);
   }
 
+  bool ROSBridge::IsHealthy() const
+  {
+      return run_publisher_queue_thread_;
+  }
+
   void ROSBridge::RegisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
     FScopeLock Lock(&change_topics_mutex_);
     registered_topic_callbacks_[topic_name].push_back(fun);
@@ -375,6 +380,7 @@ namespace rosbridge2cpp{
 
   uint32 ROSBridge::Run()
   {
+      uint32 return_value = 0;
       int num_retries_left = 10;
       float sleep_duration = 0.2f;
 
@@ -427,6 +433,7 @@ namespace rosbridge2cpp{
                   sleep_duration = 0.2f;
                   if (num_retries_left <= 0) {
                       run_publisher_queue_thread_ = false;
+                      return_value = 2;
                       std::cout << "[ROSBridge] Lost connection to ROSBridge!" << std::endl;
                   }
               }
@@ -437,7 +444,7 @@ namespace rosbridge2cpp{
           }
       }
 
-      return 0;
+      return return_value;
   }
 
   void ROSBridge::Stop()

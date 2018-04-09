@@ -55,6 +55,8 @@ namespace rosbridge2cpp{
       // to initialized in this class.
       bool Init(std::string ip_addr, int port);
 
+      bool IsHealthy() const;
+
       // Send arbitrary string-data over the given TransportLayer
       bool SendMessage(std::string data);
 
