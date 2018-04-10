@@ -241,6 +241,7 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
         }
     }
 
+    oldImplementation->_Ric = nullptr; // prevent old topic from unsubscribing using the broken connection
     delete oldImplementation;
     return success;
 }
