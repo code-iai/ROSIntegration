@@ -14,6 +14,10 @@ namespace ROSMessages{
 				_MessageType = "geometry_msgs/Quaternion";
 			}
 
+			Quaternion(FQuat q) : x(q.X), y(q.Y), z(q.Z), w(q.W) {
+				_MessageType = "geometry_msgs/Quaternion";
+			}
+
 			double x;
 			double y;
 			double z;
