@@ -103,16 +103,6 @@ uint16_t TCPConnection::Fletcher16( const uint8_t *data, int count ){
 
 int TCPConnection::ReceiverThreadFunction(){
 
-  std::cout<<"Receiving\n";
-  // uint32_t buf_size=1000000; // 1 MB
-  // char recv_buffer[buf_size];
-  // char* recv_buffer = new char[buf_size];
-  // char* recv_buffer = new char[buf_size];
-  // std::unique_ptr<char[]> recv_buffer(new char[buf_size]); 
-
-  // Register message callback
-  // std::function<void(const json)> message_cb = messageCallback;
-
   // TODO handle joined messages while reading the buffer
   uint32 count;
   TArray<uint8> binary_buffer;
@@ -123,19 +113,7 @@ int TCPConnection::ReceiverThreadFunction(){
   int return_value = 0;
 
   while(run_receiver_thread){
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
-    // std::cout << "!";
-    // std::cout.flush();
 
-    count = 0;
-    // std::string received_data;
-    FString result;
-
-    // TODO
-    // How can we check if the connection to the server has been interrupted?
-    // Checking the connection state alone doesn't catch simple interruptions 
-    // like a crashed server etc.
-    //
     ESocketConnectionState ConnectionState = _sock->GetConnectionState();
     if( ConnectionState != ESocketConnectionState::SCS_Connected ){
         if (ConnectionState == SCS_NotConnected) {
@@ -149,112 +127,79 @@ int TCPConnection::ReceiverThreadFunction(){
         }
     }
 
-    int32 bytes_read = 0;
-    // std::cout << "o";
-    std::cout.flush();
+    count = 0;
+    if (!_sock->HasPendingData(count) || count == 0)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        continue;
+    }
+
     if(bson_only_mode_){
-      // state == read_length
-      // if data present:
-      //   if state == read length:
-      //     buffer.Empty()
-      //     Recv 4 bytes and place in buffer
-      //     Convert to message length
-      //     state == read_message
-      //   else:
-      //     Recv message_length bytes
-      //     append_data_to_buf
-      //     if len(buf) == message_length :
-      //       state = read_length
-      //       callback(buffer)
-      //       buffer.Empty()
-
-      // Temporary buffer that receives
-      // the different parts of the messages
-      // before joining them
-
-      // std::cout << ",";
-      // binary_data.Empty();
-      if(_sock->HasPendingData(count) && count > 0){
         TArray<uint8> binary_temp;
-        std::cout << "d" << std::dec;
-        std::cout << count;
-        std::cout.flush();
-
         if(bson_state_read_length){
-          std::cout << "Reading length..." << std::endl;
-          binary_buffer.Empty();
-          binary_temp.SetNumUninitialized(4);
-          if( _sock->Recv(binary_temp.GetData(), 4, bytes_read) ){
+            binary_buffer.Empty();
+            binary_temp.SetNumUninitialized(4);
+            int32 bytes_read = 0;
+            if( _sock->Recv(binary_temp.GetData(), 4, bytes_read) ){
             if(bytes_read == 4){
-              // TODO endian awareness
-              // int32_t msg_length = 0;
-              bson_msg_length = ( 
-                  binary_temp.GetData()[3] << 24 |
-                  binary_temp.GetData()[2] << 16 | 
-                  binary_temp.GetData()[1] << 8  |
-                  binary_temp.GetData()[0]
-                  );
-              std::cout << std::dec << "Total message length is: " << bson_msg_length << std::endl;
-              binary_buffer += binary_temp;
-              // Indicate the message retrieval mode
-              bson_state_read_length = false;
+                // TODO endian awareness
+                // int32_t msg_length = 0;
+                bson_msg_length = ( 
+                    binary_temp.GetData()[3] << 24 |
+                    binary_temp.GetData()[2] << 16 | 
+                    binary_temp.GetData()[1] << 8  |
+                    binary_temp.GetData()[0]
+                    );
+                binary_buffer += binary_temp;
+                // Indicate the message retrieval mode
+                bson_state_read_length = false;
             }else{
-              std::cerr << "bytes_read is not 4 in bson_state_read_length==true. It's: " << bytes_read << std::endl;
+                std::cerr << "bytes_read is not 4 in bson_state_read_length==true. It's: " << bytes_read << std::endl;
             }
 
-          }else{
+            }else{
             std::cerr << "Failed to recv() even though data is pending. Count vs. bytes_read:" << count << "," << bytes_read << std::endl;
-          }
+            }
         }else{
-          std::cout << "Message read mode" << std::endl;
-          // Message retreival mode
-          //     Recv message_length bytes
-          //     append_data_to_buf
-          //     if len(buf) == message_length :
-          //       state = read_length
-          //       callback(buffer)
-          //       buffer.Empty()
-          binary_temp.SetNumUninitialized(bson_msg_length - 4);
-          if( _sock->Recv(binary_temp.GetData(), bson_msg_length - 4, bytes_read) ){
-            if(bytes_read > bson_msg_length -4){
-              std::cerr << "Read more than bson length -4 !" << std::endl;
-            }
+            // Message retreival mode
+            //     Recv message_length bytes
+            //     append_data_to_buf
+            //     if len(buf) == message_length :
+            //       state = read_length
+            //       callback(buffer)
+            //       buffer.Empty()
+            binary_temp.SetNumUninitialized(bson_msg_length - 4);
+            int32 bytes_read = 0;
+            if( _sock->Recv(binary_temp.GetData(), bson_msg_length - 4, bytes_read) ){
+                if(bytes_read > bson_msg_length -4){
+                    std::cerr << "Read more than bson length -4 !" << std::endl;
+                }
 
-            binary_buffer += binary_temp;
-            int32 msg_size_in_buffer = 0;
-            msg_size_in_buffer = binary_buffer.Num();
-            if(msg_size_in_buffer == bson_msg_length){
-              bson_state_read_length = true;
-              // Full received message!
-              for (int i = 0; i < binary_buffer.Num(); i++) {
-                std::cout << "0x" << std::setw(2) << std::setfill('0') << std::hex << (int)( binary_buffer.GetData()[i] );
-              }
-              std::cout << std::dec;
-              bson_t b;
-              if(!bson_init_static (&b, binary_buffer.GetData(), msg_size_in_buffer)){
-                std::cout << "Error on BSON parse - Ignoring message" << std::endl;
-                continue;
-              }
-              if(incoming_message_callback_bson_){
-                incoming_message_callback_bson_(b);
-              }
+                binary_buffer += binary_temp;
+                int32 msg_size_in_buffer = 0;
+                msg_size_in_buffer = binary_buffer.Num();
+                if(msg_size_in_buffer == bson_msg_length){
+                    bson_state_read_length = true;
+                    // Full received message!
+                    bson_t b;
+                    if(!bson_init_static (&b, binary_buffer.GetData(), msg_size_in_buffer)){
+                        std::cout << "Error on BSON parse - Ignoring message" << std::endl;
+                        continue;
+                    }
+                    if(incoming_message_callback_bson_){
+                        incoming_message_callback_bson_(b);
+                    }
 
-              binary_buffer.Empty();
+                    binary_buffer.Empty(binary_buffer.Max());
+                }else{
+                    std::cout << "Binary buffer num is:" << binary_buffer.Num() << std::endl;
+                }
             }else{
-              std::cout << "Binary buffer num is:" << binary_buffer.Num() << std::endl;
+                std::cerr << "Failed to recv() in message retreival mode even though data is pending. Count vs. bytes_read:" << count << "," << bytes_read << std::endl;
             }
-          }else{
-            std::cerr << "Failed to recv() in message retreival mode even though data is pending. Count vs. bytes_read:" << count << "," << bytes_read << std::endl;
-          }
         }
-      }
-      if(count == 0){
-        std::cout.flush();
-      }
-      // std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }else{
-      std::cout << ";";
-      std::cout.flush();
+      FString result;
       while(_sock->HasPendingData(count) && count > 0){
         FArrayReader data;
         data.SetNumUninitialized(count);
@@ -282,17 +227,13 @@ int TCPConnection::ReceiverThreadFunction(){
         continue;
       }
 
-
-      std::cout << "[TCPConnection] Received message(" << received_data.length() << "): " << received_data << std::endl;
       // TODO catch parse error properly
       // auto j = json::parse(received_data);
       json j;
       j.Parse(received_data);
 
-      // TODO Use a thread for the message callback?
       if(_incoming_message_callback)
         _incoming_message_callback(j);
-
     }
   }
 
