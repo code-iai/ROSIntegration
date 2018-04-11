@@ -14,6 +14,7 @@ public:
 	Impl()
     : _Ric(nullptr)
     , _ROSTopic(nullptr)
+    , _Converter(nullptr)
     {
 	}
 
@@ -31,31 +32,16 @@ public:
 	FString _MessageType;
     int32 _QueueSize;
 	rosbridge2cpp::ROSTopic* _ROSTopic;
+    UBaseMessageConverter* _Converter;
 
 	std::function<void(TSharedPtr<FROSBaseMsg>)> _Callback;
 
 	bool ConvertMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-		// TODO do this on advertise/call?
-		UBaseMessageConverter** Converter = TypeConverterMap.Find(_MessageType);
-		if (!Converter) {
-			UE_LOG(LogROS, Error, TEXT("MessageType %s is unknown. Can't find Converter to encode message"), *_MessageType);
-			return false;
-		}
-
-		return (*Converter)->ConvertOutgoingMessage(BaseMsg, message);
+		return _Converter->ConvertOutgoingMessage(BaseMsg, message);
 	}
 
-	// IN Parameter: message
-	// OUT Parameter: BaseMsg
 	bool ConvertMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-		// TODO do this on advertise/call?
-		UBaseMessageConverter** Converter = TypeConverterMap.Find(_MessageType);
-		if (!Converter) {
-			UE_LOG(LogROS, Error, TEXT("MessageType %s is unknown. Can't find Converter to decode message"), *_MessageType);
-			return false;
-		}
-
-		return (*Converter)->ConvertIncomingMessage(message, BaseMsg);
+        return _Converter->ConvertIncomingMessage(message, BaseMsg);
 	}
 
 
@@ -111,30 +97,39 @@ public:
 		}
 	}
 
-	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize) {
+	void Init(UROSIntegrationCore *Ric, const FString& Topic, const FString& MessageType, int32 QueueSize) {
+
+        // Construct static ConverterMap
+        if (TypeConverterMap.Num() == 0)
+        {
+            for (TObjectIterator<UClass> It; It; ++It)
+            {
+                UClass* ClassItr = *It;
+
+                if (It->IsChildOf(UBaseMessageConverter::StaticClass()) && *It != UBaseMessageConverter::StaticClass())
+                {
+                    UBaseMessageConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseMessageConverter>();
+                    //UE_LOG(LogROS, Log, TEXT("Added %s with type %s to TopicConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
+                    TypeConverterMap.Add(*(ConcreteConverter->_MessageType), ConcreteConverter);
+                }
+            }
+        }
+
 		_Ric = Ric;
 		_Topic = Topic;
 		_MessageType = MessageType;
         _QueueSize = QueueSize;
 
-		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize);
-
-		// Construct ConverterMap
-        if(TypeConverterMap.Num() == 0)
-        { 
-		    for (TObjectIterator<UClass> It; It; ++It)
-		    {
-			    UClass* ClassItr = *It;
-
-			    if (It->IsChildOf(UBaseMessageConverter::StaticClass()) && *It != UBaseMessageConverter::StaticClass())
-			    {
-				    UBaseMessageConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseMessageConverter>();
-				    //UE_LOG(LogROS, Log, TEXT("Added %s with type %s to TopicConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_MessageType));
-                    TypeConverterMap.Add(*(ConcreteConverter->_MessageType), ConcreteConverter);
-			    }
-		    }
+        UBaseMessageConverter** Converter = TypeConverterMap.Find(MessageType);
+        if (!Converter) 
+        {
+            UE_LOG(LogROS, Error, TEXT("MessageType %s is unknown. Can't find Converter to decode message"), *MessageType);
+            check(false);
+            return;
         }
+        _Converter = *Converter;
 
+        _ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize);
 	}
 
 	void MessageCallback(const ROSBridgePublishMsg &message) {

@@ -161,10 +161,6 @@ namespace rosbridge2cpp{
 
     // Iterate over all registered callbacks for the given topic
     for(auto topic_callback : registered_topic_callbacks_.find(incoming_topic_name)->second){
-      // TODO observe topic callback usage. If callbacks receive 'Null' 
-      // json fields this may happen due to move operations in
-      // one of the callbacks.
-      // We may need to switch to copying the json then.
       topic_callback(data);
     }
     return;
