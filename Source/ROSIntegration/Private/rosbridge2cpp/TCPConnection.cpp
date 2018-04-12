@@ -103,13 +103,13 @@ uint16_t TCPConnection::Fletcher16( const uint8_t *data, int count ){
 
 int TCPConnection::ReceiverThreadFunction(){
 
-  // TODO handle joined messages while reading the buffer
   uint32 count;
   TArray<uint8> binary_buffer;
   uint32_t buffer_size = 10 * 1024 * 1024;
   binary_buffer.Reserve(buffer_size);
   bool bson_state_read_length = true; // indicate that the receiver shall only get 4 bytes to start with
   int32_t bson_msg_length = 0;
+  int32_t bson_msg_length_read = 0;
   int return_value = 0;
 
   while(run_receiver_thread){
@@ -135,62 +135,50 @@ int TCPConnection::ReceiverThreadFunction(){
     }
 
     if(bson_only_mode_){
-        TArray<uint8> binary_temp;
         if(bson_state_read_length){
-            binary_buffer.Empty();
-            binary_temp.SetNumUninitialized(4);
+            bson_msg_length_read = 0;
+            binary_buffer.SetNumUninitialized(4, false);
             int32 bytes_read = 0;
-            if( _sock->Recv(binary_temp.GetData(), 4, bytes_read) ){
-            if(bytes_read == 4){
-                // TODO endian awareness
-                // int32_t msg_length = 0;
-                bson_msg_length = ( 
-                    binary_temp.GetData()[3] << 24 |
-                    binary_temp.GetData()[2] << 16 | 
-                    binary_temp.GetData()[1] << 8  |
-                    binary_temp.GetData()[0]
-                    );
-                binary_buffer += binary_temp;
-                // Indicate the message retrieval mode
-                bson_state_read_length = false;
-            }else{
-                std::cerr << "bytes_read is not 4 in bson_state_read_length==true. It's: " << bytes_read << std::endl;
-            }
+            if( _sock->Recv(binary_buffer.GetData(), 4, bytes_read) ){
+                bson_msg_length_read += bytes_read;
+                if(bytes_read == 4){
+#if PLATFORM_LITTLE_ENDIAN
+                    bson_msg_length = ( 
+                        binary_buffer.GetData()[3] << 24 |
+                        binary_buffer.GetData()[2] << 16 |
+                        binary_buffer.GetData()[1] << 8  |
+                        binary_buffer.GetData()[0]
+                        );
+#else
+                    bson_msg_length = *((uint32_t*)&binary_buffer[0]);
+#endif
+                    // Indicate the message retrieval mode
+                    bson_state_read_length = false;
+                    binary_buffer.SetNumUninitialized(bson_msg_length, false);
+                }else{
+                    std::cerr << "bytes_read is not 4 in bson_state_read_length==true. It's: " << bytes_read << std::endl;
+                }
 
             }else{
-            std::cerr << "Failed to recv() even though data is pending. Count vs. bytes_read:" << count << "," << bytes_read << std::endl;
+                std::cerr << "Failed to recv() even though data is pending. Count vs. bytes_read:" << count << "," << bytes_read << std::endl;
             }
         }else{
             // Message retreival mode
-            //     Recv message_length bytes
-            //     append_data_to_buf
-            //     if len(buf) == message_length :
-            //       state = read_length
-            //       callback(buffer)
-            //       buffer.Empty()
-            binary_temp.SetNumUninitialized(bson_msg_length - 4);
             int32 bytes_read = 0;
-            if( _sock->Recv(binary_temp.GetData(), bson_msg_length - 4, bytes_read) ){
-                if(bytes_read > bson_msg_length -4){
-                    std::cerr << "Read more than bson length -4 !" << std::endl;
-                }
+            if( _sock->Recv(binary_buffer.GetData() + bson_msg_length_read, bson_msg_length - bson_msg_length_read, bytes_read) ){
 
-                binary_buffer += binary_temp;
-                int32 msg_size_in_buffer = 0;
-                msg_size_in_buffer = binary_buffer.Num();
-                if(msg_size_in_buffer == bson_msg_length){
-                    bson_state_read_length = true;
+                bson_msg_length_read += bytes_read;
+                if(bson_msg_length_read == bson_msg_length){
                     // Full received message!
+                    bson_state_read_length = true;
                     bson_t b;
-                    if(!bson_init_static (&b, binary_buffer.GetData(), msg_size_in_buffer)){
+                    if(!bson_init_static(&b, binary_buffer.GetData(), bson_msg_length_read)){
                         std::cout << "Error on BSON parse - Ignoring message" << std::endl;
                         continue;
                     }
                     if(incoming_message_callback_bson_){
                         incoming_message_callback_bson_(b);
                     }
-
-                    binary_buffer.Empty(binary_buffer.Max());
                 }else{
                     std::cout << "Binary buffer num is:" << binary_buffer.Num() << std::endl;
                 }
