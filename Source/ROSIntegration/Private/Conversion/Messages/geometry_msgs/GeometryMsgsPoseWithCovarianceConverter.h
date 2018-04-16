@@ -46,7 +46,7 @@ public:
 	static void _bson_append_pose_with_covariance(bson_t *b, ROSMessages::geometry_msgs::PoseWithCovariance *t)
 	{
 		UGeometryMsgsPoseConverter::_bson_append_child_pose(b, "pose", &(t->pose));
-		_bson_append_double_tarray(b, "covariance", TArray<double>(t->covariance, 36));
+		_bson_append_double_tarray(b, "covariance", t->covariance);
 	}
 };
 
