@@ -6,12 +6,12 @@
 #include "UObject/ObjectMacros.h"
 #include "UObject/Object.h"
 #include "Conversion/Messages/BaseMessageConverter.h"
-#include "geometry_msgs/Vector3.h"
-#include "GeometryMsgsVector3Converter.generated.h"
+#include "geometry_msgs/Point.h"
+#include "GeometryMsgsPointConverter.generated.h"
 
 
 UCLASS()
-class ROSINTEGRATION_API UGeometryMsgsVector3Converter: public UBaseMessageConverter
+class ROSINTEGRATION_API UGeometryMsgsPointConverter : public UBaseMessageConverter
 {
 	GENERATED_UCLASS_BODY()
 
@@ -20,7 +20,7 @@ public:
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
 
-	static bool _bson_extract_child_vector3(bson_t *b, FString key, ROSMessages::geometry_msgs::Vector3 *p)
+	static bool _bson_extract_child_point(bson_t *b, FString key, ROSMessages::geometry_msgs::Point *p)
 	{
 		bool KeyFound = false;
 
@@ -30,21 +30,21 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_vector3(bson_t *b, const char *key, ROSMessages::geometry_msgs::Vector3 *v3)
+
+	static void _bson_append_child_point(bson_t *b, const char *key, ROSMessages::geometry_msgs::Point *p)
 	{
-		bson_t vec;
-		BSON_APPEND_DOCUMENT_BEGIN(b, key, &vec);
-		_bson_append_vector3(&vec, v3);
-		bson_append_document_end(b, &vec);
+		bson_t point;
+		BSON_APPEND_DOCUMENT_BEGIN(b, key, &point);
+		_bson_append_point(&point, p);
+		bson_append_document_end(b, &point);
 	}
 
 
-	static void _bson_append_vector3(bson_t *b, ROSMessages::geometry_msgs::Vector3 *v3)
+	static void _bson_append_point(bson_t *b, ROSMessages::geometry_msgs::Point *p)
 	{
-		BSON_APPEND_DOUBLE(b, "x", v3->x);
-		BSON_APPEND_DOUBLE(b, "y", v3->y);
-		BSON_APPEND_DOUBLE(b, "z", v3->z);
+		BSON_APPEND_DOUBLE(b, "x", p->x);
+		BSON_APPEND_DOUBLE(b, "y", p->y);
+		BSON_APPEND_DOUBLE(b, "z", p->z);
 	}
-
 };
 
