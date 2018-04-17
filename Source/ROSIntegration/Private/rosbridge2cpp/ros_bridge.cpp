@@ -1,19 +1,19 @@
+
 #include "ros_bridge.h"
 #include "ros_topic.h"
 #include "bson.h"
 
-#include "Misc/ScopeLock.h"
 #include "HAL/RunnableThread.h"
 
 namespace rosbridge2cpp{
 
-    static const FTimespan SendThreadFreezeTimeout = FTimespan::FromSeconds(5);
+    static const std::chrono::seconds SendThreadFreezeTimeout = std::chrono::seconds(5);
 
     ROSBridge::~ROSBridge()
     {
         if (publisher_queue_thread_ != nullptr)
         {
-            bool waitForThread = (FDateTime::UtcNow() - LastDataSendTime < SendThreadFreezeTimeout);
+            bool waitForThread = (std::chrono::system_clock::now() - LastDataSendTime < SendThreadFreezeTimeout);
             publisher_queue_thread_->Kill(waitForThread);
             delete publisher_queue_thread_;
         }
@@ -29,7 +29,7 @@ namespace rosbridge2cpp{
     }
 
   bool ROSBridge::SendMessage(std::string data){
-    FScopeLock Lock(&transport_layer_access_mutex_);
+    spinlock::scoped_lock_wait_for_short_task lock(transport_layer_access_mutex_);
     return transport_layer_.SendMessage(data);
   }
 
@@ -49,7 +49,7 @@ namespace rosbridge2cpp{
       }
       const uint8_t *bson_data = bson_get_data (&bson);
       uint32_t bson_size = bson.len;
-      FScopeLock Lock(&transport_layer_access_mutex_);
+      spinlock::scoped_lock_wait_for_short_task lock(transport_layer_access_mutex_);
       bool retval = transport_layer_.SendMessage(bson_data,bson_size);
       bson_destroy(&bson);
       return retval;
@@ -69,7 +69,7 @@ namespace rosbridge2cpp{
       const uint8_t *bson_data = bson_get_data (&message);
       uint32_t bson_size = message.len;
       std::cout << "[ROSBridge] Sending data from ROSBridgeMsg ("<< (uint32_t) bson_size <<" Bytes)" << std::endl;
-      FScopeLock Lock(&transport_layer_access_mutex_);
+      spinlock::scoped_lock_wait_for_short_task lock(transport_layer_access_mutex_);
       bool retval = transport_layer_.SendMessage(bson_data,bson_size);
       bson_destroy(&message); // TODO needed?
       return retval;
@@ -117,9 +117,9 @@ namespace rosbridge2cpp{
       msg.ToBSON(*message);
 
       {
-          FScopeLock Lock(&change_publisher_queues_mutex_);
           if (publisher_topics_.find(topic_name) == publisher_topics_.end())
           {
+              spinlock::scoped_lock_wait_for_short_task lock(change_publisher_queues_mutex_);
               publisher_topics_[topic_name] = publisher_queues_.size();
               publisher_queues_.push_back(std::queue<bson_t*>());
           }
@@ -138,7 +138,7 @@ namespace rosbridge2cpp{
   }
 
   void ROSBridge::HandleIncomingPublishMessage(ROSBridgePublishMsg &data){
-    FScopeLock Lock(&change_topics_mutex_);
+    spinlock::scoped_lock_wait_for_short_task lock(change_topics_mutex_);
 
     //Incoming topic message - dispatch to correct callback
     std::string &incoming_topic_name = data.topic_;
@@ -324,11 +324,30 @@ namespace rosbridge2cpp{
   bool ROSBridge::IsHealthy() const
   {
       return run_publisher_queue_thread_ &&
-          (FDateTime::UtcNow() - LastDataSendTime < SendThreadFreezeTimeout);
+          (std::chrono::system_clock::now() - LastDataSendTime < SendThreadFreezeTimeout);
   }
 
   void ROSBridge::RegisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
-    FScopeLock Lock(&change_topics_mutex_);
+
+    spinlock::scoped_lock_wait_for_short_task lock(change_topics_mutex_);
+
+    // check if accidentally subscribes twice to the same topic
+    if (registered_topic_callbacks_.find(topic_name) != registered_topic_callbacks_.end()){ 
+
+        std::list<FunVrROSPublishMsg> &r_list_of_callbacks = registered_topic_callbacks_.find(topic_name)->second;
+        for (std::list<FunVrROSPublishMsg>::iterator topic_callback_it = r_list_of_callbacks.begin();
+            topic_callback_it != r_list_of_callbacks.end();
+            ++topic_callback_it) {
+
+            typedef void(fnType)(ROSBridgePublishMsg&);
+            if (topic_callback_it->target<fnType>() == fun.target<fnType>()) {
+                // One object instance tried to subscribe twice to the same topic!
+                assert(false);
+                return;
+            }
+        }
+    }
+
     registered_topic_callbacks_[topic_name].push_back(fun);
   }
 
@@ -346,7 +365,7 @@ namespace rosbridge2cpp{
 
   bool ROSBridge::UnregisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
 
-    FScopeLock Lock(&change_topics_mutex_);
+    spinlock::scoped_lock_wait_for_short_task lock(change_topics_mutex_);
 
     if ( registered_topic_callbacks_.find(topic_name) == registered_topic_callbacks_.end()) {
       std::cerr << "[ROSBridge] UnregisterTopicCallback called but given topic name '" << topic_name << "' not in map." <<std::endl;
@@ -359,7 +378,6 @@ namespace rosbridge2cpp{
         topic_callback_it!= r_list_of_callbacks.end();
         ++topic_callback_it){
      
-      // the following compare only works with the UE4 ROSIntegration because the topic class has only one callback method
       typedef void(fnType)(ROSBridgePublishMsg&);
       if(topic_callback_it->target<fnType>() == fun.target<fnType>()) {
         std::cout << "[ROSBridge] Found CB in UnregisterTopicCallback. Deleting it ... " << std::endl;
@@ -388,17 +406,17 @@ namespace rosbridge2cpp{
 
       while (run_publisher_queue_thread_)
       {
-          LastDataSendTime = FDateTime::UtcNow();
+          LastDataSendTime = std::chrono::system_clock::now();
 
           if (sleep_duration > 0.0f)
           {
-              FPlatformProcess::Sleep(sleep_duration);
+              std::this_thread::sleep_for(std::chrono::microseconds((long long)(sleep_duration * 1000000.0)));
               sleep_duration = 0.0f;
           }
 
           bson_t* msg;
           {
-              FScopeLock Lock(&change_publisher_queues_mutex_);
+              spinlock::scoped_lock_wait_for_short_task lock(change_publisher_queues_mutex_);
               current_publisher_queue_++;
               if (current_publisher_queue_ >= publisher_queues_.size())
               {
@@ -428,7 +446,7 @@ namespace rosbridge2cpp{
           const uint8_t* bson_data = bson_get_data(msg);
           uint32_t bson_size = msg->len;
           {
-              FScopeLock Lock(&transport_layer_access_mutex_);
+              spinlock::scoped_lock_wait_for_long_task lock(transport_layer_access_mutex_);
               const bool success = transport_layer_.SendMessage(bson_data, bson_size);
               bson_destroy(msg);
               if (!success)

@@ -7,10 +7,12 @@
 #include <unordered_map>
 #include <list>
 #include <queue>
+#include <chrono>
 
 #include <stdio.h>
 #include "types.h"
 #include "helper.h"
+#include "spinlock.h"
 
 #include "itransport_layer.h"
 
@@ -145,16 +147,17 @@ namespace rosbridge2cpp{
       bool bson_only_mode_ = false;
 
 
-      FCriticalSection transport_layer_access_mutex_;
+      spinlock transport_layer_access_mutex_;
 
-      FCriticalSection change_topics_mutex_;
+      spinlock change_topics_mutex_;
 
       FRunnableThread* publisher_queue_thread_ = nullptr;
-      FCriticalSection change_publisher_queues_mutex_;
+      spinlock change_publisher_queues_mutex_;
       std::unordered_map<std::string, int> publisher_topics_; // points to index in publisher_queues_
       std::vector<std::queue<bson_t*>> publisher_queues_;   // data to publish on the queue thread
       int current_publisher_queue_ = 0;
       bool run_publisher_queue_thread_ = true;
-      FDateTime LastDataSendTime;                           // watchdog for send thread. Socket sometimes blocks infinitely.
+      std::chrono::system_clock::time_point LastDataSendTime;                           // watchdog for send thread. Socket sometimes blocks infinitely.
+
   };
 }
