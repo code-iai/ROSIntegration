@@ -10,9 +10,9 @@
 
 namespace rosbridge2cpp{ 
   using json = rapidjson::Document;
-  typedef std::function<void(json&)> FunVcrJSON;
+  typedef std::function<void(const json&)> FunVcrJSON;
   // typedef std::function<void(ROSBridgeMsg&)> FunVrROSMSG;
-  typedef std::function<void(ROSBridgePublishMsg&)> FunVrROSPublishMsg;
+  typedef std::function<void(const ROSBridgePublishMsg&)> FunVrROSPublishMsg;
   typedef std::function<void(ROSBridgeServiceResponseMsg&)> FunVrROSServiceResponseMsg;
   typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&, rapidjson::Document::AllocatorType&)> FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator;
   typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&)> FunVrROSCallServiceMsgrROSServiceResponseMsg;

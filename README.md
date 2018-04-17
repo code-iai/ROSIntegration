@@ -24,7 +24,11 @@ It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communicat
 Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin. 
 Currently, this plugin comes with a pre-compiled libbson for Windows x64 and Linux x64 which doesn't need any additional configuration.
 
-To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. Please use rosbridge with version=>0.8.0 to get this feature. After installing rosbridge, you can enable the bson_mode like this:
+To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As an example for ROS kinetic, you can install it with:
+```
+sudo apt-get install ros-kinetic-rosbridge-suite
+```
+Note: Please use rosbridge with version=>0.8.0 to get full BSON support. After installing rosbridge, you can enable the bson_mode like this:
 
 ```
 roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
@@ -32,7 +36,10 @@ roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 
 This plugin has been tested with Unreal Engine versions;
 
+ * 4.17.3
  * 4.18.2
+ * 4.18.3
+ * 4.19.1
 
 ## Usage
 
@@ -108,6 +115,19 @@ std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<F
 // Subscribe to the topic
 ExampleTopic->Subscribe(SubscribeCallback);
 ```
+
+### Blueprint Topic Subscribe Example
+
+* Create a Blueprint based on `Topic` class.
+* Subscribe to a topic.
+* Define what happens when a message arrives.
+
+![Create Blueprint based on Topic class](Documentation/bp_topic-01.png)
+
+* Open Level Bluprint or any other you want to use the topic in.
+* Instantiate the blueprint via `Construct Object from Class` with a meaningful outer to define its lifetime and affiliation.
+
+![Use the bluprint topic instance](Documentation/bp_topic-02.png)
 
 ### C++ Service Request example
 
