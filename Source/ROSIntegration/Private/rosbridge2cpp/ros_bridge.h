@@ -31,8 +31,6 @@
 #include "messages/rosbridge_unadvertise_service_msg.h"
 #include "messages/rosbridge_unsubscribe_msg.h"
 
-#include "HAL/Runnable.h"
-
 using json = rapidjson::Document;
 
 namespace rosbridge2cpp{
@@ -42,7 +40,7 @@ namespace rosbridge2cpp{
    * The library is inspired by [roslibjs](http://wiki.ros.org/roslibjs), 
    * which is a feature-rich client-side implementation of the rosbridge protocol in java script.
    */
-  class ROSBridge : FRunnable {
+  class ROSBridge {
 
     public:
       ROSBridge(ITransportLayer &transport) : transport_layer_(transport){
@@ -112,14 +110,6 @@ namespace rosbridge2cpp{
       // will be in BSON, instead of JSON
       void enable_bson_mode(){ bson_only_mode_ = true; }
 
-  protected :
-
-    //~ FRunnable interface
-    virtual bool Init() override;
-    virtual uint32 Run() override;
-    virtual void Stop() override;
-    virtual void Exit() override;
-
     private:
       // Callback function for the used ITransportLayer.
       // It receives the received json that was contained
@@ -139,6 +129,8 @@ namespace rosbridge2cpp{
       // Handler Method for reply packet
       void HandleIncomingServiceRequestMessage(std::string id, ROSBridgeCallServiceMsg &data);
 
+      int RunPublisherQueueThread();
+
       ITransportLayer &transport_layer_;
       std::unordered_map<std::string, std::list<FunVrROSPublishMsg>> registered_topic_callbacks_;
       std::unordered_map<std::string, FunVrROSServiceResponseMsg> registered_service_callbacks_;
@@ -146,18 +138,16 @@ namespace rosbridge2cpp{
       std::unordered_map<std::string, FunVrROSCallServiceMsgrROSServiceResponseMsg> registered_service_request_callbacks_bson_;
       bool bson_only_mode_ = false;
 
-
       spinlock transport_layer_access_mutex_;
 
       spinlock change_topics_mutex_;
 
-      FRunnableThread* publisher_queue_thread_ = nullptr;
+      std::thread publisher_queue_thread_;
       spinlock change_publisher_queues_mutex_;
       std::unordered_map<std::string, int> publisher_topics_; // points to index in publisher_queues_
-      std::vector<std::queue<bson_t*>> publisher_queues_;   // data to publish on the queue thread
+      std::vector<std::queue<bson_t*>> publisher_queues_;     // data to publish on the queue thread
       int current_publisher_queue_ = 0;
       bool run_publisher_queue_thread_ = true;
-      std::chrono::system_clock::time_point LastDataSendTime;                           // watchdog for send thread. Socket sometimes blocks infinitely.
-
+      std::chrono::system_clock::time_point LastDataSendTime; // watchdog for send thread. Socket sometimes blocks infinitely.
   };
 }

@@ -3,19 +3,24 @@
 #include "ros_topic.h"
 #include "bson.h"
 
-#include "HAL/RunnableThread.h"
-
 namespace rosbridge2cpp{
 
     static const std::chrono::seconds SendThreadFreezeTimeout = std::chrono::seconds(5);
 
     ROSBridge::~ROSBridge()
     {
-        if (publisher_queue_thread_ != nullptr)
+        run_publisher_queue_thread_ = false;
+        if (publisher_queue_thread_.joinable())
         {
             bool waitForThread = (std::chrono::system_clock::now() - LastDataSendTime < SendThreadFreezeTimeout);
-            publisher_queue_thread_->Kill(waitForThread);
-            delete publisher_queue_thread_;
+            if (waitForThread)
+            {
+                publisher_queue_thread_.join();
+            }
+            else
+            {
+                publisher_queue_thread_.detach();
+            }
         }
 
         for(auto& queue : publisher_queues_)
@@ -301,7 +306,6 @@ namespace rosbridge2cpp{
   }
 
   bool ROSBridge::Init(std::string ip_addr, int port){
-    // std::function<void(json&)> fun = std::bind(&ROSBridge::IncomingMessageCallback, this, std::placeholders::_1);
 
     if(bson_only_mode()){
       auto fun = [this](bson_t &bson){ IncomingMessageCallback(bson); };
@@ -314,9 +318,8 @@ namespace rosbridge2cpp{
       transport_layer_.RegisterIncomingMessageCallback(fun);
     }
 
-    static uint32 ThreadIndex = 0;
-    publisher_queue_thread_ = FRunnableThread::Create(this, *FString::Printf(TEXT("ROSBridgePublisherQueue_%u"), ThreadIndex), 128 * 1024, TPri_Normal);
-    ThreadIndex++;
+    run_publisher_queue_thread_ = true;
+    publisher_queue_thread_ = std::thread(&ROSBridge::RunPublisherQueueThread, this);
 
     return transport_layer_.Init(ip_addr,port);
   }
@@ -388,19 +391,9 @@ namespace rosbridge2cpp{
     return false;
   }
 
-
-
-  /* FRunnable interface
-  *****************************************************************************/
-
-  bool ROSBridge::Init()
+  int ROSBridge::RunPublisherQueueThread()
   {
-      return true;
-  }
-
-  uint32 ROSBridge::Run()
-  {
-      uint32 return_value = 0;
+      int return_value = 0;
       int num_retries_left = 10;
       float sleep_duration = 0.2f;
 
@@ -467,15 +460,5 @@ namespace rosbridge2cpp{
       }
 
       return return_value;
-  }
-
-  void ROSBridge::Stop()
-  {
-      run_publisher_queue_thread_ = false;
-  }
-
-  void ROSBridge::Exit()
-  {
-      // do nothing
   }
 }
