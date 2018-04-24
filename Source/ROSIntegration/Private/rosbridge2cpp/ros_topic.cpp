@@ -4,6 +4,7 @@ namespace rosbridge2cpp{
   bool ROSTopic::Subscribe(FunVrROSPublishMsg callback){
     ros_.RegisterTopicCallback(topic_name_, callback); // Register callback in ROSBridge
     subscription_counter_++;
+    assert(subscription_counter_ == 1); // Unreal Topics must never call this method twice before unsubscribing first
 
     // Only send subscribe when this ROSTopic hasn't sent this command before
     if(subscribe_id_!="")
@@ -21,7 +22,7 @@ namespace rosbridge2cpp{
     cmd.type_ = message_type_;
     cmd.compression_ = compression_;
     cmd.throttle_rate_ = throttle_rate_;
-    cmd.queue_length_ = queue_length_;
+    cmd.queue_length_ = queue_size_;
 
     if (!ros_.SendMessage(cmd))
     {
@@ -137,7 +138,7 @@ namespace rosbridge2cpp{
     cmd.msg_json_ =  message;
     cmd.latch_ =  latch_;
 
-    return ros_.SendMessage(cmd);
+    return ros_.QueueMessage(topic_name_, queue_size_, cmd);
   }
 
     bool ROSTopic::Publish(bson_t *message){
@@ -157,7 +158,7 @@ namespace rosbridge2cpp{
         cmd.msg_bson_ =  message;
         cmd.latch_ =  latch_;
 
-        return ros_.SendMessage(cmd);
+        return ros_.QueueMessage(topic_name_, queue_size_, cmd);
     }
 
   std::string ROSTopic::GeneratePublishID(){

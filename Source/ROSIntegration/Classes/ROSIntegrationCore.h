@@ -8,6 +8,7 @@
 
 #include "ROSIntegrationCore.generated.h"
 
+ROSINTEGRATION_API DECLARE_LOG_CATEGORY_EXTERN(LogROS, Display, All);
 
 UCLASS()
 class ROSINTEGRATION_API UROSIntegrationCore: public UObject
@@ -16,6 +17,8 @@ class ROSINTEGRATION_API UROSIntegrationCore: public UObject
 
 public:
 	bool Init(FString ROSBridgeHost, int32 ROSBridgePort);
+
+    bool IsHealthy() const;
 
 	// You must call Init() before using this method to set upthe Implmentation correctly
 	void SetWorld(UWorld* World);
@@ -27,19 +30,13 @@ public:
 
 private:
 
-	UPROPERTY()
-	bool test;
-
 	// PIMPL
 	class Impl;
 	Impl* _Implementation;
 
+    bool bson_test_mode = true;
+
 	friend class UTopic;
 	friend class UService;
-
-
-	
-	bool bson_test_mode = true;
-	
 };
 

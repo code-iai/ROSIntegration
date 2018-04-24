@@ -24,14 +24,14 @@ void ULookAtScanComponent::BeginPlay()
 
 	AActor *OwningActor = GetOwner();
 	if (!OwningActor) {
-		UE_LOG(LogTemp, Warning, TEXT("[ULookAtScanComponent] Actor is nullptr in BeginPlay()"));
+		UE_LOG(LogROS, Warning, TEXT("[ULookAtScanComponent] Actor is nullptr in BeginPlay()"));
 		return;
 	}
 
 	ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 
-	UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(OwningActor->GetGameInstance());
-	ExampleTopic->Init(rosinst->_Ric, CommandTopic, TEXT("std_msgs/String"));
+	UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(OwningActor->GetGameInstance());
+	ExampleTopic->Init(ROSInstance->ROSIntegrationCore, CommandTopic, TEXT("std_msgs/String"));
 	ExampleTopic->Subscribe(SubscribeCallback);
 	
 }
@@ -48,7 +48,7 @@ void ULookAtScanComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	AActor *OwningActor = GetOwner();
 	if (!OwningActor) {
-		UE_LOG(LogTemp, Warning, TEXT("[ULookAtScanningComponent] Actor is nullptr"));
+		UE_LOG(LogROS, Warning, TEXT("[ULookAtScanningComponent] Actor is nullptr"));
 		return;
 	}
 
@@ -77,7 +77,7 @@ void ULookAtScanComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 			CurrentOffsetY += YStepSize;
 
 			if (CurrentOffsetZ >= MaxOffSetZ) { // we're done if we hit Z max
-				UE_LOG(LogTemp, Warning, TEXT("Z offset is over max %f >= %f"), CurrentOffsetZ, MaxOffSetZ);
+				UE_LOG(LogROS, Warning, TEXT("Z offset is over max %f >= %f"), CurrentOffsetZ, MaxOffSetZ);
 				TranslationActive = false; // Stop execution
 				return;
 			}
