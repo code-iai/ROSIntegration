@@ -8,9 +8,11 @@ UGeometryMsgsVector3Converter::UGeometryMsgsVector3Converter(const FObjectInitia
 	_MessageType = "geometry_msgs/Vector3";
 }
 
-bool UGeometryMsgsVector3Converter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: Vector3 receiving not implemented yet"));
-	return false;
+bool UGeometryMsgsVector3Converter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
+{
+	auto p = new ROSMessages::geometry_msgs::Vector3();
+	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
+	return _bson_extract_child_vector3(message->full_msg_bson_, "msg", p);
 }
 
 bool UGeometryMsgsVector3Converter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {

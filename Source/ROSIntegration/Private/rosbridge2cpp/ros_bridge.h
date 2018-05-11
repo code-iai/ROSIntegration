@@ -77,14 +77,14 @@ namespace rosbridge2cpp{
       // Please note:
       // _If you register more than one callback for the
       // same topic, the old one get's overwritten_
-      void RegisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun);
+      void RegisterTopicCallback(std::string topic_name, ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle);
 
       // This method should ONLY be called by ROSTopic instances.
       // If you call this on your own, the housekeeping in ROSTopic
       // might fail which leads to missing unsubscribe messages etc.
       //
       // @return true, if the passed callback has been found and removed. false otherwise.
-      bool UnregisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun);
+      bool UnregisterTopicCallback(std::string topic_name, const ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle);
 
       // Register the callback for a service call.
       // This callback will be executed when we receive the response for a particular Service Request
@@ -132,7 +132,7 @@ namespace rosbridge2cpp{
       int RunPublisherQueueThread();
 
       ITransportLayer &transport_layer_;
-      std::unordered_map<std::string, std::list<FunVrROSPublishMsg>> registered_topic_callbacks_;
+      std::unordered_map<std::string, std::list<ROSCallbackHandle<FunVrROSPublishMsg>>> registered_topic_callbacks_;
       std::unordered_map<std::string, FunVrROSServiceResponseMsg> registered_service_callbacks_;
       std::unordered_map<std::string, FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator> registered_service_request_callbacks_;
       std::unordered_map<std::string, FunVrROSCallServiceMsgrROSServiceResponseMsg> registered_service_request_callbacks_bson_;

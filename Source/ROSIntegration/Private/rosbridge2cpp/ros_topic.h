@@ -16,6 +16,7 @@
 using json = rapidjson::Document;
 
 namespace rosbridge2cpp{
+
   class ROSTopic {
     public:
       ROSTopic (ROSBridge &ros, 
@@ -47,7 +48,7 @@ namespace rosbridge2cpp{
       // the json result to the local variable
       // When this happens, other callbacks that receive the same message
       // will read 'Null' on msg_json_
-      bool Subscribe(FunVrROSPublishMsg callback);
+      ROSCallbackHandle<FunVrROSPublishMsg> Subscribe(FunVrROSPublishMsg callback);
 
       // Unsubscribe from a given topic
       // If multiple callbacks for this topic have been registered,
@@ -56,7 +57,7 @@ namespace rosbridge2cpp{
       // If you're passing the last registered callback to this function,
       // it will be unregistered in the ROSBridge instance
       // AND 'unsubscribe' will be send to the server
-      bool Unsubscribe(FunVrROSPublishMsg callback);
+      bool Unsubscribe(const ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle);
 
       // Advertise as a publisher for this topic
       bool Advertise();

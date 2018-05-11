@@ -33,6 +33,7 @@ public:
     int32 _QueueSize;
 	rosbridge2cpp::ROSTopic* _ROSTopic;
     UBaseMessageConverter* _Converter;
+    rosbridge2cpp::ROSCallbackHandle<rosbridge2cpp::FunVrROSPublishMsg> _CallbackHandle;
 
 	std::function<void(TSharedPtr<FROSBaseMsg>)> _Callback;
 
@@ -55,9 +56,9 @@ public:
             Unsubscribe();
         }
 
-		bool result = _ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
+		_CallbackHandle = _ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
 		_Callback = func;
-        return result;
+        return _CallbackHandle.IsValid();
 	}
     bool Unsubscribe() {
         if (!_ROSTopic) {
@@ -65,9 +66,10 @@ public:
             return false;
         }
 
-        bool result = _ROSTopic->Unsubscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
+        bool result = _ROSTopic->Unsubscribe(_CallbackHandle);
         if (result) {
             _Callback = nullptr;
+            _CallbackHandle = rosbridge2cpp::ROSCallbackHandle<rosbridge2cpp::FunVrROSPublishMsg>();
         }
         return result;
 	}
