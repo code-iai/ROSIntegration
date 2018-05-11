@@ -30,7 +30,7 @@ public:
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	double GetDoubleFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors=true) {
+	static double GetDoubleFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors=true) {
 		assert(msg != nullptr);
 
 		double value = rosbridge2cpp::Helper::get_double_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
@@ -40,7 +40,7 @@ public:
 		return value;
 	}
 
-	FString GetFStringFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+	static FString GetFStringFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
 		assert(msg != nullptr);
 
 		std::string value = rosbridge2cpp::Helper::get_utf8_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
@@ -50,7 +50,7 @@ public:
 		return UTF8_TO_TCHAR(value.c_str());
 	}
 
-	int32 GetInt32FromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+	static int32 GetInt32FromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
 		assert(msg != nullptr);
 
 		int32 value = rosbridge2cpp::Helper::get_int32_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
@@ -58,6 +58,27 @@ public:
 			UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
 		}
 		return value;
+	}
+
+	static TArray<double> GetDoubleTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+		assert(msg != nullptr);
+
+		uint32_t array_size;
+		const uint8_t* data = rosbridge2cpp::Helper::get_array_by_key(TCHAR_TO_UTF8(*Key), *msg, array_size, KeyFound);
+		if (!KeyFound && LogOnErrors) {
+			UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+		}
+
+		TArray<double> ret;
+		bool elemFound = true;
+		for (int i = 0; elemFound; ++i)
+		{
+			double temp = GetDoubleFromBSON(Key + "." + FString::FromInt(i) , msg, elemFound, false);
+			if (elemFound)
+				ret.Add(temp);
+		}
+
+		return ret;
 	}
 
 protected:
@@ -79,7 +100,7 @@ protected:
 		for (int i = 0; i != tarray.Num(); ++i)
 		{
 			bson_uint32_to_string(i, &element_key, str, sizeof str);
-			BSON_APPEND_DOUBLE(b, element_key, tarray[i]);
+			BSON_APPEND_DOUBLE(&arr, element_key, tarray[i]);
 		}
 		bson_append_array_end(b, &arr);
 	}
