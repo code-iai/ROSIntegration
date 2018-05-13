@@ -74,7 +74,6 @@ namespace rosbridge2cpp{
 
       const uint8_t *bson_data = bson_get_data (&message);
       uint32_t bson_size = message.len;
-      std::cout << "[ROSBridge] Sending data from ROSBridgeMsg ("<< (uint32_t) bson_size <<" Bytes)" << std::endl;
       spinlock::scoped_lock_wait_for_short_task lock(transport_layer_access_mutex_);
       bool retval = transport_layer_.SendMessage(bson_data,bson_size);
       bson_destroy(&message); // TODO needed?
@@ -271,7 +270,6 @@ namespace rosbridge2cpp{
   }
   void ROSBridge::IncomingMessageCallback(json &data){
     std::string str_repr = Helper::get_string_from_rapidjson(data);
-    std::cout << "[ROSBridge] Received data: " << str_repr << std::endl;
 
 
     // Check the message type and dispatch the message properly

@@ -45,6 +45,7 @@ public:
 
     virtual void PostInitProperties() override;
 
+    void MarkAsDisconnected();
     bool Reconnect(UROSIntegrationCore* ROSIntegrationCore);
 
 protected:
@@ -64,6 +65,8 @@ private:
 
     struct State
     {
+        bool Connected;
+
         bool Advertised;
         bool Subscribed;
         bool Blueprint;
@@ -80,8 +83,6 @@ private:
 	class Impl;
 	Impl* _Implementation;
 
-    TWeakObjectPtr<UROSIntegrationCore> ROSIntegrationCore;
-    
     // Helper to keep track of self-destruction for async functions
     TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
 };

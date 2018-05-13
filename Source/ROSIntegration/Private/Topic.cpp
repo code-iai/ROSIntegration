@@ -70,6 +70,8 @@ public:
         if (result) {
             _Callback = nullptr;
             _CallbackHandle = rosbridge2cpp::ROSCallbackHandle<rosbridge2cpp::FunVrROSPublishMsg>();
+            delete _ROSTopic;
+            _ROSTopic = nullptr;
         }
         return result;
 	}
@@ -152,6 +154,7 @@ UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
     , _Implementation(new UTopic::Impl())
     , _SelfPtr(this)
 {
+    _State.Connected = true;
     _State.Advertised = false;
     _State.Subscribed = false;
     _State.Blueprint = false;
@@ -167,8 +170,9 @@ void UTopic::PostInitProperties()
 void UTopic::BeginDestroy() {
     Super::BeginDestroy();
 
-    if (!ROSIntegrationCore.Get())
+    if (!_State.Connected)
     {
+        // prevent any interaction with ROS during destruction
         _Implementation->_Ric = nullptr;
     }
 
@@ -180,36 +184,33 @@ void UTopic::BeginDestroy() {
 
 bool UTopic::Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func) {
     _State.Subscribed = true;
-	return _Implementation->Subscribe(func);
+	return _State.Connected && _Implementation->Subscribe(func);
 }
 bool UTopic::Unsubscribe() {
     _State.Subscribed = false;
-    return _Implementation->Unsubscribe();
+    return _State.Connected && _Implementation->Unsubscribe();
 }
 
 bool UTopic::Advertise() {
     _State.Advertised = true;
-    return _Implementation->Advertise();
+    return _State.Connected && _Implementation->Advertise();
 }
 bool UTopic::Unadvertise() {
     _State.Advertised = false;
-    return _Implementation->Unadvertise();
+    return _State.Connected && _Implementation->Unadvertise();
 }
 bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg) {
-    
-    if (!ROSIntegrationCore.Get()) // TODO: check why this is necessary (An active Topic should always point to a valid ROSIntegrationCore)
-    {
-        return false;
-    }
-
-	return _Implementation->Publish(msg);
+	return _State.Connected && _Implementation->Publish(msg);
 }
 
 void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize) {
-    ROSIntegrationCore = Ric;
 	_Implementation->Init(Ric, Topic, MessageType, QueueSize);
 }
 
+void UTopic::MarkAsDisconnected()
+{
+    _State.Connected = false;
+}
 
 bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 {
@@ -218,7 +219,7 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
     Impl* oldImplementation = _Implementation;
     _Implementation = new UTopic::Impl();
 
-    this->ROSIntegrationCore = ROSIntegrationCore;
+    _State.Connected = true;
 
     if (_State.Subscribed && _State.Blueprint)
     {
@@ -238,6 +239,8 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
         }
     }
 
+    _State.Connected = success;
+
     oldImplementation->_Ric = nullptr; // prevent old topic from unsubscribing using the broken connection
     delete oldImplementation;
     return success;
@@ -255,12 +258,10 @@ bool UTopic::Subscribe(const FString& TopicName, EMessageType MessageType, int32
     _State.Blueprint = true;
     _State.BlueprintMessageType = MessageType;
 
-    ROSIntegrationCore = nullptr;
-
     UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(GWorld->GetGameInstance());
     if (ROSInstance)
     {
-        if (ROSInstance->bConnectToROS)
+        if (ROSInstance->bConnectToROS && _State.Connected)
         {
             TMap<EMessageType, FString> SupportedMessageTypes;
             SupportedMessageTypes.Add(EMessageType::String, TEXT("std_msgs/String"));
