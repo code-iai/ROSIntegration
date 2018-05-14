@@ -122,9 +122,9 @@ namespace rosbridge2cpp{
       msg.ToBSON(*message);
 
       {
+          spinlock::scoped_lock_wait_for_short_task lock(change_publisher_queues_mutex_);
           if (publisher_topics_.find(topic_name) == publisher_topics_.end())
           {
-              spinlock::scoped_lock_wait_for_short_task lock(change_publisher_queues_mutex_);
               publisher_topics_[topic_name] = publisher_queues_.size();
               publisher_queues_.push_back(std::queue<bson_t*>());
           }
