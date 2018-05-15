@@ -50,12 +50,23 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
     Init();
     bReconnect = false;
 
+    // tell everyone (Topics, Services, etc.) they lost connection and should stop any interaction with ROS for now.
+    {
+        for (TObjectIterator<UTopic> It; It; ++It)
+        {
+            UTopic* Topic = *It;
+
+            Topic->MarkAsDisconnected();
+        }
+        // TODO: also tell Services, Actions, etc.
+    }
+
     if(!bIsConnected)
     {
         return; // Let timer call this method again to retry connection attempt
     }
 
-    // tell everyone (Topics, Services, etc.) they lost connection and need to reconnect (subscribe and advertise)
+    // tell everyone (Topics, Services, etc.) they can try to reconnect (subscribe and advertise)
     {
         for (TObjectIterator<UTopic> It; It; ++It)
         {
@@ -68,7 +79,7 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
                 UE_LOG(LogROS, Error, TEXT("Unable to re-establish topic %s."), *Topic->GetDetailedInfo());
             }
         }
-        // TODO: also tell Services, etc.
+        // TODO: also tell Services, Actions, etc.
     }
 
     UE_LOG(LogROS, Display, TEXT("Successfully reconnected to rosbridge %s:%u."), *ROSBridgeServerHost, ROSBridgeServerPort);

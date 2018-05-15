@@ -6,6 +6,7 @@
 namespace rosbridge2cpp{
 
     static const std::chrono::seconds SendThreadFreezeTimeout = std::chrono::seconds(5);
+    unsigned long ROSCallbackHandle_id_counter = 1;
 
     ROSBridge::~ROSBridge()
     {
@@ -73,7 +74,6 @@ namespace rosbridge2cpp{
 
       const uint8_t *bson_data = bson_get_data (&message);
       uint32_t bson_size = message.len;
-      std::cout << "[ROSBridge] Sending data from ROSBridgeMsg ("<< (uint32_t) bson_size <<" Bytes)" << std::endl;
       spinlock::scoped_lock_wait_for_short_task lock(transport_layer_access_mutex_);
       bool retval = transport_layer_.SendMessage(bson_data,bson_size);
       bson_destroy(&message); // TODO needed?
@@ -122,9 +122,9 @@ namespace rosbridge2cpp{
       msg.ToBSON(*message);
 
       {
+          spinlock::scoped_lock_wait_for_short_task lock(change_publisher_queues_mutex_);
           if (publisher_topics_.find(topic_name) == publisher_topics_.end())
           {
-              spinlock::scoped_lock_wait_for_short_task lock(change_publisher_queues_mutex_);
               publisher_topics_[topic_name] = publisher_queues_.size();
               publisher_queues_.push_back(std::queue<bson_t*>());
           }
@@ -165,8 +165,8 @@ namespace rosbridge2cpp{
     }
 
     // Iterate over all registered callbacks for the given topic
-    for(auto topic_callback : registered_topic_callbacks_.find(incoming_topic_name)->second){
-      topic_callback(data);
+    for(auto& topic_callback : registered_topic_callbacks_.find(incoming_topic_name)->second){
+      topic_callback.GetFunction()(data);
     }
     return;
   }
@@ -270,7 +270,6 @@ namespace rosbridge2cpp{
   }
   void ROSBridge::IncomingMessageCallback(json &data){
     std::string str_repr = Helper::get_string_from_rapidjson(data);
-    std::cout << "[ROSBridge] Received data: " << str_repr << std::endl;
 
 
     // Check the message type and dispatch the message properly
@@ -330,28 +329,9 @@ namespace rosbridge2cpp{
           (std::chrono::system_clock::now() - LastDataSendTime < SendThreadFreezeTimeout);
   }
 
-  void ROSBridge::RegisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
-
+  void ROSBridge::RegisterTopicCallback(std::string topic_name, ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle){
     spinlock::scoped_lock_wait_for_short_task lock(change_topics_mutex_);
-
-    // check if accidentally subscribes twice to the same topic
-    if (registered_topic_callbacks_.find(topic_name) != registered_topic_callbacks_.end()){ 
-
-        std::list<FunVrROSPublishMsg> &r_list_of_callbacks = registered_topic_callbacks_.find(topic_name)->second;
-        for (std::list<FunVrROSPublishMsg>::iterator topic_callback_it = r_list_of_callbacks.begin();
-            topic_callback_it != r_list_of_callbacks.end();
-            ++topic_callback_it) {
-
-            typedef void(fnType)(ROSBridgePublishMsg&);
-            if (topic_callback_it->target<fnType>() == fun.target<fnType>()) {
-                // One object instance tried to subscribe twice to the same topic!
-                assert(false);
-                return;
-            }
-        }
-    }
-
-    registered_topic_callbacks_[topic_name].push_back(fun);
+    registered_topic_callbacks_[topic_name].push_back(callback_handle);
   }
 
   void ROSBridge::RegisterServiceCallback(std::string service_call_id, FunVrROSServiceResponseMsg fun){
@@ -366,7 +346,7 @@ namespace rosbridge2cpp{
     registered_service_request_callbacks_bson_[service_name] = fun;
   }
 
-  bool ROSBridge::UnregisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun){
+  bool ROSBridge::UnregisterTopicCallback(std::string topic_name, const ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle){
 
     spinlock::scoped_lock_wait_for_short_task lock(change_topics_mutex_);
 
@@ -375,14 +355,13 @@ namespace rosbridge2cpp{
       return false;
     }
 
-    std::list<FunVrROSPublishMsg> &r_list_of_callbacks = registered_topic_callbacks_.find(topic_name)->second;
+    std::list<ROSCallbackHandle<FunVrROSPublishMsg>> &r_list_of_callbacks = registered_topic_callbacks_.find(topic_name)->second;
 
-    for(std::list<FunVrROSPublishMsg>::iterator topic_callback_it = r_list_of_callbacks.begin(); 
+    for(std::list<ROSCallbackHandle<FunVrROSPublishMsg>>::iterator topic_callback_it = r_list_of_callbacks.begin(); 
         topic_callback_it!= r_list_of_callbacks.end();
         ++topic_callback_it){
      
-      typedef void(fnType)(ROSBridgePublishMsg&);
-      if(topic_callback_it->target<fnType>() == fun.target<fnType>()) {
+      if(*topic_callback_it == callback_handle) {
         std::cout << "[ROSBridge] Found CB in UnregisterTopicCallback. Deleting it ... " << std::endl;
         r_list_of_callbacks.erase(topic_callback_it);
         return true;

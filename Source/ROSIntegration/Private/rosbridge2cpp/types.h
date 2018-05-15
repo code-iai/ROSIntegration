@@ -19,4 +19,49 @@ namespace rosbridge2cpp{
   // typedef std::function<json(json&)> FunJSONcrJSON;
 
   enum class TransportError{ R2C_SOCKET_ERROR, R2C_CONNECTION_CLOSED };
+  extern unsigned long ROSCallbackHandle_id_counter;
+
+  template<typename FunctionType>
+  class ROSCallbackHandle {
+    public:
+      ROSCallbackHandle()
+      : id_(0)
+      , function_() {}
+
+      ROSCallbackHandle(FunctionType& function)
+      : id_(ROSCallbackHandle_id_counter)
+      , function_(function) {
+
+        if(function_ != nullptr) {
+          ROSCallbackHandle_id_counter++;
+        } else {
+          id_ = 0;
+        }
+      }
+      
+      ROSCallbackHandle(const ROSCallbackHandle& other)
+      : id_(other.id_)
+      , function_(other.function_) {}
+
+      bool IsValid() const
+      {
+        return (function_ != nullptr) && (id_ > 0);
+      }
+
+      bool operator == (const ROSCallbackHandle& other) const {
+        return other.id_ == id_;
+      }
+
+      bool operator<( const ROSCallbackHandle& other) const {
+        return other.id_ < id_;
+      }
+
+      FunctionType& GetFunction() {
+        return function_;
+      }
+
+    private:
+      unsigned long id_;
+      FunctionType function_;
+  };
 }
