@@ -154,3 +154,7 @@ Service Message Type               | ROS to UE4 | UE4 to ROS
 ---------------------------------- | ---------- | ----------
 rospy_tutorials/AddTwoIntsRequest  | ✓          | ✓
 rospy_tutorials/AddTwoIntsResponse | ✓          | ✓
+
+### FAQ
+* Question: My Topic/Service gets closed/unadvertised or my UE4 crashes around one minute after Begin Play.
+Answer: This might be a problem relating to the Garbage Collection of UE4. Please make sure that you declare your class member attributes as UPROPERTYs. See also: https://github.com/code-iai/ROSIntegration/issues/32
