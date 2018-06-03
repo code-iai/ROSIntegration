@@ -81,8 +81,7 @@ UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGame
 ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
 
 // (Optional) Advertise the topic
-// Currently unimplemented in the plugin
-//ExamplePublishTopic->Advertise();
+ExampleTopic->Advertise();
 
 // Publish a string to the topic
 TSharedPtr<ROSMessages::std_msgs::String> StringMessage(new ROSMessages::std_msgs::String("This is an example"));

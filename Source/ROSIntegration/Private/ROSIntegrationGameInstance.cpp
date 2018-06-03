@@ -2,6 +2,16 @@
 #include "std_msgs/String.h"
 #include "bson.h" 
 
+static void MarkAllROSObjectsAsDisconnected()
+{
+    for (TObjectIterator<UTopic> It; It; ++It)
+    {
+        UTopic* Topic = *It;
+
+        Topic->MarkAsDisconnected();
+    }
+    // TODO: also tell Services, Actions, etc.
+}
 
 void UROSIntegrationGameInstance::Init()
 {
@@ -51,15 +61,7 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
     bReconnect = false;
 
     // tell everyone (Topics, Services, etc.) they lost connection and should stop any interaction with ROS for now.
-    {
-        for (TObjectIterator<UTopic> It; It; ++It)
-        {
-            UTopic* Topic = *It;
-
-            Topic->MarkAsDisconnected();
-        }
-        // TODO: also tell Services, Actions, etc.
-    }
+    MarkAllROSObjectsAsDisconnected();
 
     if(!bIsConnected)
     {
@@ -92,5 +94,8 @@ void UROSIntegrationGameInstance::Shutdown()
 
 void UROSIntegrationGameInstance::BeginDestroy() 
 {
+    // tell everyone (Topics, Services, etc.) they should stop any interaction with ROS.
+    MarkAllROSObjectsAsDisconnected();
+
 	Super::BeginDestroy();
 }
