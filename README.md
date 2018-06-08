@@ -36,8 +36,10 @@ roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 
 This plugin has been tested with Unreal Engine versions;
 
+ * 4.17.3
  * 4.18.2
  * 4.18.3
+ * 4.19.1
 
 ## Usage
 
@@ -79,8 +81,7 @@ UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGame
 ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
 
 // (Optional) Advertise the topic
-// Currently unimplemented in the plugin
-//ExamplePublishTopic->Advertise();
+ExampleTopic->Advertise();
 
 // Publish a string to the topic
 TSharedPtr<ROSMessages::std_msgs::String> StringMessage(new ROSMessages::std_msgs::String("This is an example"));
@@ -114,6 +115,19 @@ std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<F
 ExampleTopic->Subscribe(SubscribeCallback);
 ```
 
+### Blueprint Topic Subscribe Example
+
+* Create a Blueprint based on `Topic` class.
+* Subscribe to a topic.
+* Define what happens when a message arrives.
+
+![Create Blueprint based on Topic class](Documentation/bp_topic-01.png)
+
+* Open Level Bluprint or any other you want to use the topic in.
+* Instantiate the blueprint via `Construct Object from Class` with a meaningful outer to define its lifetime and affiliation.
+
+![Use the bluprint topic instance](Documentation/bp_topic-02.png)
+
 ### C++ Service Request example
 
 TODO
@@ -139,3 +153,7 @@ Service Message Type               | ROS to UE4 | UE4 to ROS
 ---------------------------------- | ---------- | ----------
 rospy_tutorials/AddTwoIntsRequest  | ✓          | ✓
 rospy_tutorials/AddTwoIntsResponse | ✓          | ✓
+
+### FAQ
+* Question: My Topic/Service gets closed/unadvertised or my UE4 crashes around one minute after Begin Play.
+Answer: This might be a problem relating to the Garbage Collection of UE4. Please make sure that you declare your class member attributes as UPROPERTYs. See also: https://github.com/code-iai/ROSIntegration/issues/32

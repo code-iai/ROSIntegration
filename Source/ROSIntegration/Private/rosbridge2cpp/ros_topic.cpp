@@ -1,41 +1,50 @@
 #include "ros_topic.h"
 
 namespace rosbridge2cpp{
-  bool ROSTopic::Subscribe(FunVrROSPublishMsg callback){
-    ros_.RegisterTopicCallback(topic_name_, callback); // Register callback in ROSBridge
-    subscription_counter_++;
 
+  ROSCallbackHandle<FunVrROSPublishMsg> ROSTopic::Subscribe(FunVrROSPublishMsg callback){
+    
+    subscription_counter_++;
+    
     // Only send subscribe when this ROSTopic hasn't sent this command before
-    if(subscribe_id_!="")
-      return true;
+    if(subscribe_id_=="") {
+      subscribe_id_.append("subscribe:");
+      subscribe_id_.append(topic_name_);
+      subscribe_id_.append(":");
+      subscribe_id_.append(std::to_string(++ros_.id_counter));
+
+      ROSBridgeSubscribeMsg cmd(true);
+      cmd.id_ = subscribe_id_;
+      cmd.topic_ = topic_name_;
+      cmd.type_ = message_type_;
+      cmd.compression_ = compression_;
+      cmd.throttle_rate_ = throttle_rate_;
+      cmd.queue_length_ = queue_size_;
+
+      if (!ros_.SendMessage(cmd))
+      {
+        subscribe_id_ = "";
+      }
+    }
+
+    if (subscribe_id_ != "")
+    {
+        // Register callback in ROSBridge
+        ROSCallbackHandle<FunVrROSPublishMsg> handle(callback);
+        ros_.RegisterTopicCallback(topic_name_, handle); // Register callback in ROSBridge
+        return handle;
+    }
 
     subscribe_id_ = "";
-    subscribe_id_.append("subscribe:");
-    subscribe_id_.append(topic_name_);
-    subscribe_id_.append(":");
-    subscribe_id_.append(std::to_string(++ros_.id_counter));
-
-    ROSBridgeSubscribeMsg cmd(true);
-    cmd.id_ = subscribe_id_;
-    cmd.topic_ = topic_name_;
-    cmd.type_ = message_type_;
-    cmd.compression_ = compression_;
-    cmd.throttle_rate_ = throttle_rate_;
-    cmd.queue_length_ = queue_length_;
-
-    if (!ros_.SendMessage(cmd))
-    {
-        subscribe_id_ = "";
-    }
-    return subscribe_id_ != "";
+    return ROSCallbackHandle<FunVrROSPublishMsg>();
   }
 
-  bool ROSTopic::Unsubscribe(FunVrROSPublishMsg callback){
+  bool ROSTopic::Unsubscribe(const ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle){
     // We've no active subscription
     if(subscribe_id_ == "") 
       return false;
 
-    if(!ros_.UnregisterTopicCallback(topic_name_, callback)){ // Unregister callback in ROSBridge
+    if(!ros_.UnregisterTopicCallback(topic_name_, callback_handle)){ // Unregister callback in ROSBridge
       // failed to unregister callback - maybe the method is different from already registered callbacks
       std::cerr << "[ROSTopic] Passed unknown callback to ROSTopic::unsubscribe. This callback is not registered in the ROSBridge instance. Aborting..." << std::endl;
       return false;
@@ -137,7 +146,7 @@ namespace rosbridge2cpp{
     cmd.msg_json_ =  message;
     cmd.latch_ =  latch_;
 
-    return ros_.SendMessage(cmd);
+    return ros_.QueueMessage(topic_name_, queue_size_, cmd);
   }
 
     bool ROSTopic::Publish(bson_t *message){
@@ -157,7 +166,7 @@ namespace rosbridge2cpp{
         cmd.msg_bson_ =  message;
         cmd.latch_ =  latch_;
 
-        return ros_.SendMessage(cmd);
+        return ros_.QueueMessage(topic_name_, queue_size_, cmd);
     }
 
   std::string ROSTopic::GeneratePublishID(){

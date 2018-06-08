@@ -16,11 +16,18 @@
 using json = rapidjson::Document;
 
 namespace rosbridge2cpp{
+
   class ROSTopic {
     public:
-      // TODO: Implement setter of other options
-      ROSTopic (ROSBridge &ros, std::string topic_name, std::string message_type) : 
-        ros_(ros), topic_name_(topic_name), message_type_(message_type){
+      ROSTopic (ROSBridge &ros, 
+          std::string topic_name, 
+          std::string message_type,
+          int queue_size = 10)
+          : ros_(ros)
+          , topic_name_(topic_name)
+          , message_type_(message_type)
+          , queue_size_(queue_size)
+        {
         }
 
       // Subscribes to a ROS Topic and registers a callback function
@@ -41,7 +48,7 @@ namespace rosbridge2cpp{
       // the json result to the local variable
       // When this happens, other callbacks that receive the same message
       // will read 'Null' on msg_json_
-      bool Subscribe(FunVrROSPublishMsg callback);
+      ROSCallbackHandle<FunVrROSPublishMsg> Subscribe(FunVrROSPublishMsg callback);
 
       // Unsubscribe from a given topic
       // If multiple callbacks for this topic have been registered,
@@ -50,7 +57,7 @@ namespace rosbridge2cpp{
       // If you're passing the last registered callback to this function,
       // it will be unregistered in the ROSBridge instance
       // AND 'unsubscribe' will be send to the server
-      bool Unsubscribe(FunVrROSPublishMsg callback);
+      bool Unsubscribe(const ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle);
 
       // Advertise as a publisher for this topic
       bool Advertise();
@@ -89,8 +96,9 @@ namespace rosbridge2cpp{
       std::string compression_ = "none";
       int throttle_rate_ = 0;
       bool latch_ = false;
-      int queue_size_ = 100;
-      int queue_length_ = 0;
+
+      // number of messages queued for remote publisher/subscriber within rosbridge AND local publisher queue (local subscriber queue is not supported at the moment)
+      int queue_size_ = 10;
 
       // Householding variables
       std::string advertise_id_ = "";
@@ -98,7 +106,5 @@ namespace rosbridge2cpp{
 
       // Count how many callbacks are currently registered in the ROSBridge instance
       int subscription_counter_ = 0;
-
-      // std::list<FunVcrJSON> _callbacks;
   };
 }

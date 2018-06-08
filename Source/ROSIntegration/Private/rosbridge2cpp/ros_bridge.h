@@ -6,10 +6,13 @@
 #include <functional>
 #include <unordered_map>
 #include <list>
+#include <queue>
+#include <chrono>
 
 #include <stdio.h>
 #include "types.h"
 #include "helper.h"
+#include "spinlock.h"
 
 #include "itransport_layer.h"
 
@@ -46,9 +49,13 @@ namespace rosbridge2cpp{
       ROSBridge(ITransportLayer &transport, bool bson_only_mode) : transport_layer_(transport), bson_only_mode_(bson_only_mode){
       }
 
+      ~ROSBridge();
+
       // Init the underlying transport layer and everything thats required
       // to initialized in this class.
       bool Init(std::string ip_addr, int port);
+
+      bool IsHealthy() const;
 
       // Send arbitrary string-data over the given TransportLayer
       bool SendMessage(std::string data);
@@ -60,6 +67,8 @@ namespace rosbridge2cpp{
 
       bool SendMessage(ROSBridgeMsg &msg);
 
+      bool QueueMessage(const std::string& topic_name, int queue_size, ROSBridgePublishMsg& msg);
+
 
       // Registration function for topic callbacks.
       // This method should ONLY be called by ROSTopic instances.
@@ -68,14 +77,14 @@ namespace rosbridge2cpp{
       // Please note:
       // _If you register more than one callback for the
       // same topic, the old one get's overwritten_
-      void RegisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun);
+      void RegisterTopicCallback(std::string topic_name, ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle);
 
       // This method should ONLY be called by ROSTopic instances.
       // If you call this on your own, the housekeeping in ROSTopic
       // might fail which leads to missing unsubscribe messages etc.
       //
       // @return true, if the passed callback has been found and removed. false otherwise.
-      bool UnregisterTopicCallback(std::string topic_name, FunVrROSPublishMsg fun);
+      bool UnregisterTopicCallback(std::string topic_name, const ROSCallbackHandle<FunVrROSPublishMsg>& callback_handle);
 
       // Register the callback for a service call.
       // This callback will be executed when we receive the response for a particular Service Request
@@ -120,21 +129,25 @@ namespace rosbridge2cpp{
       // Handler Method for reply packet
       void HandleIncomingServiceRequestMessage(std::string id, ROSBridgeCallServiceMsg &data);
 
+      int RunPublisherQueueThread();
+
       ITransportLayer &transport_layer_;
-      std::unordered_map<std::string, std::list<FunVrROSPublishMsg>> registered_topic_callbacks_;
+      std::unordered_map<std::string, std::list<ROSCallbackHandle<FunVrROSPublishMsg>>> registered_topic_callbacks_;
       std::unordered_map<std::string, FunVrROSServiceResponseMsg> registered_service_callbacks_;
       std::unordered_map<std::string, FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator> registered_service_request_callbacks_;
       std::unordered_map<std::string, FunVrROSCallServiceMsgrROSServiceResponseMsg> registered_service_request_callbacks_bson_;
       bool bson_only_mode_ = false;
 
-      FCriticalSection ChangeTopicsMutex;
+      spinlock transport_layer_access_mutex_;
 
-      // template<typename T>
-      //   size_t get_address(std::function<void (T &)> f) {
-      //     typedef void (fnType)(T &);
-      //     fnType ** fnPointer = f.template target<fnType*>();
-      //     return (size_t) *fnPointer;
-      //   }
+      spinlock change_topics_mutex_;
 
+      std::thread publisher_queue_thread_;
+      spinlock change_publisher_queues_mutex_;
+      std::unordered_map<std::string, int> publisher_topics_; // points to index in publisher_queues_
+      std::vector<std::queue<bson_t*>> publisher_queues_;     // data to publish on the queue thread
+      int current_publisher_queue_ = 0;
+      bool run_publisher_queue_thread_ = true;
+      std::chrono::system_clock::time_point LastDataSendTime; // watchdog for send thread. Socket sometimes blocks infinitely.
   };
 }

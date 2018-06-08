@@ -10,9 +10,11 @@
 
 #include <sstream>
 
+DEFINE_LOG_CATEGORY(LogROS);
+
 #define UNREAL_ROS_CHECK_KEY_FOUND                                     \
     if (!key_found) {                                                  \
-		UE_LOG(LogTemp, Warning, TEXT("%s is not present in data"), *UTF8_TO_TCHAR(LookupKey.c_str()) );\
+		UE_LOG(LogROS, Warning, TEXT("%s is not present in data"), *UTF8_TO_TCHAR(LookupKey.c_str()) );\
         return;                                                        \
     }
 
@@ -37,7 +39,7 @@ public:
 
 	void SpawnArrayMessageCallback(const ROSBridgePublishMsg& message) {
 		if (!rosbridge2cpp::Helper::bson_has_key(*message.full_msg_bson_, "msg.markers")) {
-			UE_LOG(LogTemp, Warning, TEXT("msg.markers field missing from SpawnArray Message"));
+			UE_LOG(LogROS, Warning, TEXT("msg.markers field missing from SpawnArray Message"));
 			return;
 		}
 
@@ -46,9 +48,9 @@ public:
 
 		if (bson_iter_init(&iter, message.full_msg_bson_) && bson_iter_find_descendant(&iter, "msg.markers", &val) &&
 			BSON_ITER_HOLDS_ARRAY(&val) ) {
-			UE_LOG(LogTemp, Verbose, TEXT("Marker is included and is an array!"));
+			UE_LOG(LogROS, Verbose, TEXT("Marker is included and is an array!"));
 		} else {
-			UE_LOG(LogTemp, Verbose, TEXT("Marker is not included or isn't an array!"));
+			UE_LOG(LogROS, Verbose, TEXT("Marker is not included or isn't an array!"));
 		}
 
 		const char* key;
@@ -232,21 +234,25 @@ public:
 			UNREAL_ROS_CHECK_KEY_FOUND
 				Message._MeshResource = FString(MeshResource.c_str());
 
-			UE_LOG(LogTemp, Verbose, TEXT("Enqueue Message"));
+			UE_LOG(LogROS, Verbose, TEXT("Enqueue Message"));
 			_SpawnManager->_SpawnObjectMessageQueue.Enqueue(Message);
-			UE_LOG(LogTemp, Verbose, TEXT("Enqueue Message Done"));
+			UE_LOG(LogROS, Verbose, TEXT("Enqueue Message Done"));
 		}
 
 	}
 	std::unique_ptr<rosbridge2cpp::ROSTopic> _SpawnMessageListener;
 
 	void SpawnMessageCallback(const ROSBridgePublishMsg& message) {
-		UE_LOG(LogTemp, Warning, TEXT("RECEIVED SPAWN MESSAGE --- Not implemented yet. Use the SpawnArray topic instead"));
+		UE_LOG(LogROS, Warning, TEXT("RECEIVED SPAWN MESSAGE --- Not implemented yet. Use the SpawnArray topic instead"));
 	}
 
 	Impl() {
 
 	}
+
+    bool IsHealthy() const {
+        return _Connection.IsHealthy() && _Ros.IsHealthy();
+    }
 
 	void SetWorld(UWorld* World) {
 		_World = World;
@@ -256,20 +262,15 @@ public:
 		_bson_test_mode = bson_test_mode;
 
 		if (bson_test_mode) {
-			// OUT_INFO(TEXT("BSON mode enabled"));
 			_Ros.enable_bson_mode();
 		}
 
 		bool ConnectionSuccessful = _Ros.Init(TCHAR_TO_UTF8(*ROSBridgeHost), ROSBridgePort);
 		if (!ConnectionSuccessful) {
-			UE_LOG(LogTemp, Error, TEXT("Failed to connect to server. Please make sure that your rosbridge is running. Abort ROSBridge Init."));
 			return false;
 		}
 
-		UE_LOG(LogTemp, Log, TEXT("rosbridge2cpp init successful"));
-
-		/*_Topic = new rosbridge2cpp::ROSTopic(_Ros, "/newtest", "std_msgs/String");
-		_Topic->Subscribe(std::bind(&UROSIntegrationCore::Impl::MessageCallback, this, std::placeholders::_1));*/
+		UE_LOG(LogROS, Log, TEXT("rosbridge2cpp init successful"));
 
 		return true;
 	}
@@ -300,9 +301,15 @@ UROSIntegrationCore::UROSIntegrationCore(const FObjectInitializer& ObjectInitial
 }
 
 bool UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
-	UE_LOG(LogTemp, Verbose, TEXT("CALLING INIT ON RIC IMPL()!"));
+	UE_LOG(LogROS, Verbose, TEXT("CALLING INIT ON RIC IMPL()!"));
 	_Implementation = new UROSIntegrationCore::Impl;
 	return _Implementation->Init(ROSBridgeHost, ROSBridgePort, bson_test_mode);
+}
+
+
+bool UROSIntegrationCore::IsHealthy() const
+{
+    return _Implementation->IsHealthy();
 }
 
 void UROSIntegrationCore::SetWorld(UWorld* World) {
@@ -317,7 +324,7 @@ void UROSIntegrationCore::InitSpawnManager() {
 
 
 void UROSIntegrationCore::BeginDestroy() {
-	UE_LOG(LogTemp, Verbose, TEXT("Begin Destroy on UROSIntegrationCore called"));
+	UE_LOG(LogROS, Verbose, TEXT("Begin Destroy on UROSIntegrationCore called"));
 	Super::BeginDestroy();
 
 	if (_Implementation) delete _Implementation;
