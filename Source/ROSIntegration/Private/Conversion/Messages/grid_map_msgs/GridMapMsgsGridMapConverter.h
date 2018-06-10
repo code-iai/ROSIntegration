@@ -32,7 +32,7 @@ public:
 
 		gm->data = GetTArrayFromBSON<ROSMessages::std_msgs::Float32MultiArray>(key + ".data", b, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) {
 			ROSMessages::std_msgs::Float32MultiArray ret;
-			UStdMsgsFloat32MultiArrayConverter::_bson_extract_child_float_multi_array(subMsg, subKey, &ret);
+			subKeyFound = UStdMsgsFloat32MultiArrayConverter::_bson_extract_child_float_multi_array(subMsg, subKey, &ret);
 			return ret;
 		}); 
 		if (!KeyFound) return false;
