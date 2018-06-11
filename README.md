@@ -6,7 +6,7 @@ The connection to the ROS world will be accomplished through http://wiki.ros.org
 
 ## Description
 
-This Plugin contains the basic data structures to enable the user to communicate with a running roscore. 
+This Plugin contains the basic data structures to enable the user to communicate with a running roscore.
 Currently, ROS Topics and ROS Services are supported.
 
 To boost the performance for big messages (Image Streams for example), this plugin utilizes http://bsonspec.org/ to transfer binary data in a compact manner.
@@ -20,8 +20,8 @@ If you need Vision Support in your Unreal Project, you can also add the ROSInteg
 ## Dependencies of this Plugin
 
 This Plugin utilizes BSON to achieve higher transferrates for binary data.
-It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communication protocol. 
-Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin. 
+It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communication protocol.
+Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin.
 Currently, this plugin comes with a pre-compiled libbson for Windows x64 and Linux x64 which doesn't need any additional configuration.
 
 To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As an example for ROS kinetic, you can install it with:
@@ -52,17 +52,17 @@ This plugin has been tested with Unreal Engine versions;
  * To specify your ROSBridge server, you have to create a custom GameInstance that inherits from [`ROSIntegrationGameInstance`](Source/ROSIntegration/Classes/ROSIntegrationGameInstance.h)
   * Find `ROSIntegrationGameInstance` in the Content browser (you might need to enable 'View Options' > 'Show Plugin Content' in the bottom right of the content browser).
   * Right click and create a new C++ or Blueprint class based on `ROSIntegrationGameInstance`
-    
+
     ![Create a new GameInstance](Documentation/ue4-setup-01.png)
 
   * Open your new C++ class / Blueprint object and change the values of `ROSBridgeSeverHost` and `ROSBridgeServerPort`
-    
+
     ![Change host and port to match your server](Documentation/ue4-setup-02.png)
-    
+
   * Open Project Settings > Maps and Modes, and set the GameInstance to match **your new GameInstance object**, not `ROSIntegrationGameInstance`
-    
+
     ![Change host and port to match your server](Documentation/ue4-setup-03.png)
-   
+
  * Don't forget to save everything (Ctrl + Shift + S)
  * In some cases (for example on Linux), it might be necessary to call the Generate Project Files action on UE4 in order to fetch the new header files for the plugin.
 
@@ -101,7 +101,7 @@ UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGame
 ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
 
 // Create a std::function callback object
-std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<FROSBaseMsg> msg) -> void 
+std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<FROSBaseMsg> msg) -> void
 {
     auto Concrete = StaticCastSharedPtr<ROSMessages::std_msgs::String>(msg);
     if (Concrete.IsValid())
@@ -139,11 +139,23 @@ Topic Message Type                 | ROS to UE4 | UE4 to ROS
 std_msgs/Header                    | ✓          | ✓
 std_msgs/String                    | ✓          | ✓
 std_msgs/Float32                   | ✓          | ✓
+std_msgs/Float32MultiArray         | ✓          | ✓
+std_msgs/MultiArrayDimension       | ✓          | ✓
+std_msgs/MultiArrayLayout          | ✓          | ✓
 tf2_msgs/TFMessage                 | ✘          | ✓
-geometry_msgs/Quaternion           | ✘          | ✓
-geometry_msgs/Transform            | ✘          | ✓
-geometry_msgs/TransformStamped     | ✘          | ✓
-geometry_msgs/Vector3              | ✘          | ✓
+geometry_msgs/Point                | ✓          | ✓
+geometry_msgs/Pose                 | ✓          | ✓
+geometry_msgs/PoseStamped          | ✓          | ✓
+geometry_msgs/PoseWithCovariance   | ✓          | ✓
+geometry_msgs/Quaternion           | ✓          | ✓
+geometry_msgs/Transform            | ✓          | ✓
+geometry_msgs/TransformStamped     | ✓          | ✓
+geometry_msgs/Twist                | ✓          | ✓
+geometry_msgs/TwistWithCovariance  | ✓          | ✓
+geometry_msgs/Vector3              | ✓          | ✓
+grid_map_msgs/GridMap              | ✓          | ✓
+grid_map_msgs/GridMapInfo          | ✓          | ✓
+nav_msgs/Odometry                  | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
 sensor_msgs/Image                  | ✘          | ✓
 sensor_msgs/RegionOfInterest       | ✘          | ✘
