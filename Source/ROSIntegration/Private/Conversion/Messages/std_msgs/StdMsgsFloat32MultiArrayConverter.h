@@ -20,12 +20,12 @@ public:
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	static bool _bson_extract_child_float_multi_array(bson_t *b, FString key, ROSMessages::std_msgs::Float32MultiArray *fma)
+	static bool _bson_extract_child_float_multi_array(bson_t *b, FString key, ROSMessages::std_msgs::Float32MultiArray *fma, bool LogOnErrors = true)
 	{
 		bool KeyFound = false;
 
-		KeyFound = UStdMsgsMultiArrayLayoutConverter::_bson_extract_child_multi_array_layout(b, key + ".layout", &fma->layout); if (!KeyFound) return false;
-		fma->data = GetFloatTArrayFromBSON(key + ".data", b, KeyFound); if (!KeyFound) return false;
+		KeyFound = UStdMsgsMultiArrayLayoutConverter::_bson_extract_child_multi_array_layout(b, key + ".layout", &fma->layout, LogOnErrors); if (!KeyFound) return false;
+		fma->data = GetFloatTArrayFromBSON(key + ".data", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 
 		return true;
 	}

@@ -20,19 +20,19 @@ public:
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	static bool _bson_extract_child_multi_array_layout(bson_t *b, FString key, ROSMessages::std_msgs::MultiArrayLayout *mal)
+	static bool _bson_extract_child_multi_array_layout(bson_t *b, FString key, ROSMessages::std_msgs::MultiArrayLayout *mal, bool LogOnErrors = true)
 	{
 		bool KeyFound = false;
 
-		mal->dim = GetTArrayFromBSON<ROSMessages::std_msgs::MultiArrayDimension>(key + ".dim", b, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) 
+		mal->dim = GetTArrayFromBSON<ROSMessages::std_msgs::MultiArrayDimension>(key + ".dim", b, KeyFound, [LogOnErrors](FString subKey, bson_t* subMsg, bool& subKeyFound)
 		{ 
 			ROSMessages::std_msgs::MultiArrayDimension ret;
-			subKeyFound = UStdMsgsMultiArrayDimensionConverter::_bson_extract_child_multi_array_dimension(subMsg, subKey, &ret);
+			subKeyFound = UStdMsgsMultiArrayDimensionConverter::_bson_extract_child_multi_array_dimension(subMsg, subKey, &ret, LogOnErrors);
 			return ret;
-		});
+		}, LogOnErrors);
 		if (!KeyFound) return false;
 
-		mal->data_offset = GetInt32FromBSON(key + ".data_offset", b, KeyFound); if (!KeyFound) return false;
+		mal->data_offset = GetInt32FromBSON(key + ".data_offset", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 
 		return true;
 	}

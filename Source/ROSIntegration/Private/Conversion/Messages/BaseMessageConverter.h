@@ -68,8 +68,11 @@ public:
 
 		uint32_t array_size;
 		const uint8_t* data = rosbridge2cpp::Helper::get_array_by_key(TCHAR_TO_UTF8(*Key), *msg, array_size, KeyFound);
-		if (!KeyFound && LogOnErrors) {
-			UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+		if (!KeyFound)
+		{
+			if (LogOnErrors)
+				UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+			return TArray<T>();
 		}
 
 		TArray<T> ret;

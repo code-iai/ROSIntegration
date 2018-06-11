@@ -19,13 +19,13 @@ public:
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	static bool _bson_extract_child_multi_array_dimension(bson_t *b, FString key, ROSMessages::std_msgs::MultiArrayDimension *mad)
+	static bool _bson_extract_child_multi_array_dimension(bson_t *b, FString key, ROSMessages::std_msgs::MultiArrayDimension *mad, bool LogOnErrors = true)
 	{
 		bool KeyFound = false;
 
-		mad->label = GetFStringFromBSON(key + ".label", b, KeyFound); if (!KeyFound) return false;
-		mad->size = GetInt32FromBSON(key + ".size", b, KeyFound); if (!KeyFound) return false;
-		mad->stride = GetInt32FromBSON(key + ".stride", b, KeyFound); if (!KeyFound) return false;
+		mad->label = GetFStringFromBSON(key + ".label", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		mad->size = GetInt32FromBSON(key + ".size", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		mad->stride = GetInt32FromBSON(key + ".stride", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 		return true;
 	}
 
