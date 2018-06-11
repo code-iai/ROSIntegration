@@ -12,6 +12,7 @@
 #include "UObject/Object.h"
 #include "rosbridge2cpp/messages/rosbridge_publish_msg.h"
 #include <cstring>
+#include <functional>
 #include "bson.h"
 #include "Public/std_msgs/Header.h"
 #include "BaseMessageConverter.generated.h"
@@ -60,25 +61,40 @@ public:
 		return value;
 	}
 
-	static TArray<double> GetDoubleTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+	/// @note Example usage in GetDoubleTArrayFromBSON().
+	template<class T>
+	static TArray<T> GetTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, const std::function<T(FString, bson_t*, bool&)>& keyToT, bool LogOnErrors = true) {
 		assert(msg != nullptr);
 
 		uint32_t array_size;
 		const uint8_t* data = rosbridge2cpp::Helper::get_array_by_key(TCHAR_TO_UTF8(*Key), *msg, array_size, KeyFound);
-		if (!KeyFound && LogOnErrors) {
-			UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+		if (!KeyFound)
+		{
+			if (LogOnErrors)
+				UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+			return TArray<T>();
 		}
 
-		TArray<double> ret;
+		TArray<T> ret;
 		bool elemFound = true;
 		for (int i = 0; elemFound; ++i)
 		{
-			double temp = GetDoubleFromBSON(Key + "." + FString::FromInt(i) , msg, elemFound, false);
+			T temp = keyToT(Key + "." + FString::FromInt(i), msg, elemFound);
 			if (elemFound)
 				ret.Add(temp);
 		}
 
 		return ret;
+	}
+
+	static TArray<double> GetDoubleTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+
+		return GetTArrayFromBSON<double>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetDoubleFromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
+	}
+
+	static TArray<float> GetFloatTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+		// bson doesn't support float, only double. So we use GetDoubleFromBSON internally
+		return GetTArrayFromBSON<float>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetDoubleFromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
 	}
 
 protected:
@@ -90,8 +106,8 @@ protected:
 		_bson_append_double_tarray(b, key, (TArray<double>)tarray);
 	}
 
-	// Helper function to append a TArray<double> to a bson_t
-	static void _bson_append_double_tarray(bson_t *b, const char *key, TArray<double> tarray)
+	template<class T>
+	static void _bson_append_tarray(bson_t *b, const char *key, TArray<T> tarray, const std::function<void(bson_t*, const char*, T)>& appendT)
 	{
 		bson_t arr;
 		const char *element_key;
@@ -100,9 +116,15 @@ protected:
 		for (int i = 0; i != tarray.Num(); ++i)
 		{
 			bson_uint32_to_string(i, &element_key, str, sizeof str);
-			BSON_APPEND_DOUBLE(&arr, element_key, tarray[i]);
+			appendT(&arr, element_key, tarray[i]);
 		}
 		bson_append_array_end(b, &arr);
+	}
+
+	// Helper function to append a TArray<double> to a bson_t
+	static void _bson_append_double_tarray(bson_t *b, const char *key, TArray<double> tarray)
+	{
+		_bson_append_tarray<double>(b, key, tarray, [](bson_t *subb, const char *subKey, double d) { BSON_APPEND_DOUBLE(subb, subKey, d); });
 	}
 
 	// Helper function to append a TArray<uint8> to a bson_t
@@ -115,17 +137,7 @@ protected:
 	// Helper function to append a TArray<uint32> to a bson_t
 	static void _bson_append_uint32_tarray(bson_t *b, const char *key, TArray<uint32> tarray)
 	{
-		bson_t arr;
-		const char *element_key;
-		char str[16];
-		BSON_APPEND_ARRAY_BEGIN(b, key, &arr);
-		for (int i = 0; i != tarray.Num(); ++i)
-		{
-			bson_uint32_to_string(i, &element_key, str, sizeof str);
-			// XXX ajs 10/Jan/2018 Conversion from uint32 to int32 is not safe
-			BSON_APPEND_INT32(b, element_key, tarray[i]);
-		}
-		bson_append_array_end(b, &arr);
+		_bson_append_tarray<uint32>(b, key, tarray, [](bson_t *subb, const char *subKey, uint32 i) { BSON_APPEND_INT32(subb, subKey, i); });
 	}
 
 };
