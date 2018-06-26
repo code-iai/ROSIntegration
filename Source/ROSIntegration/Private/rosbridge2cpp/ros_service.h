@@ -28,12 +28,12 @@ namespace rosbridge2cpp{
       //
       // This method will only be used when using rapidjson, since we need to use
       // the allocator of rapidjson to avoid copy operations.
-      void Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator callback);
-      void Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsg callback);
+      bool Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator callback);
+      bool Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsg callback);
 
       // Unadvertise an advertised service
       // Will do nothing if no service has been advertised before in this instance
-      void Unadvertise();
+      bool Unadvertise();
 
       // TODO failedCallback parameter
       // Call a ROS-Service
@@ -41,8 +41,8 @@ namespace rosbridge2cpp{
       // has been received by ROSBridge. It will passed the received data to the callback.
       // The whole content of the "request" parameter will be send as the "args"
       // argument of the Service Request
-      void CallService(rapidjson::Value &request, FunVrROSServiceResponseMsg callback);
-      void CallService(bson_t *request, FunVrROSServiceResponseMsg callback);
+      bool CallService(rapidjson::Value &request, FunVrROSServiceResponseMsg callback);
+      bool CallService(bson_t *request, FunVrROSServiceResponseMsg callback);
 
       std::string GenerateServiceCallID();
 

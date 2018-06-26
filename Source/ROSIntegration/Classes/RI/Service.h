@@ -14,19 +14,18 @@
 #include "Service.generated.h"
 
 UCLASS()
-	class ROSINTEGRATION_API UService : public UObject
+class ROSINTEGRATION_API UService : public UObject
 {
 	GENERATED_UCLASS_BODY()
 public:
-	void doAnything();
-
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType);
+    void BeginDestroy() override;
 
-	void Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler);
+	bool Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler);
 
 	//// Unadvertise an advertised service
 	//// Will do nothing if no service has been advertised before in this instance
-	//void Unadvertise();
+	bool Unadvertise();
 
 	//// TODO failedCallback parameter
 	//// Call a ROS-Service
@@ -34,19 +33,27 @@ public:
 	//// has been received by ROSBridge. It will passed the received data to the callback.
 	//// The whole content of the "request" parameter will be send as the "args"
 	//// argument of the Service Request
-	void CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse);
+	bool CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse);
 
+    void MarkAsDisconnected();
+    bool Reconnect(UROSIntegrationCore* ROSIntegrationCore);
+
+protected:
+
+    virtual FString GetDetailedInfoInternal() const override;
 
 private:
+    struct State
+    {
+        bool Connected;
 
-	UPROPERTY()
-		bool test;
-
-
-
+        bool Advertised;
+    } _State;
 
 	// PIMPL
 	class Impl;
 	Impl* _Implementation;
 
+    // Helper to keep track of self-destruction for async functions
+    TSharedPtr<UService, ESPMode::ThreadSafe> _SelfPtr;
 };

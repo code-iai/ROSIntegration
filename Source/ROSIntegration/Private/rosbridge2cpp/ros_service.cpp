@@ -11,9 +11,9 @@ namespace rosbridge2cpp{
     return service_call_id;
   }
 
-  void ROSService::CallService(rapidjson::Value &request, FunVrROSServiceResponseMsg callback){
+  bool ROSService::CallService(rapidjson::Value &request, FunVrROSServiceResponseMsg callback){
     if(is_advertised_) // You can't use an advertised ROSService instance to call services. 
-      return;         // Use a separate instance
+      return false;         // Use a separate instance
 
     std::string service_call_id = GenerateServiceCallID();
 
@@ -25,12 +25,12 @@ namespace rosbridge2cpp{
     cmd.service_ = service_name_;
     cmd.args_json_ =  request;
 
-    ros_.SendMessage(cmd);
+    return ros_.SendMessage(cmd);
   }
 
-  void ROSService::CallService(bson_t *request, FunVrROSServiceResponseMsg callback){
+  bool ROSService::CallService(bson_t *request, FunVrROSServiceResponseMsg callback){
     if(is_advertised_) // You can't use an advertised ROSService instance to call services. 
-      return;         // Use a separate instance
+      return false;    // Use a separate instance
 
     assert(request);
 
@@ -44,12 +44,12 @@ namespace rosbridge2cpp{
     cmd.service_ = service_name_;
     cmd.args_bson_ =  request;
 
-    ros_.SendMessage(cmd);
+    return ros_.SendMessage(cmd);
   }
 
-  void ROSService::Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator callback){
+  bool ROSService::Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsgrAllocator callback){
     if(is_advertised_) 
-      return;
+      return true;
 
     // Register on ROSBridge
     ros_.RegisterServiceRequestCallback(service_name_, callback);
@@ -58,14 +58,13 @@ namespace rosbridge2cpp{
     cmd.service_ = service_name_;
     cmd.type_ =  service_type_;
 
-    ros_.SendMessage(cmd);
-
-    is_advertised_ = true;
+    is_advertised_ = ros_.SendMessage(cmd);
+    return is_advertised_;
   }
 
-  void ROSService::Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsg callback){
+  bool ROSService::Advertise(FunVrROSCallServiceMsgrROSServiceResponseMsg callback){
     if(is_advertised_) 
-      return;
+      return true;
 
     // Register on ROSBridge
     ros_.RegisterServiceRequestCallback(service_name_, callback);
@@ -74,22 +73,20 @@ namespace rosbridge2cpp{
     cmd.service_ = service_name_;
     cmd.type_ =  service_type_;
 
-    ros_.SendMessage(cmd);
-
-    is_advertised_ = true;
+    is_advertised_ = ros_.SendMessage(cmd);
+    return is_advertised_;
   }
 
 
   // Unadvertise an advertised service
-  void ROSService::Unadvertise(){
+  bool ROSService::Unadvertise(){
     if(!is_advertised_) 
-      return;
+      return true;
 
     ROSBridgeUnadvertiseServiceMsg cmd(true);
     cmd.service_ = service_name_;
 
-    ros_.SendMessage(cmd);
-
-    is_advertised_ = false;
+    is_advertised_ = !ros_.SendMessage(cmd);
+    return !is_advertised_;
   }
 }

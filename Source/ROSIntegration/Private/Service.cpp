@@ -7,23 +7,31 @@
 #include "Conversion/Services/BaseRequestConverter.h"
 #include "Conversion/Services/BaseResponseConverter.h"
 
+static TMap<FString, UBaseRequestConverter*> RequestConverterMap;
+static TMap<FString, UBaseResponseConverter*> ResponseConverterMap;
+
 // PIMPL
 class UService::Impl {
 	// hidden implementation details
 public:
-	Impl() : b(true) {
-
+	Impl()
+        : _Ric(nullptr)
+        , _ROSService(nullptr)
+        , _ResponseConverter(nullptr)
+        , _RequestConverter(nullptr) {
 	}
-	//ROSBridgeHandler _Handler;
-	bool b;
+
+    ~Impl() {
+        delete _ROSService;
+    }
 	UROSIntegrationCore* _Ric;
 	FString _ServiceName;
 	FString _ServiceType;
 	rosbridge2cpp::ROSService* _ROSService;
-	std::function<void(TSharedPtr<FROSBaseServiceResponse>)> _LastCallServiceCallback;
-	std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> _LastServiceRequestCallback;
-	TMap<FString, UBaseRequestConverter*> _RequestConverterMap;
-	TMap<FString, UBaseResponseConverter*> _ResponseConverterMap;
+	std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> _ServiceRequestCallback;
+
+    UBaseResponseConverter* _ResponseConverter;
+    UBaseRequestConverter* _RequestConverter;
 
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
 		_Ric = Ric;
@@ -32,47 +40,54 @@ public:
 
 		_ROSService = new rosbridge2cpp::ROSService(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*ServiceName), TCHAR_TO_UTF8(*ServiceType));
 
+        // Construct static ConverterMaps
+        if (RequestConverterMap.Num() == 0)
+        {
+            for (TObjectIterator<UClass> It; It; ++It)
+            {
+                UClass* ClassItr = *It;
 
-		// Construct Converter Maps
-		for (TObjectIterator<UClass> It; It; ++It)
-		{
-			UClass* ClassItr = *It;
+                if (It->IsChildOf(UBaseRequestConverter::StaticClass()) && *It != UBaseRequestConverter::StaticClass())
+                {
+                    UBaseRequestConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseRequestConverter>();
+                    UE_LOG(LogROS, Verbose, TEXT("Added %s with type %s to RequestConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
+                    RequestConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
+                    continue;
+                }
+                else if (It->IsChildOf(UBaseResponseConverter::StaticClass()) && *It != UBaseResponseConverter::StaticClass())
+                {
+                    UBaseResponseConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseResponseConverter>();
+                    UE_LOG(LogROS, Verbose, TEXT("Added %s with type %s to ResponseConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
+                    ResponseConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
+                    continue;
+                }
+            }
+        }
 
-			if (It->IsChildOf(UBaseRequestConverter::StaticClass()) && *It != UBaseRequestConverter::StaticClass())
-			{
-				UBaseRequestConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseRequestConverter>();
-				UE_LOG(LogROS, Verbose, TEXT("Added %s with type %s to RequestConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
-				_RequestConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
-				continue;
-			}
-			else if (It->IsChildOf(UBaseResponseConverter::StaticClass()) && *It != UBaseResponseConverter::StaticClass())
-			{
-				UBaseResponseConverter* ConcreteConverter = ClassItr->GetDefaultObject<UBaseResponseConverter>();
-				UE_LOG(LogROS, Verbose, TEXT("Added %s with type %s to ResponseConverterMap"), *(It->GetDefaultObjectName().ToString()), *(ConcreteConverter->_ServiceType));
-				_ResponseConverterMap.Add(*(ConcreteConverter->_ServiceType), ConcreteConverter);
-				continue;
-			}
-		}
+        UBaseResponseConverter** ResponseConverter = ResponseConverterMap.Find(_ServiceType);
+        if (!ResponseConverter) {
+            UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
+            return;
+        }
+        _ResponseConverter = *ResponseConverter;
+
+        UBaseRequestConverter** RequestConverter = RequestConverterMap.Find(_ServiceType);
+        if (!RequestConverter) {
+            UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to decode service call"));
+            return;
+        }
+        _RequestConverter = *RequestConverter;
 	}
 
-	void CallServiceCallback(const ROSBridgeServiceResponseMsg &message) {
-		UE_LOG(LogROS, Verbose, TEXT("RECEIVED SERVICE RESPONSE"));
-
+	void CallServiceCallback(const ROSBridgeServiceResponseMsg &message, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
 		TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response =
 			TSharedRef<TSharedPtr<FROSBaseServiceResponse>>(new TSharedPtr<FROSBaseServiceResponse>());
 
-		UBaseResponseConverter** Converter = _ResponseConverterMap.Find(_ServiceType);
-		if (!Converter) {
-			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
-			return;
-		}
-
-		if (!(*Converter)->ConvertIncomingResponse(message, Response)) {
+		if (!_ResponseConverter->ConvertIncomingResponse(message, Response)) {
 			UE_LOG(LogROS, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to UnrealRI Service Format"));
 		}
 
-		_LastCallServiceCallback(*Response);
-
+        ServiceResponse(*Response);
 	}
 
 	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req, ROSBridgeServiceResponseMsg &message) {
@@ -81,15 +96,9 @@ public:
 
 		// Convert the incoming service request to the UnrealRI format
 
-		UBaseRequestConverter** RequestConverter = _RequestConverterMap.Find(_ServiceType);
-		if (!RequestConverter) {
-			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to decode service call"));
-			return;
-		}
+		ServiceRequest = _RequestConverter->AllocateConcreteRequest();
 
-		ServiceRequest = (*RequestConverter)->AllocateConcreteRequest();
-
-		if (!(*RequestConverter)->ConvertIncomingRequest(req, ServiceRequest)) {
+		if (!_RequestConverter->ConvertIncomingRequest(req, ServiceRequest)) {
 			UE_LOG(LogROS, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to Unreal Service Format"));
 		}
 
@@ -98,18 +107,12 @@ public:
 			return;
 		}
 
-		UBaseResponseConverter** ResponseConverter = _ResponseConverterMap.Find(_ServiceType);
-		if (!ResponseConverter) {
-			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service response"));
-			return;
-		}
-		ServiceResponse = (*ResponseConverter)->AllocateConcreteResponse();
+		ServiceResponse = _ResponseConverter->AllocateConcreteResponse();
 
 		// Call the user defined Service Handler with 
-		_LastServiceRequestCallback(ServiceRequest, ServiceResponse);
+		_ServiceRequestCallback(ServiceRequest, ServiceResponse);
 
-
-		if (!(*ResponseConverter)->ConvertOutgoingResponse(ServiceResponse, message)) {
+		if (!_ResponseConverter->ConvertOutgoingResponse(ServiceResponse, message)) {
 			UE_LOG(LogROS, Error, TEXT("Failed to encode UnrealRI service response"));
 			return;
 		}
@@ -118,56 +121,109 @@ public:
 			UE_LOG(LogROS, Error, TEXT("ServiceResponse is empty after ConvertOutgoingResponse - Check that AllocateConcreteResponse returns a valid instance of your Response class"));
 			return;
 		}
-
 	}
 
-	void Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler) {
-		_LastServiceRequestCallback = ServiceHandler;
-		//typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&)> FunVrROSCallServiceMsgrROSServiceResponseMsg;
+	bool Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler) {
+        _ServiceRequestCallback = ServiceHandler;
 		auto service_request_handler = [this](ROSBridgeCallServiceMsg &message, ROSBridgeServiceResponseMsg &response) { this->ServiceRequestCallback(message, response); };
-		//_ROSService->Advertise(std::bind(&UService::Impl::ServiceRequestCallback, this, std::placeholders::_1, std::placeholders::_2));
-		_ROSService->Advertise(service_request_handler);
+		return _ROSService->Advertise(service_request_handler);
 	}
 
-	void CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
+    bool Unadvertise() {
+        return _ROSService->Unadvertise();
+    }
 
-		UBaseRequestConverter** Converter = _RequestConverterMap.Find(_ServiceType);
-		if (!Converter) {
-			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
-			return;
-		}
+	bool CallService(
+        TSharedPtr<FROSBaseServiceRequest> ServiceRequest, 
+        std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse,
+        TWeakPtr<UService, ESPMode::ThreadSafe> SelfPtr) {
 
-		_LastCallServiceCallback = ServiceResponse;
-		bson_t *service_params;
+		bson_t* service_params;
 
-		if (!(*Converter)->ConvertOutgoingRequest(ServiceRequest, &service_params)) {
+		if (!_RequestConverter->ConvertOutgoingRequest(ServiceRequest, &service_params)) {
 			UE_LOG(LogROS, Error, TEXT("Failed to Convert Service call to BSON"));
+            return false;
 		}
 
-		//CallServiceCallback
-		_ROSService->CallService(service_params, std::bind(&UService::Impl::CallServiceCallback, this, std::placeholders::_1));
+        auto service_response_handler = [this, ServiceResponse, SelfPtr](const ROSBridgeServiceResponseMsg &message)
+        {
+            if (!SelfPtr.IsValid()) return;
+            this->CallServiceCallback(message, ServiceResponse);
+        };
+		return _ROSService->CallService(service_params, service_response_handler);
 	}
-
 };
 
 
-void UService::doAnything() {
+bool UService::CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
+    return _State.Connected && _Implementation->CallService(ServiceRequest, ServiceResponse, _SelfPtr);
 }
 
-void UService::CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
-	_Implementation->CallService(ServiceRequest, ServiceResponse);
+bool UService::Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler) {
+    _State.Advertised = true;
+    return _State.Connected && _Implementation->Advertise(ServiceHandler);
 }
 
-void UService::Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler) {
-	_Implementation->Advertise(ServiceHandler);
+bool UService::Unadvertise() {
+    _State.Advertised = false;
+    return _Implementation->Unadvertise();
 }
+
 
 UService::UService(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
+    , _Implementation(new UService::Impl)
+    , _SelfPtr(this)
 {
-	_Implementation = new UService::Impl;
+    _State.Connected = true;
+    _State.Advertised = false;
+}
+
+void UService::BeginDestroy() {
+    Super::BeginDestroy();
+
+    if (!_State.Connected)
+    {
+        // prevent any interaction with ROS during destruction
+        _Implementation->_Ric = nullptr;
+    }
+
+    delete _Implementation;
+
+    _SelfPtr.Reset();
 }
 
 void UService::Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
 	_Implementation->Init(Ric, ServiceName, ServiceType);
+}
+
+void UService::MarkAsDisconnected()
+{
+    _State.Connected = false;
+}
+
+bool UService::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
+{
+    bool success = true;
+
+    Impl* oldImplementation = _Implementation;
+    _Implementation = new UService::Impl();
+
+    _State.Connected = true;
+
+    _Implementation->Init(ROSIntegrationCore, oldImplementation->_ServiceName, oldImplementation->_ServiceType);
+    if (_State.Advertised)
+    {
+        success = success && Advertise(oldImplementation->_ServiceRequestCallback);
+    }
+
+    _State.Connected = success;
+
+    delete oldImplementation;
+    return success;
+}
+
+FString UService::GetDetailedInfoInternal() const
+{
+    return _Implementation->_ServiceName;
 }
