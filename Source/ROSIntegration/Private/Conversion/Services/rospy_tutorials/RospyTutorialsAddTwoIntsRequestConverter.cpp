@@ -3,13 +3,13 @@
 
 
 URospyTutorialsAddTwoIntsRequestConverter::URospyTutorialsAddTwoIntsRequestConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_ServiceType = "rospy_tutorials/AddTwoInts";
 }
 
-bool URospyTutorialsAddTwoIntsRequestConverter::ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest) {
-
+bool URospyTutorialsAddTwoIntsRequestConverter::ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest)
+{
 	auto AddTwoIntsRequest = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsRequest>(Request);
 	*BSONRequest = BCON_NEW(
 		"a", BCON_INT32(AddTwoIntsRequest->_a),
@@ -20,7 +20,8 @@ bool URospyTutorialsAddTwoIntsRequestConverter::ConvertOutgoingRequest(TSharedPt
 	return true;
 }
 
-bool URospyTutorialsAddTwoIntsRequestConverter::ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request) {
+bool URospyTutorialsAddTwoIntsRequestConverter::ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request)
+{
 	//*Request = MakeShareable(new rospy_tutorials::FAddTwoIntsRequest);
 	auto ServiceRequest = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsRequest>(Request);
 	bool key_found = false;
@@ -43,6 +44,7 @@ bool URospyTutorialsAddTwoIntsRequestConverter::ConvertIncomingRequest(ROSBridge
 	return true;
 }
 
-TSharedPtr<FROSBaseServiceRequest> URospyTutorialsAddTwoIntsRequestConverter::AllocateConcreteRequest() {
+TSharedPtr<FROSBaseServiceRequest> URospyTutorialsAddTwoIntsRequestConverter::AllocateConcreteRequest()
+{
 	return MakeShareable(new rospy_tutorials::FAddTwoIntsRequest);
 }

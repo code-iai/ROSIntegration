@@ -29,7 +29,5 @@ namespace ROSMessages{
 			uint32 binning_y;
 			RegionOfInterest roi;
 		};
-
-
 	}
 }

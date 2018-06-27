@@ -11,9 +11,8 @@
 class UService::Impl {
 	// hidden implementation details
 public:
-	Impl() : b(true) {
+	Impl() : b(true) {}
 
-	}
 	//ROSBridgeHandler _Handler;
 	bool b;
 	UROSIntegrationCore* _Ric;
@@ -25,13 +24,13 @@ public:
 	TMap<FString, UBaseRequestConverter*> _RequestConverterMap;
 	TMap<FString, UBaseResponseConverter*> _ResponseConverterMap;
 
-	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
+	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType)
+	{
 		_Ric = Ric;
 		_ServiceName = ServiceName;
 		_ServiceType = ServiceType;
 
 		_ROSService = new rosbridge2cpp::ROSService(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*ServiceName), TCHAR_TO_UTF8(*ServiceType));
-
 
 		// Construct Converter Maps
 		for (TObjectIterator<UClass> It; It; ++It)
@@ -55,7 +54,8 @@ public:
 		}
 	}
 
-	void CallServiceCallback(const ROSBridgeServiceResponseMsg &message) {
+	void CallServiceCallback(const ROSBridgeServiceResponseMsg &message)
+	{
 		UE_LOG(LogROS, Verbose, TEXT("RECEIVED SERVICE RESPONSE"));
 
 		TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response =
@@ -75,7 +75,8 @@ public:
 
 	}
 
-	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req, ROSBridgeServiceResponseMsg &message) {
+	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req, ROSBridgeServiceResponseMsg &message)
+	{
 		TSharedPtr<FROSBaseServiceRequest> ServiceRequest;
 		TSharedPtr<FROSBaseServiceResponse> ServiceResponse;
 
@@ -118,10 +119,10 @@ public:
 			UE_LOG(LogROS, Error, TEXT("ServiceResponse is empty after ConvertOutgoingResponse - Check that AllocateConcreteResponse returns a valid instance of your Response class"));
 			return;
 		}
-
 	}
 
-	void Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler) {
+	void Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler)
+	{
 		_LastServiceRequestCallback = ServiceHandler;
 		//typedef std::function<void(ROSBridgeCallServiceMsg&, ROSBridgeServiceResponseMsg&)> FunVrROSCallServiceMsgrROSServiceResponseMsg;
 		auto service_request_handler = [this](ROSBridgeCallServiceMsg &message, ROSBridgeServiceResponseMsg &response) { this->ServiceRequestCallback(message, response); };
@@ -129,8 +130,8 @@ public:
 		_ROSService->Advertise(service_request_handler);
 	}
 
-	void CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
-
+	void CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse)
+	{
 		UBaseRequestConverter** Converter = _RequestConverterMap.Find(_ServiceType);
 		if (!Converter) {
 			UE_LOG(LogROS, Error, TEXT("ServiceType is unknown. Can't find Converter to encode service call"));
@@ -147,27 +148,30 @@ public:
 		//CallServiceCallback
 		_ROSService->CallService(service_params, std::bind(&UService::Impl::CallServiceCallback, this, std::placeholders::_1));
 	}
-
 };
 
 
-void UService::doAnything() {
+void UService::doAnything()
+{
 }
 
-void UService::CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
+void UService::CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse)
+{
 	_Implementation->CallService(ServiceRequest, ServiceResponse);
 }
 
-void UService::Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler) {
+void UService::Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler)
+{
 	_Implementation->Advertise(ServiceHandler);
 }
 
 UService::UService(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_Implementation = new UService::Impl;
 }
 
-void UService::Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
+void UService::Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType)
+{
 	_Implementation->Init(Ric, ServiceName, ServiceType);
 }

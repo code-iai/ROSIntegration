@@ -15,9 +15,6 @@ namespace ROSMessages{
 			uint32 height;
 			uint32 width;
 			bool do_rectify;
-
 		};
-
-
 	}
 }

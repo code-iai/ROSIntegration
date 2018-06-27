@@ -4,7 +4,7 @@
 
 
 USensorMsgsImageConverter::USensorMsgsImageConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "sensor_msgs/Image";
 }
@@ -14,8 +14,8 @@ bool USensorMsgsImageConverter::ConvertIncomingMessage(const ROSBridgePublishMsg
 	return false;
 }
 
-bool USensorMsgsImageConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool USensorMsgsImageConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Image = StaticCastSharedPtr<ROSMessages::sensor_msgs::Image>(BaseMsg);
 
 	*message = BCON_NEW(

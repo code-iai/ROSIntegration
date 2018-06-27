@@ -12,7 +12,6 @@ namespace ROSMessages{
 				_MessageType = "tf2_msgs/TFMessage";
 			}
 			TArray<geometry_msgs::TransformStamped> transforms;
-
 		};
 	}
 }

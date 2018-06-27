@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "LookAtScanComponent.h"
 
 
@@ -9,8 +7,6 @@ ULookAtScanComponent::ULookAtScanComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 
@@ -18,7 +14,7 @@ ULookAtScanComponent::ULookAtScanComponent()
 void ULookAtScanComponent::BeginPlay()
 {
 	Super::BeginPlay();
-  // Read current parameters - They might have been changed in the editor
+	// Read current parameters - They might have been changed in the editor
 	CurrentOffsetY = MinOffSetY;
 	CurrentOffsetZ = MinOffSetZ;
 
@@ -33,7 +29,6 @@ void ULookAtScanComponent::BeginPlay()
 	UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(OwningActor->GetGameInstance());
 	ExampleTopic->Init(ROSInstance->ROSIntegrationCore, CommandTopic, TEXT("std_msgs/String"));
 	ExampleTopic->Subscribe(SubscribeCallback);
-	
 }
 
 
@@ -55,14 +50,10 @@ void ULookAtScanComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	FVector ThisActorLocation = OwningActor->GetActorLocation();
 	FRotator ThisActorRotation = OwningActor->GetActorRotation();
 
-
-
 	//UE_LOG(LogTemp, Warning, TEXT("Actor is now at %f, %f, %f"), ThisActorLocation.X, ThisActorLocation.Y, ThisActorLocation.Z)
 	//UE_LOG(LogTemp, Warning, TEXT("Rotation is now at %f, %f, %f"), ThisActorRotation.Roll, ThisActorRotation.Pitch, ThisActorRotation.Yaw);
 	// UE_LOG(LogTemp, Warning, TEXT("max z offsets %f, %f"), MinOffSetZ, MaxOffSetZ);
 	// UE_LOG(LogTemp, Warning, TEXT("offsets %f, %f"), CurrentOffsetY, CurrentOffsetZ);
-
-
 
 	// Do movement
 	if (TranslationActive) {
@@ -92,8 +83,6 @@ void ULookAtScanComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		}
 	}
 
-
-
 	FVector TargetDirectionVector = TargetActorLocation - ThisActorLocation;
 	TargetDirectionVector.Normalize();
 
@@ -101,4 +90,3 @@ void ULookAtScanComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	OwningActor->SetActorRotation(NewRotationRPY.Quaternion());
 }
-

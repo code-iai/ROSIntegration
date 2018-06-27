@@ -139,9 +139,9 @@ typedef GenericSchemaDocument<Value, CrtAllocator> SchemaDocument;
 typedef IGenericRemoteSchemaDocumentProvider<SchemaDocument> IRemoteSchemaDocumentProvider;
 
 template <
-    typename SchemaDocumentType,
-    typename OutputHandler,
-    typename StateAllocator>
+	typename SchemaDocumentType,
+	typename OutputHandler,
+	typename StateAllocator>
 class GenericSchemaValidator;
 
 typedef GenericSchemaValidator<SchemaDocument, BaseReaderHandler<UTF8<char>, void>, CrtAllocator> SchemaValidator;

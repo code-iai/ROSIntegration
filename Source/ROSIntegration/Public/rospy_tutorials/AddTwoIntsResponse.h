@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CoreMinimal.h"
-//#include "ROSBaseMsg.generated.h"
+#include <CoreMinimal.h>
+#include "ROSBaseServiceResponse.h"
 
 namespace rospy_tutorials {
 	class ROSINTEGRATION_API FAddTwoIntsResponse : public FROSBaseServiceResponse {

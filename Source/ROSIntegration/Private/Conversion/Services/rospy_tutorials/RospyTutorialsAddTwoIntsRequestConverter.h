@@ -1,11 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Services/BaseRequestConverter.h"
+
 #include "RospyTutorialsAddTwoIntsRequestConverter.generated.h"
 
 
@@ -15,10 +14,8 @@ class ROSINTEGRATION_API URospyTutorialsAddTwoIntsRequestConverter: public UBase
 	GENERATED_UCLASS_BODY()
 
 public:
-
 	virtual bool ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request) override;
 	virtual bool ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest) override;
 
 	virtual TSharedPtr<FROSBaseServiceRequest> AllocateConcreteRequest() override;
 };
-

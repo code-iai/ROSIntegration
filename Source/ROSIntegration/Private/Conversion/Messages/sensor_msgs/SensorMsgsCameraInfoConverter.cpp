@@ -4,7 +4,7 @@
 
 
 USensorMsgsCameraInfoConverter::USensorMsgsCameraInfoConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "sensor_msgs/CameraInfo";
 }
@@ -18,7 +18,7 @@ bool USensorMsgsCameraInfoConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseM
 
 	auto CameraInfo = StaticCastSharedPtr<ROSMessages::sensor_msgs::CameraInfo>(BaseMsg);
 
-	assert(CameraInfo->D.Num() >= 5);
+	assert(CameraInfo->D.Num() >= 5); // TODO: use Unreal assertions
 	assert(CameraInfo->K.Num() >= 9);
 	assert(CameraInfo->R.Num() >= 9);
 	assert(CameraInfo->P.Num() >= 12);
@@ -52,5 +52,4 @@ bool USensorMsgsCameraInfoConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseM
 	);
 	
 	return true;
-
 }

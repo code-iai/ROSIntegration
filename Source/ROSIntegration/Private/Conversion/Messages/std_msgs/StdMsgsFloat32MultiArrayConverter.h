@@ -1,13 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "std_msgs/Float32MultiArray.h"
 #include "Conversion/Messages/std_msgs/StdMsgsMultiArrayLayoutConverter.h"
+
 #include "StdMsgsFloat32MultiArrayConverter.generated.h"
 
 
@@ -44,4 +43,3 @@ public:
 		_bson_append_float_tarray(b, "data", fma->data);
 	}
 };
-

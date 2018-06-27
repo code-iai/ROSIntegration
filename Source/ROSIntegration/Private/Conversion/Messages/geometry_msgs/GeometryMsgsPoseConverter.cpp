@@ -2,7 +2,7 @@
 
 
 UGeometryMsgsPoseConverter::UGeometryMsgsPoseConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/Pose";
 }
@@ -14,8 +14,8 @@ bool UGeometryMsgsPoseConverter::ConvertIncomingMessage(const ROSBridgePublishMs
 	return _bson_extract_child_pose(message->full_msg_bson_, "msg", p);
 }
 
-bool UGeometryMsgsPoseConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool UGeometryMsgsPoseConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Pose = StaticCastSharedPtr<ROSMessages::geometry_msgs::Pose>(BaseMsg);
 
 	*message = new bson_t;

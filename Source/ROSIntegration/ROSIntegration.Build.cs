@@ -9,58 +9,58 @@ using System.IO;
 
 public class ROSIntegration : ModuleRules
 {
-    private string ModulePath
-    {
-        get { return ModuleDirectory; }
-    }
+	private string ModulePath
+	{
+		get { return ModuleDirectory; }
+	}
 
 
-    private string ThirdPartyPath
-    {
-        get { return Path.GetFullPath(Path.Combine(ModulePath, "../../ThirdParty/")); }
-    }
+	private string ThirdPartyPath
+	{
+		get { return Path.GetFullPath(Path.Combine(ModulePath, "../../ThirdParty/")); }
+	}
 
-    public ROSIntegration(ReadOnlyTargetRules Target) : base(Target)
+	public ROSIntegration(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        string BSONPath = Path.Combine(ThirdPartyPath, "bson");
+		string BSONPath = Path.Combine(ThirdPartyPath, "bson");
 
-        // Console.WriteLine("");
-        Console.WriteLine("BSONPath: " + BSONPath);
+		// Console.WriteLine("");
+		Console.WriteLine("BSONPath: " + BSONPath);
 
-        // Include std::string functions for rapidjson
-        Definitions.Add("RAPIDJSON_HAS_STDSTRING=1");
+		// Include std::string functions for rapidjson
+		Definitions.Add("RAPIDJSON_HAS_STDSTRING=1");
 
 
-        PublicIncludePaths.AddRange(
+		PublicIncludePaths.AddRange(
 			new string[] {
 				"ROSIntegration/Public"
 				// ... add public include paths required here ...
 			}
-			);
-				
-		
+		);
+
+
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				"ROSIntegration/Private",
-                "ROSIntegration/Private/rosbridge2cpp"
+				"ROSIntegration/Private/rosbridge2cpp"
 				// ... add other private include paths required here ...
 			}
-			);
-			
-		
+		);
+
+
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
-                "Sockets",
-                "Networking"
+				"Sockets",
+				"Networking"
 				// ... add other public dependencies that you statically link with here ...
 			}
-			);
-			
-		
+		);
+
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -68,33 +68,33 @@ public class ROSIntegration : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "Sockets",
-                "Networking"
+				"Sockets",
+				"Networking"
 				// ... add private dependencies that you statically link with here ...	
 			}
-			);
-		
-		
+		);
+
+
 		DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
 				// ... add any modules that your module loads dynamically here ...
 			}
-			);
+		);
 
 
 
-        if (Target.Platform == UnrealTargetPlatform.Win64)
-        {
-            Console.WriteLine("Using Windows BSON files");
-            PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "bson-static-1.0.lib"));
-            PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "windows")); 
-        }else if (Target.Platform == UnrealTargetPlatform.Linux)
-        {
-            Console.WriteLine("Using Linux BSON files");
-            PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "libbson-1.0.a"));
-            PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "linux")); 
-        }
-
-    }
+		if (Target.Platform == UnrealTargetPlatform.Win64)
+		{
+			Console.WriteLine("Using Windows BSON files");
+			PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "bson-static-1.0.lib"));
+			PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "windows"));
+		}
+		else if (Target.Platform == UnrealTargetPlatform.Linux)
+		{
+			Console.WriteLine("Using Linux BSON files");
+			PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "libbson-1.0.a"));
+			PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "linux"));
+		}
+	}
 }

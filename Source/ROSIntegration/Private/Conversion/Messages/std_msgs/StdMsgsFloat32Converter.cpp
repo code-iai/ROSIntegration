@@ -2,7 +2,7 @@
 
 
 UStdMsgsFloat32Converter::UStdMsgsFloat32Converter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "std_msgs/Float32";
 }

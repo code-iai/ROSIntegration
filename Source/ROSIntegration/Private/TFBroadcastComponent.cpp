@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "TFBroadcastComponent.h"
 
 #include "ROSIntegrationGameInstance.h"
@@ -7,64 +5,60 @@
 #include "ROSTime.h"
 
 // Sets default values for this component's properties
-UTFBroadcastComponent::UTFBroadcastComponent() : ComponentActive(true),
-                                                 FrameRate(1),
-                                                 CoordsRelativeTo(ECoordinateType::COORDTYPE_WORLD),
-                                                 ParentFrameName(TEXT("/world")),
-                                                 ThisFrameName(TEXT("/tfbroadcast_default")),
-                                                 UseParentActorLabelAsParentFrame(true),
-                                                 UseActorLabelAsFrame(true),
-                                                 FrameTime(1.0f / FrameRate),
-                                                 TimePassed(0)
-                                                 
+UTFBroadcastComponent::UTFBroadcastComponent()
+: ComponentActive(true)
+, FrameRate(1)
+, CoordsRelativeTo(ECoordinateType::COORDTYPE_WORLD)
+, ParentFrameName(TEXT("/world"))
+, ThisFrameName(TEXT("/tfbroadcast_default"))
+, UseParentActorLabelAsParentFrame(true)
+, UseActorLabelAsFrame(true)
+, FrameTime(1.0f / FrameRate)
+, TimePassed(0)
 {
-    // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these
-    // features
-    // off to improve performance if you don't need them.
-    PrimaryComponentTick.bCanEverTick = true;
-
-    // ...
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these
+	// features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 // Called when the game starts
 void UTFBroadcastComponent::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
 
 	assert(GetOwner());
 
 	_TFTopic = NewObject<UTopic>(UTopic::StaticClass());
 	UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(GetOwner()->GetGameInstance());
 	_TFTopic->Init(ROSInstance->ROSIntegrationCore, TEXT("/tf"), TEXT("tf2_msgs/TFMessage"));
-
-
-    
 }
 
-AActor* UTFBroadcastComponent::GetParentActor(){
-    auto RootComponent = GetOwner()->GetRootComponent();
-    assert(RootComponent);
-    if (!(RootComponent->GetAttachParent()))
-        return nullptr;
+AActor* UTFBroadcastComponent::GetParentActor()
+{
+	auto RootComponent = GetOwner()->GetRootComponent();
+	assert(RootComponent);
+	if (!(RootComponent->GetAttachParent()))
+		return nullptr;
 
-    return RootComponent->GetAttachParent()->GetOwner();
+	return RootComponent->GetAttachParent()->GetOwner();
 }
 
 // Called every frame
 void UTFBroadcastComponent::TickComponent(float DeltaTime,
-                                          ELevelTick TickType,
-                                          FActorComponentTickFunction* ThisTickFunction)
+	ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
 {
-    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-    // Check for framerate
-    TimePassed += DeltaTime;
-    if (TimePassed < FrameTime) {
-        return;
-    }
-    TimePassed -= FrameTime;
+	// Check for framerate
+	TimePassed += DeltaTime;
+	if (TimePassed < FrameTime) {
+		return;
+	}
+	TimePassed -= FrameTime;
 
-    TickCounter++;
+	TickCounter++;
 
 	bool GlobalSettingTFBroadcastEnabled = false;
 
@@ -74,7 +68,7 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 	//	if (WorldSettings) {
 	//		AMyWorldSettings* MyWorldSettings = Cast<AMyWorldSettings>(WorldSettings);
 	//		GlobalSettingTFBroadcastEnabled = MyWorldSettings->bEnableTFBroadcast;
-	//		//            OUT_INFO(TEXT("MyWorldSettings::bEnableTFBroadcast is %s"), GlobalSettingTFBroadcastEnabled ? TEXT("True") : TEXT("False"));
+	//		//			OUT_INFO(TEXT("MyWorldSettings::bEnableTFBroadcast is %s"), GlobalSettingTFBroadcastEnabled ? TEXT("True") : TEXT("False"));
 	//	}
 	//	else {
 	//		OUT_INFO(TEXT("Failed to GetWorldSettings() - Can't access WorldSettings"));
@@ -84,7 +78,7 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 	//	OUT_INFO(TEXT("Failed to GetWorld() - Can't access WorldSettings"));
 	//}
 
-	//    OUT_INFO(TEXT("Owner Loc: %s"), *(GetOwner()->GetActorLocation().ToString()));
+	//	OUT_INFO(TEXT("Owner Loc: %s"), *(GetOwner()->GetActorLocation().ToString()));
 	TickCounter = 0;
 
 	// Skip execution when TF is deactivated globally
@@ -115,11 +109,9 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 			// Force set the CoordsRelativeTo Variable to RELATIVE 
 			// Please make sure that the child has set it's transformation to 'relative'
 			CoordsRelativeTo = ECoordinateType::COORDTYPE_RELATIVE;
-		}
-		else {
+		} else {
 			UE_LOG(LogTemp, Error, TEXT("[TFBroadcast] UseParentActorLabelAsParentFrame==true and No Parent Component on %s - Add a parent actor or deactive UseParentActorLabelAsParentFrame"), *(GetOwner()->GetActorLabel()));
 		}
-
 	}
 
 	FVector ActorTranslation;
@@ -136,9 +128,7 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 		FTransform RelativeTransform = ThisTransformInWorldCoordinates.GetRelativeTransform(ParentTransformInWorldCoordinates);
 		ActorTranslation = RelativeTransform.GetLocation();
 		ActorRotation = RelativeTransform.GetRotation();
-
-	}
-	else {
+	} else {
 		ActorTranslation = GetOwner()->GetActorLocation();
 		ActorRotation = GetOwner()->GetActorQuat();
 	}
@@ -205,13 +195,12 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 	);
 
 	_tf->SendTransform(*transform);
-    */
+	*/
 }
-
 
 void UTFBroadcastComponent::SetFramerate(const float _FrameRate)
 {
-  FrameRate = _FrameRate;
-  FrameTime = 1.0f / _FrameRate;
-  TimePassed = 0;
+	FrameRate = _FrameRate;
+	FrameTime = 1.0f / _FrameRate;
+	TimePassed = 0;
 }
