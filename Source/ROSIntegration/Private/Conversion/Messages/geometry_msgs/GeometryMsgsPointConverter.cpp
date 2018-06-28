@@ -3,7 +3,7 @@
 #include "geometry_msgs/Point.h"
 
 UGeometryMsgsPointConverter::UGeometryMsgsPointConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/Point";
 }

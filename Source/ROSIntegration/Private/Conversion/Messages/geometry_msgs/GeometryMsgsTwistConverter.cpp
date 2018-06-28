@@ -2,7 +2,7 @@
 
 
 UGeometryMsgsTwistConverter::UGeometryMsgsTwistConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/Twist";
 }
@@ -14,8 +14,8 @@ bool UGeometryMsgsTwistConverter::ConvertIncomingMessage(const ROSBridgePublishM
 	return _bson_extract_child_twist(message->full_msg_bson_, "msg", p);
 }
 
-bool UGeometryMsgsTwistConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool UGeometryMsgsTwistConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Twist = StaticCastSharedPtr<ROSMessages::geometry_msgs::Twist>(BaseMsg);
 
 	*message = new bson_t;

@@ -1,20 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
+#include <CoreMinimal.h>
 
 #if PLATFORM_WINDOWS
 #include "WindowsHWrapper.h"
 #endif
 
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "rosbridge2cpp/messages/rosbridge_publish_msg.h"
 #include <cstring>
 #include <functional>
-#include "bson.h"
+#include <bson.h>
 #include "Public/std_msgs/Header.h"
+
 #include "BaseMessageConverter.generated.h"
 
 UCLASS()
@@ -26,12 +25,13 @@ public:
 	UPROPERTY()
 	FString _MessageType;
 
-	//For ConvertMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
+	// For ConvertMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
 
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	static double GetDoubleFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors=true) {
+	static double GetDoubleFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors=true)
+	{
 		assert(msg != nullptr);
 
 		double value = rosbridge2cpp::Helper::get_double_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
@@ -41,7 +41,8 @@ public:
 		return value;
 	}
 
-	static FString GetFStringFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+	static FString GetFStringFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true)
+	{
 		assert(msg != nullptr);
 
 		std::string value = rosbridge2cpp::Helper::get_utf8_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
@@ -51,7 +52,8 @@ public:
 		return UTF8_TO_TCHAR(value.c_str());
 	}
 
-	static int32 GetInt32FromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+	static int32 GetInt32FromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true)
+	{
 		assert(msg != nullptr);
 
 		int32 value = rosbridge2cpp::Helper::get_int32_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
@@ -63,7 +65,8 @@ public:
 
 	/// @note Example usage in GetDoubleTArrayFromBSON().
 	template<class T>
-	static TArray<T> GetTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, const std::function<T(FString, bson_t*, bool&)>& keyToT, bool LogOnErrors = true) {
+	static TArray<T> GetTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, const std::function<T(FString, bson_t*, bool&)>& keyToT, bool LogOnErrors = true)
+	{
 		assert(msg != nullptr);
 
 		uint32_t array_size;
@@ -87,12 +90,14 @@ public:
 		return ret;
 	}
 
-	static TArray<double> GetDoubleTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+	static TArray<double> GetDoubleTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true)
+	{
 
 		return GetTArrayFromBSON<double>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetDoubleFromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
 	}
 
-	static TArray<float> GetFloatTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true) {
+	static TArray<float> GetFloatTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true)
+	{
 		// bson doesn't support float, only double. So we use GetDoubleFromBSON internally
 		return GetTArrayFromBSON<float>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetDoubleFromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
 	}
@@ -139,6 +144,4 @@ protected:
 	{
 		_bson_append_tarray<uint32>(b, key, tarray, [](bson_t *subb, const char *subKey, uint32 i) { BSON_APPEND_INT32(subb, subKey, i); });
 	}
-
 };
-

@@ -3,7 +3,7 @@
 #include "geometry_msgs/Vector3.h"
 
 UGeometryMsgsVector3Converter::UGeometryMsgsVector3Converter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/Vector3";
 }
@@ -15,8 +15,8 @@ bool UGeometryMsgsVector3Converter::ConvertIncomingMessage(const ROSBridgePublis
 	return _bson_extract_child_vector3(message->full_msg_bson_, "msg", p);
 }
 
-bool UGeometryMsgsVector3Converter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-	
+bool UGeometryMsgsVector3Converter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Vector3 = StaticCastSharedPtr<ROSMessages::geometry_msgs::Vector3>(BaseMsg);
 
 	*message = new bson_t;

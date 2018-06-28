@@ -4,7 +4,7 @@
 
 
 USensorMsgsRegionOfInterestConverter::USensorMsgsRegionOfInterestConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "sensor_msgs/RegionOfInterest";
 }

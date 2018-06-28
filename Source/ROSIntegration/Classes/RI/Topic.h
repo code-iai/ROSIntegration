@@ -1,14 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include <functional>
 #include <memory>
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "ROSBaseMsg.h"
 #include "ROSIntegrationCore.h"
+
 #include "Topic.generated.h"
 
 /**
@@ -18,8 +17,8 @@
 UENUM(BlueprintType, Category = "ROS")
 enum class EMessageType : uint8
 {
-    String = 0,
-    Float32 = 1,
+	String = 0,
+	Float32 = 1,
 };
 
 UCLASS(Blueprintable)
@@ -29,61 +28,59 @@ class ROSINTEGRATION_API UTopic: public UObject
 
 public:
 	
-    bool Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
+	bool Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
 
-    bool Unsubscribe();
+	bool Unsubscribe();
 
-    bool Advertise();
+	bool Advertise();
 	
-    bool Unadvertise();
+	bool Unadvertise();
 	
-    bool Publish(TSharedPtr<FROSBaseMsg> msg);
+	bool Publish(TSharedPtr<FROSBaseMsg> msg);
 
 	void BeginDestroy() override;
 
 	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize = 10);
 
-    virtual void PostInitProperties() override;
+	virtual void PostInitProperties() override;
 
-    void MarkAsDisconnected();
-    bool Reconnect(UROSIntegrationCore* ROSIntegrationCore);
+	void MarkAsDisconnected();
+	bool Reconnect(UROSIntegrationCore* ROSIntegrationCore);
 
 protected:
 
-    virtual FString GetDetailedInfoInternal() const override;
+	virtual FString GetDetailedInfoInternal() const override;
 
-    UFUNCTION(BlueprintImplementableEvent, Category = ROS)
-        void OnConstruct();
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnConstruct();
 
-    UFUNCTION(BlueprintImplementableEvent, Category = ROS)
-        void OnStringMessage(const FString& Data);
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnStringMessage(const FString& Data);
 
-    UFUNCTION(BlueprintImplementableEvent, Category = ROS)
-        void OnFloat32Message(const float& Data);
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnFloat32Message(const float& Data);
 
 private:
 
-    struct State
-    {
-        bool Connected;
+	struct State
+	{
+		bool Connected;
+		bool Advertised;
+		bool Subscribed;
+		bool Blueprint;
+		EMessageType BlueprintMessageType;
+	} _State;
 
-        bool Advertised;
-        bool Subscribed;
-        bool Blueprint;
-        EMessageType BlueprintMessageType;
-    } _State;
-
-    /*
-    * Subscribe to the given topic
-    */
-    UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
-    bool Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
+	/**
+	 * Subscribe to the given topic
+	 */
+	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
+	bool Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
 
 	// PIMPL
 	class Impl;
-	Impl* _Implementation;
+	Impl *_Implementation;
 
-    // Helper to keep track of self-destruction for async functions
-    TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
+	// Helper to keep track of self-destruction for async functions
+	TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
 };
-

@@ -1,16 +1,17 @@
 #include "Conversion/Services/rospy_tutorials/RospyTutorialsAddTwoIntsResponseConverter.h"
 
 #include "rospy_tutorials/AddTwoIntsResponse.h"
-#include "bson.h"
+#include <bson.h>
 
 
 URospyTutorialsAddTwoIntsResponseConverter::URospyTutorialsAddTwoIntsResponseConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_ServiceType = "rospy_tutorials/AddTwoInts";
 }
 
-bool URospyTutorialsAddTwoIntsResponseConverter::ConvertIncomingResponse(const ROSBridgeServiceResponseMsg &res, TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response) {
+bool URospyTutorialsAddTwoIntsResponseConverter::ConvertIncomingResponse(const ROSBridgeServiceResponseMsg &res, TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response)
+{
 	bool key_found = false;
 	*Response = MakeShareable(new rospy_tutorials::FAddTwoIntsResponse);
 	auto ServiceResponse = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsResponse>(*Response);
@@ -24,7 +25,9 @@ bool URospyTutorialsAddTwoIntsResponseConverter::ConvertIncomingResponse(const R
 	}
 	return true;
 }
-bool URospyTutorialsAddTwoIntsResponseConverter::ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res) {
+
+bool URospyTutorialsAddTwoIntsResponseConverter::ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res)
+{
 	auto ServiceResponse = StaticCastSharedPtr<rospy_tutorials::FAddTwoIntsResponse>(Response);
 
 	res.result_ = ServiceResponse->_Result;
@@ -32,6 +35,7 @@ bool URospyTutorialsAddTwoIntsResponseConverter::ConvertOutgoingResponse(TShared
 	return true;
 }
 
-TSharedPtr<FROSBaseServiceResponse> URospyTutorialsAddTwoIntsResponseConverter::AllocateConcreteResponse() {
+TSharedPtr<FROSBaseServiceResponse> URospyTutorialsAddTwoIntsResponseConverter::AllocateConcreteResponse()
+{
 	return MakeShareable(new rospy_tutorials::FAddTwoIntsResponse);
 }

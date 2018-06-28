@@ -1,10 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-
+#include <CoreMinimal.h>
+#include <Components/ActorComponent.h>
 #include "RI/Topic.h"
 #include "ROSIntegrationGameInstance.h"
 #include "std_msgs/String.h"
@@ -27,11 +24,11 @@ protected:
 
 	// This Vector is the target where the owning actor should always look to
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		FVector TargetActorLocation;
+	FVector TargetActorLocation;
 
 	// The ROS Topic where you can send your commands to
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
-		FString CommandTopic = TEXT("/camera_orbit_topic");
+	FString CommandTopic = TEXT("/camera_orbit_topic");
 
 	// Boundary for Y to offset the owning actor
 	UPROPERTY(EditAnywhere, Category = "Offset configuration")
@@ -96,7 +93,7 @@ protected:
 
 	UTopic *ExampleTopic;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -105,6 +102,4 @@ public:
 		CurrentOffsetY = MinOffSetY;
 		CurrentOffsetZ = MinOffSetZ;
 	}
-		
-	
 };

@@ -1,13 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "geometry_msgs/Twist.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsVector3Converter.h"
+
 #include "GeometryMsgsTwistConverter.generated.h"
 
 
@@ -22,9 +21,8 @@ public:
 
 	static bool _bson_extract_child_twist(bson_t *b, FString key, ROSMessages::geometry_msgs::Twist *p)
 	{
-		bool KeyFound = false;
-		KeyFound = UGeometryMsgsVector3Converter::_bson_extract_child_vector3(b, key + ".linear", &p->linear); if (!KeyFound) return false;
-		KeyFound = UGeometryMsgsVector3Converter::_bson_extract_child_vector3(b, key + ".angular", &p->angular); if (!KeyFound) return false;
+		if (!UGeometryMsgsVector3Converter::_bson_extract_child_vector3(b, key + ".linear", &p->linear)) return false;
+		if (!UGeometryMsgsVector3Converter::_bson_extract_child_vector3(b, key + ".angular", &p->angular)) return false;
 
 		return true;
 	}
@@ -43,5 +41,3 @@ public:
 		UGeometryMsgsVector3Converter::_bson_append_child_vector3(b, "angular", &(t->angular));
 	}
 };
-
-

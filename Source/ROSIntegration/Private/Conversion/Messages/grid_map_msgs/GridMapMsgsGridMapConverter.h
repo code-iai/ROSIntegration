@@ -1,14 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "grid_map_msgs/GridMap.h"
 #include "Conversion/Messages/grid_map_msgs/GridMapMsgsGridMapInfoConverter.h"
 #include "Conversion/Messages/std_msgs/StdMsgsFloat32MultiArrayConverter.h"
+
 #include "GridMapMsgsGridMapConverter.generated.h"
 
 
@@ -66,4 +65,3 @@ public:
 		BSON_APPEND_INT32(b, "inner_start_index", gm->inner_start_index);
 	}
 };
-

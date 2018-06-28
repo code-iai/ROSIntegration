@@ -1,10 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "ROSIntegrationCore.h"
 #include "ROSBaseServiceRequest.h"
 #include "ROSBaseServiceResponse.h"
@@ -27,12 +25,13 @@ public:
 	//// Will do nothing if no service has been advertised before in this instance
 	bool Unadvertise();
 
-	//// TODO failedCallback parameter
-	//// Call a ROS-Service
-	//// The given callback variable will be called when the service reply
-	//// has been received by ROSBridge. It will passed the received data to the callback.
-	//// The whole content of the "request" parameter will be send as the "args"
-	//// argument of the Service Request
+	// TODO failedCallback parameter
+	/** Call a ROS-Service
+	 * The given callback variable will be called when the service reply
+	 * has been received by ROSBridge. It will passed the received data to the callback.
+	 * The whole content of the "request" parameter will be send as the "args"
+	 * argument of the Service Request
+	 */
 	bool CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse);
 
     void MarkAsDisconnected();

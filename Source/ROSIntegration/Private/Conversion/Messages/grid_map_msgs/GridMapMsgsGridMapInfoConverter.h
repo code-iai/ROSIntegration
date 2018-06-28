@@ -1,14 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "grid_map_msgs/GridMapInfo.h"
 #include "Conversion/Messages/std_msgs/StdMsgsHeaderConverter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsPoseConverter.h"
+
 #include "GridMapMsgsGridMapInfoConverter.generated.h"
 
 
@@ -26,10 +25,10 @@ public:
 		bool KeyFound = false;
 
 		KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(b, key + ".header", &g->header); if (!KeyFound) return false;
-		g->resolution = GetDoubleFromBSON(key + ".resolution", b, KeyFound);                            if (!KeyFound) return false;
-		g->length_x = GetDoubleFromBSON(key + ".length_x", b, KeyFound);                                if (!KeyFound) return false;
-		g->length_y = GetDoubleFromBSON(key + ".length_y", b, KeyFound);                                if (!KeyFound) return false;
-		KeyFound = UGeometryMsgsPoseConverter::_bson_extract_child_pose(b, key + ".pose", &g->pose);    if (!KeyFound) return false;
+		g->resolution = GetDoubleFromBSON(key + ".resolution", b, KeyFound);							if (!KeyFound) return false;
+		g->length_x = GetDoubleFromBSON(key + ".length_x", b, KeyFound);								if (!KeyFound) return false;
+		g->length_y = GetDoubleFromBSON(key + ".length_y", b, KeyFound);								if (!KeyFound) return false;
+		KeyFound = UGeometryMsgsPoseConverter::_bson_extract_child_pose(b, key + ".pose", &g->pose);	if (!KeyFound) return false;
 
 		return true;
 	}
@@ -51,4 +50,3 @@ public:
 		UGeometryMsgsPoseConverter::_bson_append_child_pose(b, "pose", &(g->pose));
 	}
 };
-

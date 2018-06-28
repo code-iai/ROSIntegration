@@ -1,14 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "geometry_msgs/Pose.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsPointConverter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsQuaternionConverter.h"
+
 #include "GeometryMsgsPoseConverter.generated.h"
 
 
@@ -23,9 +22,8 @@ public:
 
 	static bool _bson_extract_child_pose(bson_t *b, FString key, ROSMessages::geometry_msgs::Pose *p)
 	{
-		bool KeyFound = false;
-		KeyFound = UGeometryMsgsPointConverter::_bson_extract_child_point(b, key + ".position", &p->position); if (!KeyFound) return false;
-		KeyFound = UGeometryMsgsQuaternionConverter::_bson_extract_child_quaternion(b, key + ".orientation", &p->orientation); if (!KeyFound) return false;
+		if(!UGeometryMsgsPointConverter::_bson_extract_child_point(b, key + ".position", &p->position)) return false;
+		if(!UGeometryMsgsQuaternionConverter::_bson_extract_child_quaternion(b, key + ".orientation", &p->orientation)) return false;
 
 		return true;
 	}
@@ -44,4 +42,3 @@ public:
 		UGeometryMsgsQuaternionConverter::_bson_append_child_quaternion(b, "orientation", &(t->orientation));
 	}
 };
-

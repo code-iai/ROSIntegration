@@ -1,7 +1,6 @@
 #pragma once
 
-#include "CoreMinimal.h"
-//#include "ROSBaseMsg.generated.h"
+#include <CoreMinimal.h>
 
 class ROSINTEGRATION_API FROSBaseServiceResponse {
 
