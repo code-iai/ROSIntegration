@@ -125,7 +125,7 @@ namespace rosbridge2cpp {
 		void HandleIncomingServiceResponseMessage(ROSBridgeServiceResponseMsg &data);
 
 		// Handler Method for reply packet
-		void HandleIncomingServiceRequestMessage(std::string id, ROSBridgeCallServiceMsg &data);
+		void HandleIncomingServiceRequestMessage(ROSBridgeCallServiceMsg &data);
 
 		int RunPublisherQueueThread();
 

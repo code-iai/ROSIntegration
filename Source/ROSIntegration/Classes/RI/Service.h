@@ -19,7 +19,7 @@ public:
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType);
     void BeginDestroy() override;
 
-	bool Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler);
+	bool Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler, bool HandleRequestsInGameThread);
 
 	//// Unadvertise an advertised service
 	//// Will do nothing if no service has been advertised before in this instance
@@ -49,10 +49,11 @@ private:
         bool Advertised;
     } _State;
 
+    // Helper to keep track of self-destruction for async functions
+    TSharedPtr<UService, ESPMode::ThreadSafe> _SelfPtr;
+
 	// PIMPL
 	class Impl;
 	Impl* _Implementation;
 
-    // Helper to keep track of self-destruction for async functions
-    TSharedPtr<UService, ESPMode::ThreadSafe> _SelfPtr;
 };
