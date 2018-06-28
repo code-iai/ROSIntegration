@@ -2,7 +2,7 @@
 
 
 UStdMsgsMultiArrayLayoutConverter::UStdMsgsMultiArrayLayoutConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "std_msgs/MultiArrayLayout";
 }
@@ -14,8 +14,8 @@ bool UStdMsgsMultiArrayLayoutConverter::ConvertIncomingMessage(const ROSBridgePu
 	return _bson_extract_child_multi_array_layout(message->full_msg_bson_, "msg", p);
 }
 
-bool UStdMsgsMultiArrayLayoutConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool UStdMsgsMultiArrayLayoutConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Pose = StaticCastSharedPtr<ROSMessages::std_msgs::MultiArrayLayout>(BaseMsg);
 
 	*message = new bson_t;

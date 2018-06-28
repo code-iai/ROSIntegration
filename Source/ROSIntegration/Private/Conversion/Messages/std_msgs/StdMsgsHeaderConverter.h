@@ -1,11 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
+
 #include "StdMsgsHeaderConverter.generated.h"
 
 
@@ -24,7 +23,7 @@ public:
 		bool KeyFound = false;
 		
 		// TODO Check if rosbridge sends UINT64 or INT32 (there is no uint32 in bson)
-		h->seq =      GetInt32FromBSON(key + ".seq", b, KeyFound);        if (!KeyFound) return false;
+		h->seq =	  GetInt32FromBSON(key + ".seq", b, KeyFound);		if (!KeyFound) return false;
 		int32 Sec =   GetInt32FromBSON(key + ".stamp.secs", b, KeyFound);  if (!KeyFound) return false;
 		int32 NSec =  GetInt32FromBSON(key + ".stamp.nsecs", b, KeyFound); if (!KeyFound) return false;
 		h->frame_id = GetFStringFromBSON(key + ".frame_id", b, KeyFound); if (!KeyFound) return false;
@@ -55,6 +54,4 @@ public:
 		);
 		BSON_APPEND_DOCUMENT(b, "header", hdr);
 	}
-
 };
-

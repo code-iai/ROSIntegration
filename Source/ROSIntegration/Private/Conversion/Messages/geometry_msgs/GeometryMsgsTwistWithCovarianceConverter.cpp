@@ -2,7 +2,7 @@
 
 
 UGeometryMsgsTwistWithCovarianceConverter::UGeometryMsgsTwistWithCovarianceConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/TwistWithCovariance";
 }
@@ -14,8 +14,8 @@ bool UGeometryMsgsTwistWithCovarianceConverter::ConvertIncomingMessage(const ROS
 	return _bson_extract_child_twist_with_covariance(message->full_msg_bson_, "msg", p);
 }
 
-bool UGeometryMsgsTwistWithCovarianceConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool UGeometryMsgsTwistWithCovarianceConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Pose = StaticCastSharedPtr<ROSMessages::geometry_msgs::TwistWithCovariance>(BaseMsg);
 
 	*message = new bson_t;

@@ -4,7 +4,7 @@
 
 
 UStdMsgsHeaderConverter::UStdMsgsHeaderConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "std_msgs/Header";
 }

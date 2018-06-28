@@ -5,18 +5,19 @@
 
 
 UGeometryMsgsTransformStampedConverter::UGeometryMsgsTransformStampedConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/TransformStamped";
 }
 
-bool UGeometryMsgsTransformStampedConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: TransformStamped receiving not implemented yet"));
+bool UGeometryMsgsTransformStampedConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
+{
+	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: TransformStamped receiving not implemented yet")); // TODO: use ROS log
 	return false;
 }
 
-bool UGeometryMsgsTransformStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-	
+bool UGeometryMsgsTransformStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto TransformStamped = StaticCastSharedPtr<ROSMessages::geometry_msgs::TransformStamped>(BaseMsg);
 
 	*message = new bson_t;

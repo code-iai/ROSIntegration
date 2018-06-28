@@ -2,17 +2,21 @@
 
 
 UBaseResponseConverter::UBaseResponseConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 }
 
-bool UBaseResponseConverter::ConvertIncomingResponse(const ROSBridgeServiceResponseMsg &res, TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response) {
-	return false;
-}
-bool UBaseResponseConverter::ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res) {
+bool UBaseResponseConverter::ConvertIncomingResponse(const ROSBridgeServiceResponseMsg &res, TSharedRef<TSharedPtr<FROSBaseServiceResponse>> Response)
+{
 	return false;
 }
 
-TSharedPtr<FROSBaseServiceResponse> UBaseResponseConverter::AllocateConcreteResponse() {
+bool UBaseResponseConverter::ConvertOutgoingResponse(TSharedPtr<FROSBaseServiceResponse> Response, ROSBridgeServiceResponseMsg &res)
+{
+	return false;
+}
+
+TSharedPtr<FROSBaseServiceResponse> UBaseResponseConverter::AllocateConcreteResponse()
+{
 	return TSharedPtr<FROSBaseServiceResponse>();
 }

@@ -2,7 +2,7 @@
 
 
 UGeometryMsgsPoseStampedConverter::UGeometryMsgsPoseStampedConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/PoseStamped";
 }
@@ -12,9 +12,8 @@ bool UGeometryMsgsPoseStampedConverter::ConvertIncomingMessage(const ROSBridgePu
 	auto p = new ROSMessages::geometry_msgs::PoseStamped();
 	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
 
-	bool KeyFound = false;
-	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(message->full_msg_bson_, TEXT("msg.header"), &p->header); if (!KeyFound) return false;
-	KeyFound = UGeometryMsgsPoseConverter::_bson_extract_child_pose(message->full_msg_bson_, TEXT("msg.pose"), &p->pose); if (!KeyFound) return false;
+	if (!UStdMsgsHeaderConverter::_bson_extract_child_header(message->full_msg_bson_, TEXT("msg.header"), &p->header)) return false;
+	if (!UGeometryMsgsPoseConverter::_bson_extract_child_pose(message->full_msg_bson_, TEXT("msg.pose"), &p->pose)) return false;
 
 	return true;
 }

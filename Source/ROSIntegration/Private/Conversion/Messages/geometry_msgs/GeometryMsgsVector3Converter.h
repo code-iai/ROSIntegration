@@ -1,10 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "geometry_msgs/Vector3.h"
 #include "GeometryMsgsVector3Converter.generated.h"
@@ -45,6 +43,4 @@ public:
 		BSON_APPEND_DOUBLE(b, "y", v3->y);
 		BSON_APPEND_DOUBLE(b, "z", v3->z);
 	}
-
 };
-

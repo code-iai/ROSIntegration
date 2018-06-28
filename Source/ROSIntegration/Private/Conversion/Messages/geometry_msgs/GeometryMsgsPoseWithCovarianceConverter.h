@@ -1,13 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "geometry_msgs/PoseWithCovariance.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsPoseConverter.h"
+
 #include "GeometryMsgsPoseWithCovarianceConverter.generated.h"
 
 
@@ -24,12 +23,11 @@ public:
 	{
 		bool KeyFound = false;
 
-		KeyFound = UGeometryMsgsPoseConverter::_bson_extract_child_pose(b, key + ".pose", &p->pose); 
-		if (!KeyFound) 
+		if (!UGeometryMsgsPoseConverter::_bson_extract_child_pose(b, key + ".pose", &p->pose))
 			return false;
 
 		p->covariance = GetDoubleTArrayFromBSON(key + ".covariance", b, KeyFound); 
-		if (!KeyFound || p->covariance.Num() != 36) 
+		if (!KeyFound || p->covariance.Num() != 36) // TODO: Magic Number?
 			return false;
 
 		return true;
@@ -49,4 +47,3 @@ public:
 		_bson_append_double_tarray(b, "covariance", t->covariance);
 	}
 };
-

@@ -1,14 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "geometry_msgs/Transform.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsVector3Converter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsQuaternionConverter.h"
+
 #include "GeometryMsgsTransformConverter.generated.h"
 
 
@@ -34,6 +33,4 @@ public:
 		UGeometryMsgsVector3Converter::_bson_append_child_vector3(b, "translation", &(t->translation));
 		UGeometryMsgsQuaternionConverter::_bson_append_child_quaternion(b, "rotation", &(t->rotation));
 	}
-
 };
-

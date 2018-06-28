@@ -1,12 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "std_msgs/MultiArrayDimension.h"
+
 #include "StdMsgsMultiArrayDimensionConverter.generated.h"
 
 
@@ -45,4 +44,3 @@ public:
 		BSON_APPEND_INT32(b, "stride", mad->stride);
 	}
 };
-

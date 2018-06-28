@@ -1,10 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "ROSIntegrationCore.h"
 #include "ROSBaseServiceRequest.h"
 #include "ROSBaseServiceResponse.h"
@@ -18,35 +16,32 @@ UCLASS()
 {
 	GENERATED_UCLASS_BODY()
 public:
-	void doAnything();
+	void doAnything(); // TODO: can be removed?
 
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType);
 
 	void Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler);
 
-	//// Unadvertise an advertised service
-	//// Will do nothing if no service has been advertised before in this instance
+	/** Unadvertise an advertised service
+	 * Will do nothing if no service has been advertised before in this instance
+	 */
 	//void Unadvertise();
 
-	//// TODO failedCallback parameter
-	//// Call a ROS-Service
-	//// The given callback variable will be called when the service reply
-	//// has been received by ROSBridge. It will passed the received data to the callback.
-	//// The whole content of the "request" parameter will be send as the "args"
-	//// argument of the Service Request
+	// TODO failedCallback parameter
+	/** Call a ROS-Service
+	 * The given callback variable will be called when the service reply
+	 * has been received by ROSBridge. It will passed the received data to the callback.
+	 * The whole content of the "request" parameter will be send as the "args"
+	 * argument of the Service Request
+	 */
 	void CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse);
 
 
 private:
-
 	UPROPERTY()
-		bool test;
-
-
-
+	bool test;
 
 	// PIMPL
 	class Impl;
-	Impl* _Implementation;
-
+	Impl *_Implementation;
 };

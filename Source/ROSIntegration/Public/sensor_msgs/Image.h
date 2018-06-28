@@ -18,11 +18,10 @@ namespace ROSMessages {
 			uint8 is_bigendian;
 			uint32 step;
 			TArray<uint8> data;
-			uint8* data_ptr; // To avoid copy operations of the image data, 
-							 // hand over a pointer to the uint8 data. 
-							 // Please note, that the memory this pointer points to must be valid until this message has been published.
+			// To avoid copy operations of the image data, 
+			// hand over a pointer to the uint8 data. 
+			// Please note, that the memory this pointer points to must be valid until this message has been published.
+			uint8* data_ptr;
 		};
-
-
 	}
 }

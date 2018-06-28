@@ -7,7 +7,7 @@
 
 
 UNavMsgsOdometryConverter::UNavMsgsOdometryConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "nav_msgs/Odometry";
 }

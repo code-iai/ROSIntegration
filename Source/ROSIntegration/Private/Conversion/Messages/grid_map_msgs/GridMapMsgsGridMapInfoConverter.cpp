@@ -2,7 +2,7 @@
 
 
 UGridMapMsgsGridMapInfoConverter::UGridMapMsgsGridMapInfoConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "grid_map_msgs/GridMapInfo";
 }
@@ -14,8 +14,8 @@ bool UGridMapMsgsGridMapInfoConverter::ConvertIncomingMessage(const ROSBridgePub
 	return _bson_extract_child_grid_map_info(message->full_msg_bson_, "msg", p);
 }
 
-bool UGridMapMsgsGridMapInfoConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool UGridMapMsgsGridMapInfoConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Info = StaticCastSharedPtr<ROSMessages::grid_map_msgs::GridMapInfo>(BaseMsg);
 
 	*message = new bson_t;

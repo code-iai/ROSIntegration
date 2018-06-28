@@ -1,7 +1,7 @@
 #include "GridMapMsgsGridMapConverter.h"
 
 UGridMapMsgsGridMapConverter::UGridMapMsgsGridMapConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "grid_map_msgs/GridMap";
 }
@@ -13,8 +13,8 @@ bool UGridMapMsgsGridMapConverter::ConvertIncomingMessage(const ROSBridgePublish
 	return _bson_extract_child_grid_map(message->full_msg_bson_, "msg", p);
 }
 
-bool UGridMapMsgsGridMapConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool UGridMapMsgsGridMapConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto map = StaticCastSharedPtr<ROSMessages::grid_map_msgs::GridMap>(BaseMsg);
 
 	*message = new bson_t;

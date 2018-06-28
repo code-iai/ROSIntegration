@@ -20,7 +20,5 @@ namespace ROSMessages{
 			FROSTime time;
 			FString frame_id;
 		};
-
-
 	}
 }

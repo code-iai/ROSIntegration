@@ -27,46 +27,46 @@ RAPIDJSON_NAMESPACE_BEGIN
 
 //! Wrapper of \c std::basic_ostream into RapidJSON's Stream concept.
 /*!
-    The classes can be wrapped including but not limited to:
+	The classes can be wrapped including but not limited to:
 
-    - \c std::ostringstream
-    - \c std::stringstream
-    - \c std::wpstringstream
-    - \c std::wstringstream
-    - \c std::ifstream
-    - \c std::fstream
-    - \c std::wofstream
-    - \c std::wfstream
+	- \c std::ostringstream
+	- \c std::stringstream
+	- \c std::wpstringstream
+	- \c std::wstringstream
+	- \c std::ifstream
+	- \c std::fstream
+	- \c std::wofstream
+	- \c std::wfstream
 
-    \tparam StreamType Class derived from \c std::basic_ostream.
+	\tparam StreamType Class derived from \c std::basic_ostream.
 */
    
 template <typename StreamType>
 class BasicOStreamWrapper {
 public:
-    typedef typename StreamType::char_type Ch;
-    BasicOStreamWrapper(StreamType& stream) : stream_(stream) {}
+	typedef typename StreamType::char_type Ch;
+	BasicOStreamWrapper(StreamType& stream) : stream_(stream) {}
 
-    void Put(Ch c) {
-        stream_.put(c);
-    }
+	void Put(Ch c) {
+		stream_.put(c);
+	}
 
-    void Flush() {
-        stream_.flush();
-    }
+	void Flush() {
+		stream_.flush();
+	}
 
-    // Not implemented
-    char Peek() const { RAPIDJSON_ASSERT(false); return 0; }
-    char Take() { RAPIDJSON_ASSERT(false); return 0; }
-    size_t Tell() const { RAPIDJSON_ASSERT(false); return 0; }
-    char* PutBegin() { RAPIDJSON_ASSERT(false); return 0; }
-    size_t PutEnd(char*) { RAPIDJSON_ASSERT(false); return 0; }
+	// Not implemented
+	char Peek() const { RAPIDJSON_ASSERT(false); return 0; }
+	char Take() { RAPIDJSON_ASSERT(false); return 0; }
+	size_t Tell() const { RAPIDJSON_ASSERT(false); return 0; }
+	char* PutBegin() { RAPIDJSON_ASSERT(false); return 0; }
+	size_t PutEnd(char*) { RAPIDJSON_ASSERT(false); return 0; }
 
 private:
-    BasicOStreamWrapper(const BasicOStreamWrapper&);
-    BasicOStreamWrapper& operator=(const BasicOStreamWrapper&);
+	BasicOStreamWrapper(const BasicOStreamWrapper&);
+	BasicOStreamWrapper& operator=(const BasicOStreamWrapper&);
 
-    StreamType& stream_;
+	StreamType& stream_;
 };
 
 typedef BasicOStreamWrapper<std::ostream> OStreamWrapper;
