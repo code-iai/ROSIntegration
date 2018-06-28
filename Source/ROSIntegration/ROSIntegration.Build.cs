@@ -29,9 +29,12 @@ public class ROSIntegration : ModuleRules
         // Console.WriteLine("");
         Console.WriteLine("BSONPath: " + BSONPath);
 
-        // Include std::string functions for rapidjson
-        Definitions.Add("RAPIDJSON_HAS_STDSTRING=1");
-
+		// Include std::string functions for rapidjson
+#if UE_4_19_OR_LATER // works at least for 4.18.3, but not for 4.17.3 and below
+		PublicDefinitions.Add("RAPIDJSON_HAS_STDSTRING=1");
+#else
+		Definitions.Add("RAPIDJSON_HAS_STDSTRING=1");
+#endif
 
         PublicIncludePaths.AddRange(
 			new string[] {
