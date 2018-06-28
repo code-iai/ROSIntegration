@@ -39,7 +39,7 @@ This plugin has been tested with Unreal Engine versions;
  * 4.17.3
  * 4.18.2
  * 4.18.3
- * 4.19.1
+ * 4.19.1, 4.19.2
 
 ## Usage
 
