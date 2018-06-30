@@ -77,10 +77,10 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
 	bool Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
 
+    // Helper to keep track of self-destruction for async functions
+    TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
+
 	// PIMPL
 	class Impl;
 	Impl *_Implementation;
-
-	// Helper to keep track of self-destruction for async functions
-	TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
 };

@@ -94,12 +94,10 @@ public:
 	}
 
 	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req) {
-		TSharedPtr<FROSBaseServiceRequest> ServiceRequest;
-		TSharedPtr<FROSBaseServiceResponse> ServiceResponse;
 
-		// Convert the incoming service request to the UnrealRI format
-		ServiceRequest = _RequestConverter->AllocateConcreteRequest();
+		TSharedPtr<FROSBaseServiceRequest> ServiceRequest = _RequestConverter->AllocateConcreteRequest();
 
+        // Convert the incoming service request to the UnrealRI format
 		if (!_RequestConverter->ConvertIncomingRequest(req, ServiceRequest)) {
 			UE_LOG(LogROS, Error, TEXT("Failed to Convert ROSBridgeCallServiceMsg to Unreal Service Format"));
 		}
@@ -109,12 +107,14 @@ public:
 			return;
 		}
 
-		ServiceResponse = _ResponseConverter->AllocateConcreteResponse();
-
         std::string service = req.service_;
         std::string id = req.id_;
-        auto CreateAndSendResponse = [this, ServiceRequest, ServiceResponse, service, id]()
+        auto CreateAndSendResponse = [this, ServiceRequest, service, id]()
         {
+            if (!_SelfPtr.IsValid()) return;
+
+            TSharedPtr<FROSBaseServiceResponse> ServiceResponse = _ResponseConverter->AllocateConcreteResponse();
+
             // Call the user defined Service Handler with
             _ServiceRequestCallback(ServiceRequest, ServiceResponse);
 
