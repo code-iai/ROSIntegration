@@ -12,9 +12,8 @@ static TMap<FString, UBaseResponseConverter*> ResponseConverterMap;
 class UService::Impl {
 	// hidden implementation details
 public:
-	Impl(TSharedPtr<UService, ESPMode::ThreadSafe> Service)
-        : _SelfPtr(Service)
-        , _HandleRequestsInGameThread(false)
+	Impl()
+        : _HandleRequestsInGameThread(false)
         , _Ric(nullptr)
         , _ROSService(nullptr)
         , _ResponseConverter(nullptr)
@@ -22,10 +21,14 @@ public:
 	}
 
     ~Impl() {
+        
+        if (_ServiceRequestCallback && _Ric) {
+            Unadvertise();
+        }
+
         delete _ROSService;
     }
 
-    TWeakPtr<UService, ESPMode::ThreadSafe> _SelfPtr;
     bool _HandleRequestsInGameThread;
 	UROSIntegrationCore* _Ric;
 	FString _ServiceName;
@@ -93,7 +96,7 @@ public:
         ServiceResponse(*Response);
 	}
 
-	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req) {
+	void ServiceRequestCallback(ROSBridgeCallServiceMsg &req, TWeakPtr<UService, ESPMode::ThreadSafe> SelfPtr) {
 
 		TSharedPtr<FROSBaseServiceRequest> ServiceRequest = _RequestConverter->AllocateConcreteRequest();
 
@@ -111,8 +114,6 @@ public:
         std::string id = req.id_;
         auto CreateAndSendResponse = [this, ServiceRequest, service, id]()
         {
-            if (!_SelfPtr.IsValid()) return;
-
             TSharedPtr<FROSBaseServiceResponse> ServiceResponse = _ResponseConverter->AllocateConcreteResponse();
 
             // Call the user defined Service Handler with
@@ -137,35 +138,42 @@ public:
         };
 
         if (_HandleRequestsInGameThread) {
-            AsyncTask(ENamedThreads::GameThread, [this, CreateAndSendResponse]()
+            AsyncTask(ENamedThreads::GameThread, [this, SelfPtr, CreateAndSendResponse]()
             {
-                if (!_SelfPtr.IsValid()) return;
+                if (!SelfPtr.IsValid()) return;
                 CreateAndSendResponse();
             });
         }
         else
         {
-            if (_SelfPtr.IsValid())
+            if (SelfPtr.IsValid())
             {
                 CreateAndSendResponse();
             }
         }
 	}
 
-	bool Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler, bool HandleRequestsInGameThread) {
+	bool Advertise(
+        std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler, 
+        bool HandleRequestsInGameThread,
+        TWeakPtr<UService, ESPMode::ThreadSafe> SelfPtr) {
         _ServiceRequestCallback = ServiceHandler;
         _HandleRequestsInGameThread = HandleRequestsInGameThread;
-		auto service_request_handler = [this](ROSBridgeCallServiceMsg &message) { this->ServiceRequestCallback(message); };
+		auto service_request_handler = [this, SelfPtr](ROSBridgeCallServiceMsg &message) {
+            this->ServiceRequestCallback(message, SelfPtr);
+        };
 		return _ROSService->Advertise(service_request_handler);
 	}
 
     bool Unadvertise() {
+        _ServiceRequestCallback = nullptr;
         return _ROSService->Unadvertise();
     }
 
 	bool CallService(
         TSharedPtr<FROSBaseServiceRequest> ServiceRequest, 
-        std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
+        std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse,
+        TWeakPtr<UService, ESPMode::ThreadSafe> SelfPtr) {
 
 		bson_t* service_params;
 
@@ -174,10 +182,9 @@ public:
             return false;
 		}
 
-        
-        auto service_response_handler = [this, ServiceResponse](const ROSBridgeServiceResponseMsg &message)
+        auto service_response_handler = [this, ServiceResponse, SelfPtr](const ROSBridgeServiceResponseMsg &message)
         {
-            if (!_SelfPtr.IsValid()) return;
+            if (!SelfPtr.IsValid()) return;
             this->CallServiceCallback(message, ServiceResponse);
         };
 		return _ROSService->CallService(service_params, service_response_handler);
@@ -186,12 +193,12 @@ public:
 
 
 bool UService::CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse) {
-    return _State.Connected && _Implementation->CallService(ServiceRequest, ServiceResponse);
+    return _State.Connected && _Implementation->CallService(ServiceRequest, ServiceResponse, _SelfPtr);
 }
 
 bool UService::Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler, bool HandleRequestsInGameThread) {
     _State.Advertised = true;
-    return _State.Connected && _Implementation->Advertise(ServiceHandler, HandleRequestsInGameThread);
+    return _State.Connected && _Implementation->Advertise(ServiceHandler, HandleRequestsInGameThread, _SelfPtr);
 }
 
 bool UService::Unadvertise() {
@@ -203,7 +210,7 @@ bool UService::Unadvertise() {
 UService::UService(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
     , _SelfPtr(this)
-    , _Implementation(new UService::Impl(_SelfPtr))
+    , _Implementation(new UService::Impl())
 {
     _State.Connected = true;
     _State.Advertised = false;
@@ -237,7 +244,7 @@ bool UService::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
     bool success = true;
 
     Impl* oldImplementation = _Implementation;
-    _Implementation = new UService::Impl(_SelfPtr);
+    _Implementation = new UService::Impl();
 
     _State.Connected = true;
 

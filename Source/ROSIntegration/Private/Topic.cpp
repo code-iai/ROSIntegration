@@ -11,19 +11,22 @@ static TMap<FString, UBaseMessageConverter*> TypeConverterMap;
 class UTopic::Impl {
 	// hidden implementation details
 public:
-	Impl(TSharedPtr<UTopic, ESPMode::ThreadSafe> Topic)
-    : _SelfPtr(Topic)
-    , _Ric(nullptr)
+	Impl()
+    : _Ric(nullptr)
 	, _ROSTopic(nullptr)
 	, _Converter(nullptr)
 	{
 	}
 
 	~Impl() {
+
+        if (_Callback && _Ric) {
+            Unsubscribe();
+        }
+
 		delete _ROSTopic;
 	}
 
-    TWeakPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
 	UROSIntegrationCore* _Ric;
 	FString _Topic;
 	FString _MessageType;
@@ -142,8 +145,6 @@ public:
 
 	void MessageCallback(const ROSBridgePublishMsg &message)
 	{
-        if (!_SelfPtr.IsValid()) return;
-
 		TSharedPtr<FROSBaseMsg> BaseMsg;
 		if (ConvertMessage(&message, BaseMsg)) {
 			_Callback(BaseMsg);
@@ -159,7 +160,7 @@ public:
 UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 , _SelfPtr(this)
-, _Implementation(new UTopic::Impl(_SelfPtr))
+, _Implementation(new UTopic::Impl())
 {
 	_State.Connected = true;
 	_State.Advertised = false;
@@ -232,7 +233,7 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 	bool success = true;
 
 	Impl* oldImplementation = _Implementation;
-	_Implementation = new UTopic::Impl(_SelfPtr);
+	_Implementation = new UTopic::Impl();
 
 	_State.Connected = true;
 
