@@ -225,10 +225,10 @@ void UService::BeginDestroy() {
     }
 
     delete _Implementation;
-
-    _SelfPtr.Reset();
+    _Implementation = nullptr;
 
     Super::BeginDestroy();
+    _SelfPtr.Reset();
 }
 
 void UService::Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {

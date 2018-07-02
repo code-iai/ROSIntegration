@@ -191,10 +191,10 @@ void UTopic::BeginDestroy() {
 	}
 
 	delete _Implementation;
-
-	_SelfPtr.Reset();
+    _Implementation = nullptr;
 
     Super::BeginDestroy();
+    _SelfPtr.Reset();
 }
 
 bool UTopic::Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func)
