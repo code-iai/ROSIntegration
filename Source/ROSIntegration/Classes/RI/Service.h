@@ -41,7 +41,11 @@ protected:
 
     virtual FString GetDetailedInfoInternal() const override;
 
+    UPROPERTY()
+    UROSIntegrationCore* _ROSIntegrationCore;
+
 private:
+
     struct State
     {
         bool Connected;

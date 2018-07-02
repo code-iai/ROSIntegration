@@ -217,9 +217,8 @@ UService::UService(const FObjectInitializer& ObjectInitializer)
 }
 
 void UService::BeginDestroy() {
-    Super::BeginDestroy();
 
-    if (!_State.Connected)
+    if (!_State.Connected || !_ROSIntegrationCore || _ROSIntegrationCore->HasAnyFlags(EObjectFlags::RF_BeginDestroyed))
     {
         // prevent any interaction with ROS during destruction
         _Implementation->_Ric = nullptr;
@@ -228,9 +227,12 @@ void UService::BeginDestroy() {
     delete _Implementation;
 
     _SelfPtr.Reset();
+
+    Super::BeginDestroy();
 }
 
 void UService::Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
+    _ROSIntegrationCore = Ric;
 	_Implementation->Init(Ric, ServiceName, ServiceType);
 }
 
@@ -242,6 +244,7 @@ void UService::MarkAsDisconnected()
 bool UService::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 {
     bool success = true;
+    _ROSIntegrationCore = ROSIntegrationCore;
 
     Impl* oldImplementation = _Implementation;
     _Implementation = new UService::Impl();

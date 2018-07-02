@@ -60,6 +60,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnFloat32Message(const float& Data);
 
+    UPROPERTY()
+    UROSIntegrationCore* _ROSIntegrationCore;
+
 private:
 
 	struct State
@@ -71,11 +74,18 @@ private:
 		EMessageType BlueprintMessageType;
 	} _State;
 
+
+    UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
+    void Init(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
+
 	/**
 	 * Subscribe to the given topic
 	 */
 	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
-	bool Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
+	bool Subscribe();
+
+    UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
+    bool PublishStringMessage(const FString& Message);
 
     // Helper to keep track of self-destruction for async functions
     TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
