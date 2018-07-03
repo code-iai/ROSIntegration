@@ -6,22 +6,24 @@
 #include "Conversion/Messages/std_msgs/StdMsgsStringConverter.h"
 
 static TMap<FString, UBaseMessageConverter*> TypeConverterMap;
+static TMap<EMessageType, FString> SupportedMessageTypes;
 
 // PIMPL
 class UTopic::Impl {
 	// hidden implementation details
 public:
 	Impl()
-	: _Ric(nullptr)
+    : _Ric(nullptr)
 	, _ROSTopic(nullptr)
 	, _Converter(nullptr)
 	{
 	}
 
 	~Impl() {
-		if (_Callback && _Ric) {
-			Unsubscribe();
-		}
+
+        if (_Callback && _Ric) {
+            Unsubscribe();
+        }
 
 		delete _ROSTopic;
 	}
@@ -81,14 +83,14 @@ public:
 
 	bool Advertise()
 	{
-		assert(_ROSTopic);
+        check(_ROSTopic);
 		return _ROSTopic->Advertise();
 	}
 
 
 	bool Unadvertise()
 	{
-		assert(_ROSTopic);
+        check(_ROSTopic);
 		return _ROSTopic->Unadvertise();
 	}
 
@@ -158,34 +160,41 @@ public:
 
 UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
-, _Implementation(new UTopic::Impl())
 , _SelfPtr(this)
+, _Implementation(new UTopic::Impl())
 {
 	_State.Connected = true;
 	_State.Advertised = false;
 	_State.Subscribed = false;
 	_State.Blueprint = false;
+
+    if (SupportedMessageTypes.Num() == 0)
+    {
+        SupportedMessageTypes.Add(EMessageType::String, TEXT("std_msgs/String"));
+        SupportedMessageTypes.Add(EMessageType::Float32, TEXT("std_msgs/Float32"));
+    }
 }
 
 void UTopic::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	OnConstruct(); // TODO: 
+	OnConstruct();
 }
 
 void UTopic::BeginDestroy() {
-	Super::BeginDestroy(); // TODO: Super::BeginDestroy at the end of this function!
 
-	if (!_State.Connected)
+	if (!_State.Connected || !_ROSIntegrationCore || _ROSIntegrationCore->HasAnyFlags(EObjectFlags::RF_BeginDestroyed))
 	{
 		// prevent any interaction with ROS during destruction
 		_Implementation->_Ric = nullptr;
 	}
 
 	delete _Implementation;
+    _Implementation = nullptr;
 
-	_SelfPtr.Reset();
+    Super::BeginDestroy();
+    _SelfPtr.Reset();
 }
 
 bool UTopic::Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func)
@@ -219,6 +228,7 @@ bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg)
 
 void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize)
 {
+    _ROSIntegrationCore = Ric;
 	_Implementation->Init(Ric, Topic, MessageType, QueueSize);
 }
 
@@ -230,29 +240,22 @@ void UTopic::MarkAsDisconnected()
 bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 {
 	bool success = true;
+    _ROSIntegrationCore = ROSIntegrationCore;
 
 	Impl* oldImplementation = _Implementation;
 	_Implementation = new UTopic::Impl();
 
 	_State.Connected = true;
 
-	if (_State.Subscribed && _State.Blueprint)
-	{
-		success = Subscribe(oldImplementation->_Topic, _State.BlueprintMessageType, oldImplementation->_QueueSize);
+    _Implementation->Init(ROSIntegrationCore, oldImplementation->_Topic, oldImplementation->_MessageType, oldImplementation->_QueueSize);
+    if (_State.Subscribed)
+    {
+        success = Subscribe(oldImplementation->_Callback);
 	}
-	else if(_State.Subscribed || _State.Advertised)
-	{
-		_Implementation->Init(ROSIntegrationCore, oldImplementation->_Topic, oldImplementation->_MessageType, oldImplementation->_QueueSize);
-
-		if (_State.Subscribed)
-		{
-			success = Subscribe(oldImplementation->_Callback);
-		}
-		if (_State.Advertised)
-		{
-			success = success && Advertise();
-		}
-	}
+    if (_State.Advertised)
+    {
+        success = success && Advertise();
+    }
 
 	_State.Connected = success;
 
@@ -266,72 +269,94 @@ FString UTopic::GetDetailedInfoInternal() const
 	return _Implementation->_Topic;
 }
 
-bool UTopic::Subscribe(const FString& TopicName, EMessageType MessageType, int32 QueueSize)
+void UTopic::Init(const FString& TopicName, EMessageType MessageType, int32 QueueSize)
+{
+    _State.Blueprint = true;
+    _State.BlueprintMessageType = MessageType;
+
+    UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(GWorld->GetGameInstance());
+    if (ROSInstance)
+    {
+        if (ROSInstance->bConnectToROS && _State.Connected)
+        {
+            Init(ROSInstance->ROSIntegrationCore, TopicName, SupportedMessageTypes[MessageType], QueueSize);
+        }
+    }
+    else
+    {
+        UE_LOG(LogROS, Warning, TEXT("ROSIntegrationGameInstance does not exist."));
+    }
+}
+
+bool UTopic::Subscribe()
 {
 	bool success = false;
 	_State.Subscribed = true;
-	_State.Blueprint = true;
-	_State.BlueprintMessageType = MessageType;
 
-	UROSIntegrationGameInstance* ROSInstance = Cast<UROSIntegrationGameInstance>(GWorld->GetGameInstance());
-	if (ROSInstance)
+	if (_State.Connected)
 	{
-		if (ROSInstance->bConnectToROS && _State.Connected)
+        EMessageType MessageType = _State.BlueprintMessageType;
+		std::function<void(TSharedPtr<FROSBaseMsg>)> Callback = [this, MessageType](TSharedPtr<FROSBaseMsg> msg) -> void
 		{
-			TMap<EMessageType, FString> SupportedMessageTypes;
-			SupportedMessageTypes.Add(EMessageType::String, TEXT("std_msgs/String"));
-			SupportedMessageTypes.Add(EMessageType::Float32, TEXT("std_msgs/Float32"));
-
-			Init(ROSInstance->ROSIntegrationCore, TopicName, SupportedMessageTypes[MessageType], QueueSize);
-
-			std::function<void(TSharedPtr<FROSBaseMsg>)> Callback = [this, MessageType](TSharedPtr<FROSBaseMsg> msg) -> void
+			switch (MessageType)
 			{
-				switch (MessageType)
+			case EMessageType::String:
+			{
+				auto ConcreteStringMessage = StaticCastSharedPtr<ROSMessages::std_msgs::String>(msg);
+				if (ConcreteStringMessage.IsValid())
 				{
-				case EMessageType::String:
-				{
-					auto ConcreteStringMessage = StaticCastSharedPtr<ROSMessages::std_msgs::String>(msg);
-					if (ConcreteStringMessage.IsValid())
+					const FString Data = ConcreteStringMessage->_Data;
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
 					{
-						const FString Data = ConcreteStringMessage->_Data;
-						TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
-						AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
-						{
-							if (!SelfPtr.IsValid()) return;
-							OnStringMessage(Data);
-						});
-					}
-					break;
+						if (!SelfPtr.IsValid()) return;
+						OnStringMessage(Data);
+					});
 				}
-				case EMessageType::Float32:
+				break;
+			}
+			case EMessageType::Float32:
+			{
+				auto ConcreteFloatMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Float32>(msg);
+				if (ConcreteFloatMessage.IsValid())
 				{
-					auto ConcreteFloatMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Float32>(msg);
-					if (ConcreteFloatMessage.IsValid())
+					const float Data = ConcreteFloatMessage->_Data;
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
 					{
-						const float Data = ConcreteFloatMessage->_Data;
-						TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
-						AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
-						{
-							if (!SelfPtr.IsValid()) return;
-							OnFloat32Message(Data);
-						});
+						if (!SelfPtr.IsValid()) return;
+						OnFloat32Message(Data);
+					});
 						
-					}
-					break;
 				}
-				default:
-					unimplemented();
-					break;
-				}
-			};
+				break;
+			}
+			default:
+				unimplemented();
+				break;
+			}
+		};
 
-			success = Subscribe(Callback);
-		}
-	}
-	else
-	{
-		UE_LOG(LogROS, Warning, TEXT("ROSIntegrationGameInstance does not exist."));
+		success = Subscribe(Callback);
 	}
 
 	return success;
+}
+
+
+bool UTopic::PublishStringMessage(const FString& Message)
+{
+    check(_Implementation->_MessageType == TEXT("std_msgs/String"));
+
+    if (!_State.Advertised)
+    {
+        if (!Advertise())
+        {
+            return false;
+        }
+    }
+
+    TSharedPtr<ROSMessages::std_msgs::String> msg = MakeShareable(new ROSMessages::std_msgs::String);
+    msg->_Data = Message;
+    return _Implementation->Publish(msg);
 }

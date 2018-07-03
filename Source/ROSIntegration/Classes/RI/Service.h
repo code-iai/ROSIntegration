@@ -12,20 +12,18 @@
 #include "Service.generated.h"
 
 UCLASS()
-	class ROSINTEGRATION_API UService : public UObject
+class ROSINTEGRATION_API UService : public UObject
 {
 	GENERATED_UCLASS_BODY()
 public:
-	void doAnything(); // TODO: can be removed?
-
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType);
+    void BeginDestroy() override;
 
-	void Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler);
+	bool Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler, bool HandleRequestsInGameThread);
 
-	/** Unadvertise an advertised service
-	 * Will do nothing if no service has been advertised before in this instance
-	 */
-	//void Unadvertise();
+	//// Unadvertise an advertised service
+	//// Will do nothing if no service has been advertised before in this instance
+	bool Unadvertise();
 
 	// TODO failedCallback parameter
 	/** Call a ROS-Service
@@ -34,14 +32,32 @@ public:
 	 * The whole content of the "request" parameter will be send as the "args"
 	 * argument of the Service Request
 	 */
-	void CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse);
+	bool CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse);
 
+    void MarkAsDisconnected();
+    bool Reconnect(UROSIntegrationCore* ROSIntegrationCore);
+
+protected:
+
+    virtual FString GetDetailedInfoInternal() const override;
+
+    UPROPERTY()
+    UROSIntegrationCore* _ROSIntegrationCore;
 
 private:
-	UPROPERTY()
-	bool test;
+
+    struct State
+    {
+        bool Connected;
+
+        bool Advertised;
+    } _State;
+
+    // Helper to keep track of self-destruction for async functions
+    TSharedPtr<UService, ESPMode::ThreadSafe> _SelfPtr;
 
 	// PIMPL
 	class Impl;
-	Impl *_Implementation;
+	Impl* _Implementation;
+
 };

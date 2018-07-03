@@ -195,15 +195,9 @@ namespace rosbridge2cpp {
 
 	}
 
-	void ROSBridge::HandleIncomingServiceRequestMessage(std::string id, ROSBridgeCallServiceMsg &data)
+	void ROSBridge::HandleIncomingServiceRequestMessage(ROSBridgeCallServiceMsg &data)
 	{
 		std::string &incoming_service = data.service_;
-
-		ROSBridgeServiceResponseMsg response(true);
-		response.service_ = incoming_service;
-
-		if (id != "")
-			response.id_ = id;
 
 		if (bson_only_mode()) {
 			auto service_request_callback_it = registered_service_request_callbacks_bson_.find(incoming_service);
@@ -212,9 +206,7 @@ namespace rosbridge2cpp {
 				std::cerr << "[ROSBridge] Received service request for service :" << incoming_service << " where no callback has been registered before" << std::endl;
 				return;
 			}
-			response.values_bson_ = bson_new();
-			service_request_callback_it->second(data, response);
-			SendMessage(response);
+			service_request_callback_it->second(data);
 		}
 		else
 		{
@@ -224,12 +216,10 @@ namespace rosbridge2cpp {
 				std::cerr << "[ROSBridge] Received service request for service :" << incoming_service << " where no bson callback has been registered before" << std::endl;
 				return;
 			}
-			response.values_json_.SetObject();
 			rapidjson::Document response_allocator;
 
 			// Execute the callback for the given service id
-			service_request_callback_it->second(data, response, response_allocator.GetAllocator());
-			SendMessage(response);
+			service_request_callback_it->second(data, response_allocator.GetAllocator());
 		}
 	}
 
@@ -270,7 +260,7 @@ namespace rosbridge2cpp {
 		if (Helper::get_utf8_by_key("op", bson, key_found) == "call_service") {
 			ROSBridgeCallServiceMsg m;
 			m.FromBSON(bson);
-			HandleIncomingServiceRequestMessage(m.id_, m);
+			HandleIncomingServiceRequestMessage(m);
 		}
 	}
 
@@ -306,7 +296,7 @@ namespace rosbridge2cpp {
 		if (std::string(data["op"].GetString(), data["op"].GetStringLength()) == "call_service") {
 			ROSBridgeCallServiceMsg m;
 			m.FromJSON(data);
-			HandleIncomingServiceRequestMessage(m.id_, m);
+			HandleIncomingServiceRequestMessage(m);
 		}
 	}
 
