@@ -105,14 +105,14 @@ public:
 protected:
 
 	// Helper function to append a TArray<float> to a bson_t
-	static void _bson_append_float_tarray(bson_t *b, const char *key, TArray<float> tarray)
+	static void _bson_append_float_tarray(bson_t *b, const char *key, const TArray<float>& tarray)
 	{
 		// float -> double doesn't loose precision
 		_bson_append_double_tarray(b, key, (TArray<double>)tarray);
 	}
 
 	template<class T>
-	static void _bson_append_tarray(bson_t *b, const char *key, TArray<T> tarray, const std::function<void(bson_t*, const char*, T)>& appendT)
+	static void _bson_append_tarray(bson_t *b, const char *key, const TArray<T>& tarray, const std::function<void(bson_t*, const char*, const T&)>& appendT)
 	{
 		bson_t arr;
 		const char *element_key;
@@ -127,20 +127,20 @@ protected:
 	}
 
 	// Helper function to append a TArray<double> to a bson_t
-	static void _bson_append_double_tarray(bson_t *b, const char *key, TArray<double> tarray)
+	static void _bson_append_double_tarray(bson_t *b, const char *key, const TArray<double>& tarray)
 	{
 		_bson_append_tarray<double>(b, key, tarray, [](bson_t *subb, const char *subKey, double d) { BSON_APPEND_DOUBLE(subb, subKey, d); });
 	}
 
 	// Helper function to append a TArray<uint8> to a bson_t
-	static void _bson_append_uint8_tarray(bson_t *b, const char *key, TArray<uint8> tarray)
+	static void _bson_append_uint8_tarray(bson_t *b, const char *key, const TArray<uint8>& tarray)
 	{
 		// uint8 -> uint32 doesn't loose precision
 		_bson_append_uint32_tarray(b, key, (TArray<uint32>)tarray);
 	}
 
 	// Helper function to append a TArray<uint32> to a bson_t
-	static void _bson_append_uint32_tarray(bson_t *b, const char *key, TArray<uint32> tarray)
+	static void _bson_append_uint32_tarray(bson_t *b, const char *key, const TArray<uint32>& tarray)
 	{
 		_bson_append_tarray<uint32>(b, key, tarray, [](bson_t *subb, const char *subKey, uint32 i) { BSON_APPEND_INT32(subb, subKey, i); });
 	}
