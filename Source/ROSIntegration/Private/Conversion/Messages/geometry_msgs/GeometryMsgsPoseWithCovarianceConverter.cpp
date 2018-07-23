@@ -2,7 +2,7 @@
 
 
 UGeometryMsgsPoseWithCovarianceConverter::UGeometryMsgsPoseWithCovarianceConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/PoseWithCovariance";
 }
@@ -14,8 +14,8 @@ bool UGeometryMsgsPoseWithCovarianceConverter::ConvertIncomingMessage(const ROSB
 	return _bson_extract_child_pose_with_covariance(message->full_msg_bson_, "msg", p);
 }
 
-bool UGeometryMsgsPoseWithCovarianceConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool UGeometryMsgsPoseWithCovarianceConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Pose = StaticCastSharedPtr<ROSMessages::geometry_msgs::PoseWithCovariance>(BaseMsg);
 
 	*message = new bson_t;

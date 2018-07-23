@@ -1,13 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "UObject/Object.h"
+#include <CoreMinimal.h>
+#include <UObject/ObjectMacros.h>
+#include <UObject/Object.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "std_msgs/MultiArrayLayout.h"
 #include "Conversion/Messages/std_msgs/StdMsgsMultiArrayDimensionConverter.h"
+
 #include "StdMsgsMultiArrayLayoutConverter.generated.h"
 
 
@@ -54,4 +53,3 @@ public:
 		BSON_APPEND_INT32(b, "data_offset", mal->data_offset);
 	}
 };
-

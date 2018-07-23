@@ -4,7 +4,7 @@
 
 
 UTf2MsgsTFMessageConverter::UTf2MsgsTFMessageConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "tf2_msgs/TFMessage";
 }

@@ -1,9 +1,8 @@
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Engine/GameInstance.h"
+#include <CoreMinimal.h>
+#include <Engine/GameInstance.h>
 #include "ROSIntegrationCore.h"
-
 
 #include "ROSIntegrationGameInstance.generated.h"
 
@@ -34,9 +33,9 @@ public:
 	bool bIsConnected = false;
 
 protected:
-    void CheckROSBridgeHealth();
+	void CheckROSBridgeHealth();
 
-    FTimerHandle TimerHandle_CheckHealth;
+	FTimerHandle TimerHandle_CheckHealth;
 
-    bool bReconnect = false;
+	bool bReconnect = false;
 };

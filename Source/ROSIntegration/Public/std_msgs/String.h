@@ -18,7 +18,5 @@ namespace ROSMessages{
 		//private:
 			FString _Data;
 		};
-
-
 	}
 }

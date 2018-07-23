@@ -14,7 +14,7 @@ namespace ROSMessages {
 			//string label   # label of given dimension
 			FString label;
 
-			//uint32 size    # size of given dimension(in type units)
+			//uint32 size	# size of given dimension(in type units)
 			uint32 size;
 
 			//uint32 stride  # stride of given dimension

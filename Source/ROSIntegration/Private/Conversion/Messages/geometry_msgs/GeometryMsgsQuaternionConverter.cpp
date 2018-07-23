@@ -2,7 +2,7 @@
 
 
 UGeometryMsgsQuaternionConverter::UGeometryMsgsQuaternionConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 	_MessageType = "geometry_msgs/Quaternion";
 }
@@ -14,8 +14,8 @@ bool UGeometryMsgsQuaternionConverter::ConvertIncomingMessage(const ROSBridgePub
 	return _bson_extract_child_quaternion(message->full_msg_bson_, "msg", p);
 }
 
-bool UGeometryMsgsQuaternionConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-
+bool UGeometryMsgsQuaternionConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
+{
 	auto Quaternion = StaticCastSharedPtr<ROSMessages::geometry_msgs::Quaternion>(BaseMsg);
 
 	*message = new bson_t;

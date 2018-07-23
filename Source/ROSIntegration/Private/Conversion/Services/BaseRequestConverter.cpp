@@ -2,19 +2,22 @@
 
 
 UBaseRequestConverter::UBaseRequestConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+: Super(ObjectInitializer)
 {
 }
 
 
-bool UBaseRequestConverter::ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest) {
+bool UBaseRequestConverter::ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest)
+{
 	return false;
 }
 
-bool UBaseRequestConverter::ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request) {
+bool UBaseRequestConverter::ConvertIncomingRequest(ROSBridgeCallServiceMsg &req, TSharedPtr<FROSBaseServiceRequest> Request)
+{
 	return false;
 }
 
-TSharedPtr<FROSBaseServiceRequest> UBaseRequestConverter::AllocateConcreteRequest() {
+TSharedPtr<FROSBaseServiceRequest> UBaseRequestConverter::AllocateConcreteRequest()
+{
 	return TSharedPtr<FROSBaseServiceRequest>();
 }

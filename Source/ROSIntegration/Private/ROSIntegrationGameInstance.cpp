@@ -1,6 +1,6 @@
 #include "ROSIntegrationGameInstance.h"
-#include "std_msgs/String.h"
-#include "bson.h" 
+#include "RI/Topic.h"
+#include "RI/Service.h"
 
 static void MarkAllROSObjectsAsDisconnected()
 {
@@ -10,7 +10,12 @@ static void MarkAllROSObjectsAsDisconnected()
 
         Topic->MarkAsDisconnected();
     }
-    // TODO: also tell Services, Actions, etc.
+    for (TObjectIterator<UService> It; It; ++It)
+    {
+        UService* Service = *It;
+
+        Service->MarkAsDisconnected();
+    }
 }
 
 void UROSIntegrationGameInstance::Init()
@@ -81,7 +86,17 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
                 UE_LOG(LogROS, Error, TEXT("Unable to re-establish topic %s."), *Topic->GetDetailedInfo());
             }
         }
-        // TODO: also tell Services, Actions, etc.
+        for (TObjectIterator<UService> It; It; ++It)
+        {
+            UService* Service = *It;
+
+            bool success = Service->Reconnect(ROSIntegrationCore);
+            if (!success)
+            {
+                bIsConnected = false;
+                UE_LOG(LogROS, Error, TEXT("Unable to re-establish service %s."), *Service->GetDetailedInfo());
+            }
+        }
     }
 
     UE_LOG(LogROS, Display, TEXT("Successfully reconnected to rosbridge %s:%u."), *ROSBridgeServerHost, ROSBridgeServerPort);
