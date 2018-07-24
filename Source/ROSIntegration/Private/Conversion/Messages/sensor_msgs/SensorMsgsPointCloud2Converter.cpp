@@ -22,7 +22,7 @@ bool USensorMsgsPointCloud2Converter::ConvertOutgoingMessage(TSharedPtr<FROSBase
 
     *message = new bson_t;
     bson_init(*message);
-    UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(PointCloud2->header));
+    UStdMsgsHeaderConverter::_bson_append_header(*message, &(PointCloud2->header));
 
     BSON_APPEND_INT32(*message, "height", PointCloud2->height);
     BSON_APPEND_INT32(*message, "width", PointCloud2->width);
