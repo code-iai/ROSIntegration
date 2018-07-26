@@ -47,7 +47,7 @@ namespace ROSMessages {
 
             // To avoid copy operations of the point data, hand over a pointer to the data. 
 			// Please note, that the memory this pointer points to must be valid until this message has been published.
-            uint8* data_ptr;
+            const uint8* data_ptr;
 
             bool is_dense;
 		};
