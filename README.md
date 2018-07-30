@@ -158,6 +158,7 @@ grid_map_msgs/GridMapInfo          | ✓          | ✓
 nav_msgs/Odometry                  | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
 sensor_msgs/Image                  | ✘          | ✓
+sensor_msgs/PointCloud2            | ✘          | ✓
 sensor_msgs/RegionOfInterest       | ✘          | ✘
 
 
