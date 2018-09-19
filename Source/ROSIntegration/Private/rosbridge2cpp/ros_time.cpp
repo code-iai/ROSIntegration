@@ -3,7 +3,7 @@
 namespace rosbridge2cpp {
 
 	bool ROSTime::use_sim_time = false;
-	ROSTime ROSTime::sim_time = ROSTime::ROSTime(0, 0);
+	ROSTime ROSTime::sim_time(0, 0);
 
 	ROSTime ROSTime::now() {
 		if (use_sim_time) {
