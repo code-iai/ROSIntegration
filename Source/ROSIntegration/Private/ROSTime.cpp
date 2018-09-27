@@ -8,7 +8,7 @@ FROSTime FROSTime::Now() {
 		return FROSTime(ROSTime::sim_time.sec_, ROSTime::sim_time.nsec_);
 	}
 
-	const std::chrono::high_resolution_clock::duration time_since_epoch = std::chrono::high_resolution_clock::now().time_since_epoch();
+	const std::chrono::high_resolution_clock::duration time_since_epoch = ROSTime::HRCEpocOffset + std::chrono::high_resolution_clock::now().time_since_epoch();
 	unsigned long seconds_since_epoch =
 		std::chrono::duration_cast<std::chrono::seconds>(time_since_epoch).count();
 	unsigned long long nanoseconds_since_epoch =

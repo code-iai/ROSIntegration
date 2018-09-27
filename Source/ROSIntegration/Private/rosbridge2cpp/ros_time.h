@@ -20,5 +20,7 @@ namespace rosbridge2cpp {
 
 		static bool use_sim_time;
 		static ROSTime sim_time;
+
+		static const std::chrono::high_resolution_clock::duration HRCEpocOffset;
 	};
 }
