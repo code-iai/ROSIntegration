@@ -189,6 +189,7 @@ void UTopic::BeginDestroy() {
 		// prevent any interaction with ROS during destruction
 		_Implementation->_Ric = nullptr;
 	}
+	_State.Connected = false;
 
 	delete _Implementation;
     _Implementation = nullptr;
@@ -244,11 +245,10 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 
 	Impl* oldImplementation = _Implementation;
 	_Implementation = new UTopic::Impl();
+    _Implementation->Init(ROSIntegrationCore, oldImplementation->_Topic, oldImplementation->_MessageType, oldImplementation->_QueueSize);
 
 	_State.Connected = true;
-
-    _Implementation->Init(ROSIntegrationCore, oldImplementation->_Topic, oldImplementation->_MessageType, oldImplementation->_QueueSize);
-    if (_State.Subscribed)
+	if (_State.Subscribed)
     {
         success = Subscribe(oldImplementation->_Callback);
 	}
@@ -256,7 +256,6 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
     {
         success = success && Advertise();
     }
-
 	_State.Connected = success;
 
 	oldImplementation->_Ric = nullptr; // prevent old topic from unsubscribing using the broken connection

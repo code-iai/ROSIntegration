@@ -32,10 +32,26 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "ROS")
 	bool bIsConnected = false;
 
+	UPROPERTY(EditAnywhere, Category = "ROS")
+	bool bSimulateTime = true;
+
+	UPROPERTY(EditAnywhere, Category = "ROS")
+	bool bUseFixedUpdateInterval = false;
+
+	UPROPERTY(EditAnywhere, Category = "ROS")
+	float FixedUpdateInterval = 0.01666666667;
+
 protected:
 	void CheckROSBridgeHealth();
+
+	void OnWorldTickStart(ELevelTick TickType, float DeltaTime);
 
 	FTimerHandle TimerHandle_CheckHealth;
 
 	bool bReconnect = false;
+
+private:
+
+	UPROPERTY()
+	class UTopic* ClockTopic;
 };

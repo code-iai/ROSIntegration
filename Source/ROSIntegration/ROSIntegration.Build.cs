@@ -38,7 +38,6 @@ public class ROSIntegration : ModuleRules
 
 		PublicIncludePaths.AddRange(
 			new string[] {
-				"ROSIntegration/Public"
 				// ... add public include paths required here ...
 			}
 		);
