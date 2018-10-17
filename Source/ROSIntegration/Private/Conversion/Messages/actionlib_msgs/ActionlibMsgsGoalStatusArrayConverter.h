@@ -48,13 +48,9 @@ public:
 	static void _bson_append_goal_status_array(bson_t *b, ROSMessages::actionlib_msgs::GoalStatusArray *g)
 	{
 		UStdMsgsHeaderConverter::_bson_append_header(b, &(g->header));
-		//UStdMsgsHeaderConverter::_bson_append_child_header(b, "header", &(g->header));
 		_bson_append_tarray<ROSMessages::actionlib_msgs::GoalStatus>(b, "status_list", g->status_list, [](bson_t *subb, const char *subKey, ROSMessages::actionlib_msgs::GoalStatus gs)
 		{
 			UActionlibMsgsGoalStatusConverter::_bson_append_child_goal_status(subb, subKey, &gs);
 		});
-		
-		FString fstr(bson_as_json(b, NULL));
-		UE_LOG(LogTemp, Display, TEXT("json: %s"), *fstr);
 	}
 };
