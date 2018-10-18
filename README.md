@@ -40,6 +40,7 @@ This plugin has been tested with Unreal Engine versions;
  * 4.18.2
  * 4.18.3
  * 4.19.1, 4.19.2
+ * 4.20.3
 
 ## Usage
 
@@ -78,7 +79,7 @@ Add the following code into the BeginPlay() method of any actor that is put into
 // Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
-ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
+ExampleTopic->Init(rosinst->ROSIntegrationCore, TEXT("/example_topic"), TEXT("std_msgs/String"));
 
 // (Optional) Advertise the topic
 ExampleTopic->Advertise();
@@ -98,7 +99,7 @@ ExampleTopic->Publish(StringMessage);
 // Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
-ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
+ExampleTopic->Init(rosinst->ROSIntegrationCore, TEXT("/example_topic"), TEXT("std_msgs/String"));
 
 // Create a std::function callback object
 std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<FROSBaseMsg> msg) -> void
@@ -156,6 +157,7 @@ geometry_msgs/Vector3              | ✓          | ✓
 grid_map_msgs/GridMap              | ✓          | ✓
 grid_map_msgs/GridMapInfo          | ✓          | ✓
 nav_msgs/Odometry                  | ✓          | ✓
+rosgraph_msgs/Clock                | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
 sensor_msgs/Image                  | ✘          | ✓
 sensor_msgs/PointCloud2            | ✘          | ✓
