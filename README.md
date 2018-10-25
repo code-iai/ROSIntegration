@@ -157,9 +157,12 @@ grid_map_msgs/GridMap              | ✓          | ✓
 grid_map_msgs/GridMapInfo          | ✓          | ✓
 nav_msgs/Odometry                  | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
-sensor_msgs/Image                  | ✘          | ✓
+sensor_msgs/Image                  | ✓          | ✓
 sensor_msgs/PointCloud2            | ✘          | ✓
 sensor_msgs/RegionOfInterest       | ✘          | ✘
+actionlib_msgs/GoalID              | ✓          | ✓
+actionlib_msgs/GoalStatus          | ✓          | ✓
+actionlib_msgs/GoalStatusArray     | ✓          | ✓
 
 
 Service Message Type               | ROS to UE4 | UE4 to ROS
