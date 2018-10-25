@@ -78,7 +78,7 @@ Add the following code into the BeginPlay() method of any actor that is put into
 // Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
-ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
+ExampleTopic->Init(rosinst->ROSIntegrationCore, TEXT("/example_topic"), TEXT("std_msgs/String"));
 
 // (Optional) Advertise the topic
 ExampleTopic->Advertise();
@@ -98,7 +98,7 @@ ExampleTopic->Publish(StringMessage);
 // Initialize a topic
 UTopic *ExampleTopic = NewObject<UTopic>(UTopic::StaticClass());
 UROSIntegrationGameInstance* rosinst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
-ExampleTopic->Init(rosinst->_Ric, TEXT("/example_topic"), TEXT("std_msgs/String"));
+ExampleTopic->Init(rosinst->ROSIntegrationCore, TEXT("/example_topic"), TEXT("std_msgs/String"));
 
 // Create a std::function callback object
 std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<FROSBaseMsg> msg) -> void
@@ -158,6 +158,7 @@ grid_map_msgs/GridMapInfo          | ✓          | ✓
 nav_msgs/Odometry                  | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
 sensor_msgs/Image                  | ✘          | ✓
+sensor_msgs/PointCloud2            | ✘          | ✓
 sensor_msgs/RegionOfInterest       | ✘          | ✘
 
 

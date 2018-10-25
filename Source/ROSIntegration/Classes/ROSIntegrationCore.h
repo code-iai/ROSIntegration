@@ -31,7 +31,7 @@ private:
 	class Impl;
 	Impl *_Implementation;
 
-	bool bson_test_mode = true;
+	bool _bson_test_mode = true;
 
 	friend class UTopic;
 	friend class UService;

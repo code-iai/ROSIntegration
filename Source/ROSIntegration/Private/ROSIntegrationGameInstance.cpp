@@ -1,6 +1,9 @@
 #include "ROSIntegrationGameInstance.h"
 #include "RI/Topic.h"
 #include "RI/Service.h"
+#include "ROSTime.h"
+#include "rosgraph_msgs/Clock.h"
+#include "Misc/App.h"
 
 static void MarkAllROSObjectsAsDisconnected()
 {
@@ -22,6 +25,8 @@ void UROSIntegrationGameInstance::Init()
 {
 	if (bConnectToROS)
 	{
+		FROSTime::SetUseSimTime(false);
+
         ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass());
 		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerHost, ROSBridgeServerPort);
 
@@ -44,6 +49,24 @@ void UROSIntegrationGameInstance::Init()
         {
             UE_LOG(LogROS, Error, TEXT("Failed to connect to server %s:%u. Please make sure that your rosbridge is running."), *ROSBridgeServerHost, ROSBridgeServerPort);
         }
+
+		if (bSimulateTime)
+		{
+			FApp::SetFixedDeltaTime(FixedUpdateInterval);
+			FApp::SetUseFixedTimeStep(bUseFixedUpdateInterval);
+
+			// tell ROSIntegration to use simulated time
+			FROSTime now = FROSTime::Now();
+			FROSTime::SetUseSimTime(true);
+			FROSTime::SetSimTime(now);
+
+			FWorldDelegates::OnWorldTickStart.AddUObject(this, &UROSIntegrationGameInstance::OnWorldTickStart);
+
+			ClockTopic = NewObject<UTopic>(UTopic::StaticClass());
+			ClockTopic->Init(ROSIntegrationCore, FString(TEXT("/clock")), FString(TEXT("rosgraph_msgs/Clock")), 3);
+
+			ClockTopic->Advertise();
+		}
 	}
 }
 
@@ -105,6 +128,8 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 void UROSIntegrationGameInstance::Shutdown() 
 {
     GetTimerManager().ClearTimer(TimerHandle_CheckHealth);
+
+	FWorldDelegates::OnWorldTickStart.RemoveAll(this);
 }
 
 void UROSIntegrationGameInstance::BeginDestroy() 
@@ -114,3 +139,36 @@ void UROSIntegrationGameInstance::BeginDestroy()
 
 	Super::BeginDestroy();
 }
+
+void UROSIntegrationGameInstance::OnWorldTickStart(ELevelTick TickType, float DeltaTime)
+{
+	if (bSimulateTime)
+	{
+		FApp::SetFixedDeltaTime(FixedUpdateInterval);
+		FApp::SetUseFixedTimeStep(bUseFixedUpdateInterval);
+
+		FROSTime now = FROSTime::Now();
+
+		// advance ROS time
+		unsigned long seconds = (unsigned long)DeltaTime;
+		unsigned long long nanoseconds = (unsigned long long)(DeltaTime * 1000000000ul);
+		unsigned long nanoseconds_only = nanoseconds - (seconds * 1000000000ul);
+
+		now._Sec += seconds;
+		now._NSec += nanoseconds_only;
+
+		if (now._NSec >= 1000000000ul)
+		{
+			now._Sec += 1;
+			now._NSec -= 1000000000ul;
+		}
+
+		// internal update for ROSIntegration
+		FROSTime::SetSimTime(now);
+
+		// send /clock topic to let everyone know what time it is...
+		TSharedPtr<ROSMessages::rosgraph_msgs::Clock> ClockMessage(new ROSMessages::rosgraph_msgs::Clock(now));
+		ClockTopic->Publish(ClockMessage);
+	}
+}
+

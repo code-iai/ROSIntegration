@@ -305,7 +305,7 @@ UROSIntegrationCore::UROSIntegrationCore(const FObjectInitializer& ObjectInitial
 bool UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
 	UE_LOG(LogROS, Verbose, TEXT("CALLING INIT ON RIC IMPL()!"));
 	_Implementation = new UROSIntegrationCore::Impl;
-	return _Implementation->Init(ROSBridgeHost, ROSBridgePort, bson_test_mode);
+	return _Implementation->Init(ROSBridgeHost, ROSBridgePort, _bson_test_mode);
 }
 
 
