@@ -34,7 +34,6 @@ public:
 
 		uint32_t binSize = 0;
 		img->data_ptr = rosbridge2cpp::Helper::get_binary_by_key(TCHAR_TO_UTF8(*(key + ".data")), *b, binSize, KeyFound);
-		img->data = TArray<uint8_t>(img->data_ptr, img->height * img->step);
 
 		return KeyFound;
 	}
