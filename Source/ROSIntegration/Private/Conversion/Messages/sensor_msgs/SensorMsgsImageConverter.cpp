@@ -1,7 +1,5 @@
 #include "Conversion/Messages/sensor_msgs/SensorMsgsImageConverter.h"
 
-#include "sensor_msgs/Image.h"
-
 
 USensorMsgsImageConverter::USensorMsgsImageConverter(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -9,9 +7,11 @@ USensorMsgsImageConverter::USensorMsgsImageConverter(const FObjectInitializer& O
 	_MessageType = "sensor_msgs/Image";
 }
 
-bool USensorMsgsImageConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: Image receiving not implemented yet"));
-	return false;
+bool USensorMsgsImageConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) 
+{
+	auto p = new ROSMessages::sensor_msgs::Image;
+	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
+	return _bson_extract_child_image(message->full_msg_bson_, "msg", p);
 }
 
 bool USensorMsgsImageConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
