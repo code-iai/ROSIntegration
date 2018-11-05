@@ -32,6 +32,6 @@ bool USensorMsgsImageConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> B
 	"encoding", BCON_UTF8(TCHAR_TO_UTF8(*Image->encoding)),
 	"step", BCON_INT32(Image->step)
 	);
-	bson_append_binary(*message, "data", -1, BSON_SUBTYPE_BINARY, Image->data_ptr, Image->height * Image->step );
+	bson_append_binary(*message, "data", -1, BSON_SUBTYPE_BINARY, Image->data, Image->height * Image->step );
 	return true;
 }
