@@ -1,10 +1,11 @@
 #include "SpawnManager.h"
+#include "ROSIntegrationCore.h"
 
 USpawnManager::USpawnManager()
 {
-	std::cout << "Hi from USpawnManager CTOR" << std::endl;
+	UE_LOG(LogROS, Verbose, TEXT("USpawnManager::USpawnManager()"));
 	AddToRoot();
-	//	 _SpawnObjectMessageQueue = new TQueue<SpawnObjectMessage, EQueueMode::Spsc>;
+	//_SpawnObjectMessageQueue = new TQueue<SpawnObjectMessage, EQueueMode::Spsc>;
 }
 
 USpawnManager::~USpawnManager()
@@ -16,13 +17,13 @@ void USpawnManager::Tick(float DeltaTime)
 {
 	SpawnObjectMessage Message;
 	while (_SpawnObjectMessageQueue.Dequeue(Message)) {
-		std::cout << "SpawnManager: Handling SpawnObjectMessage" << std::endl;
-		std::cout << "Message contains: Action " << Message._Action  << " and Type: " << Message._Type<< std::endl;
-		std::cout << "				 " << TCHAR_TO_UTF8(*Message._MeshResource) << std::endl;
-		std::cout << "				 " << TCHAR_TO_UTF8(*Message._Text) << std::endl;
+		UE_LOG(LogROS, Display, TEXT("SpawnManager: Handling SpawnObjectMessage"));
+		UE_LOG(LogROS, Display, TEXT("Message contains: Action %d and Type: %d"), Message._Action, Message._Type);
+		UE_LOG(LogROS, Display, TEXT("				 %s"), *Message._MeshResource);
+		UE_LOG(LogROS, Display, TEXT("				 %s"), *Message._Text);
 
 		//if (Message._Action == SpawnObjectMessage::ACTION_TYPE::MODIFY) {
-		//	std::cout << "SpawnManager: Modify Messages are not supported currently" << std::endl;
+		//	UE_LOG(LogROS, Display, TEXT("SpawnManager: Modify Messages are not supported currently"));
 		//	continue;
 		//}
 
@@ -33,7 +34,7 @@ void USpawnManager::Tick(float DeltaTime)
 			for (TActorIterator<ASpawnableObject> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
 				ASpawnableObject* Obj = *ActorItr;
 				if (ActorItr->GetWorld() != this->GetWorld()) {
-					std::cout << "Skipping object from other World" << std::endl;
+					UE_LOG(LogROS, Display, TEXT("Skipping object from other World"));
 					continue;
 				}
 				if (Message._Action == SpawnObjectMessage::ACTION_TYPE::ACTION_DELETEALL ||
@@ -54,7 +55,7 @@ void USpawnManager::Tick(float DeltaTime)
 			Message._Type == SpawnObjectMessage::OBJECT_TYPE::CYLINDER ||
 			Message._Type == SpawnObjectMessage::OBJECT_TYPE::SPHERE ||
 			Message._Type == SpawnObjectMessage::OBJECT_TYPE::MESH_RESOURCE)) {
-			std::cerr << "Pulled unsupported Object Type from queued SpawnMessage: " << Message._Type << std::endl;
+			UE_LOG(LogROS, Error, TEXT("Pulled unsupported Object Type from queued SpawnMessage: %d"), Message._Type);
 			return;
 		}
 
@@ -117,8 +118,7 @@ void USpawnManager::Tick(float DeltaTime)
 			break;
 
 		default:
-			std::cerr << "Unsupported Object Type in type handling. This should never happen. Check pre-check. Type:"
-				<< Message._Type << std::endl;
+			UE_LOG(LogROS, Error, TEXT("Unsupported Object Type in type handling. This should never happen. Check pre-check. Type: %d"), Message._Type);
 			break;
 		}
 		// Set the scale of the object (Actor)
@@ -126,7 +126,7 @@ void USpawnManager::Tick(float DeltaTime)
 		SpawnedObject->Id = Message._Id;
 
 		// Message has been handeled. Delete it
-		// delete Message;
+		//delete Message;
 	}
 }
 

@@ -1,5 +1,5 @@
 #include "SpawnableObject.h"
-
+#include "ROSIntegrationCore.h"
 
 ASpawnableObject::ASpawnableObject(const FObjectInitializer& ObjectInitializer)
 : ColorToAssign(FLinearColor(1, 0, 0, 1))
@@ -47,7 +47,7 @@ void ASpawnableObject::SetMaterial()
 		TheMatInst->SetVectorParameterValue("Color", ColorToAssign);
 		FoundComp->SetMaterial(0, TheMatInst);
 	} else {
-		std::cout << "No StaticMesh Components in Spawnable. Can't set Material" << std::endl;
+		UE_LOG(LogROS, Warning, TEXT("No StaticMesh Components in Spawnable. Can't set Material"));
 	}
 }
 
@@ -62,6 +62,6 @@ void ASpawnableObject::SetStaticMesh()
 		FoundComp->SetStaticMesh(pCube);
 		FoundComp->SetSimulatePhysics(ActivatePhysics);
 	} else {
-		std::cout << "No StaticMesh Components in Spawnable. Can't set Mesh" << std::endl;
+		UE_LOG(LogROS, Warning, TEXT("No StaticMesh Components in Spawnable. Can't set Mesh"));
 	}
 }

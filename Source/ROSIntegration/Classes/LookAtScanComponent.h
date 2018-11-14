@@ -77,11 +77,11 @@ protected:
 		auto Concrete = StaticCastSharedPtr<ROSMessages::std_msgs::String>(msg);
 		if (Concrete.IsValid())
 		{
-			UE_LOG(LogTemp, Log, TEXT("[ULookAtScanningComponent] Command was: %s"), (*(Concrete->_Data)));
+			UE_LOG(LogROS, Log, TEXT("[ULookAtScanningComponent] Command was: %s"), *Concrete->_Data);
 			FString Command = *(Concrete->_Data);
 
 			if (Command == TEXT("reset")) {
-				UE_LOG(LogTemp, Log, TEXT("[ULookAtScanningComponent] Resetting procedure"));
+				UE_LOG(LogROS, Log, TEXT("[ULookAtScanningComponent] Resetting procedure"));
 				ResetProcedure();
 			}
 			else if (Command == TEXT("ping")) {

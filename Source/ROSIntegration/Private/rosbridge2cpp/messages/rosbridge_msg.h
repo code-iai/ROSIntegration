@@ -84,7 +84,7 @@ public:
 	bool FromJSON(const rapidjson::Document &data)
 	{
 		if (!data.HasMember("op")) {
-			std::cerr << "[ROSBridgeMsg] Received message without 'op' field" << std::endl; // TODO: use UE_LOG
+			std::cerr << "[ROSBridgeMsg] Received message without 'op' field" << std::endl;
 			return false;
 		}
 

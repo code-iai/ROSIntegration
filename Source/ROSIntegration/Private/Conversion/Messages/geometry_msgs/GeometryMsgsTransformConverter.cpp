@@ -9,7 +9,7 @@ UGeometryMsgsTransformConverter::UGeometryMsgsTransformConverter(const FObjectIn
 
 bool UGeometryMsgsTransformConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: Transform receiving not implemented yet")); // TODO: use ROS log
+	UE_LOG(LogROS, Warning, TEXT("ROSIntegration: Transform receiving not implemented yet"));
 	return false;
 }
 
