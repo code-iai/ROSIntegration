@@ -63,6 +63,17 @@ public:
 		return value;
 	}
 
+	static bool GetBoolFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true)
+	{
+		assert(msg != nullptr);
+
+		bool value = rosbridge2cpp::Helper::get_bool_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
+		if (!KeyFound && LogOnErrors) {
+			UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+		}
+		return value;
+	}
+
 	/// @note Example usage in GetDoubleTArrayFromBSON().
 	template<class T>
 	static TArray<T> GetTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, const std::function<T(FString, bson_t*, bool&)>& keyToT, bool LogOnErrors = true)
