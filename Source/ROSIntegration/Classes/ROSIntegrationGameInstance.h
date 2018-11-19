@@ -35,10 +35,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "ROS")
 	bool bSimulateTime = true;
 
-	UPROPERTY(EditAnywhere, Category = "ROS")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	bool bUseFixedUpdateInterval = false;
 
-	UPROPERTY(EditAnywhere, Category = "ROS")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	float FixedUpdateInterval = 0.01666666667;
 
 protected:

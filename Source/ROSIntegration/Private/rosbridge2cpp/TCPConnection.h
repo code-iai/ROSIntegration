@@ -33,12 +33,13 @@ public:
 	TCPConnection() {
 	}
 	~TCPConnection() {
-		if (_sock != nullptr) {
-			_sock->Close();
-		}
 		run_receiver_thread = false;
 		if (receiverThreadSetUp) {
 			receiverThread.join(); // Wait for the receiver thread to finish
+		}
+		if (_sock != nullptr) {
+			_sock->Close();
+			ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->DestroySocket(_sock);
 		}
 	}
 
