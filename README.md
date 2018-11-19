@@ -159,15 +159,38 @@ grid_map_msgs/GridMapInfo          | ✓          | ✓
 nav_msgs/Odometry                  | ✓          | ✓
 rosgraph_msgs/Clock                | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
-sensor_msgs/Image                  | ✘          | ✓
+sensor_msgs/Image                  | ✓          | ✓
 sensor_msgs/PointCloud2            | ✘          | ✓
 sensor_msgs/RegionOfInterest       | ✘          | ✘
+sensor_msgs/LaserScan              | ✓          | ✓
+actionlib_msgs/GoalID              | ✓          | ✓
+actionlib_msgs/GoalStatus          | ✓          | ✓
+actionlib_msgs/GoalStatusArray     | ✓          | ✓
 
 
 Service Message Type               | ROS to UE4 | UE4 to ROS
 ---------------------------------- | ---------- | ----------
 rospy_tutorials/AddTwoIntsRequest  | ✓          | ✓
 rospy_tutorials/AddTwoIntsResponse | ✓          | ✓
+
+### Implementing New Message Types
+
+To be able to send and receive message types with ROSIntegration we need two things: the message definition, as well as a converter of the data in that definition from and to BSON. For reference how to do that look into the message definitions in `Source\ROSIntegration\Public`, and the converters in `Source\ROSIntegration\Private\Conversion\Messages`.
+
+If you need one of the standard message types provided by ROS, you should implement them inside the ROSIntegration's folder structure. Please keep to the naming convention of the ROS documentation for the message definition.
+If you want to implement your own messages you can do that in your own project. You only need to add something like the following to the Build.cs-file of your project:
+
+```
+string rosintegrationPath = Path.GetFullPath(Path.Combine(ModuleDirectory, "../../Plugins/ROSIntegration/Source/ROSIntegration/Private"));
+PrivateIncludePaths.AddRange(
+    new string[] {
+        rosintegrationPath,
+        rosintegrationPath + "/rosbridge2cpp"
+    }
+);
+```
+
+Then you can create the message definition and the converter in your own projects source tree. You can just copy and paste the files of a similar standard message, but don't forget to replace the `ROSINTEGRATION_API` with your own API macro created by Unreal.
 
 ### FAQ
 * Question: My Topic/Service gets closed/unadvertised or my UE4 crashes around one minute after Begin Play.
