@@ -1,15 +1,6 @@
 #include "TCPConnection.h"
-
-//#include <Runtime/Networking/Public/Interfaces/IPv4/IPv4Address.h>
-//#include <Runtime/Networking/Public/Common/TcpSocketBuilder.h>
 #include <Networking.h>
-
 #include <iomanip>
-
-// void messageCallback(const json &message) {
-//		std::string pkg_op = message["op"];
-//		std::cout << "Type of received message: " << pkg_op;
-// }
 
 bool TCPConnection::Init(std::string ip_addr, int port)
 {
@@ -23,21 +14,27 @@ bool TCPConnection::Init(std::string ip_addr, int port)
 	addr->SetIp(*address, ipValid);
 	addr->SetPort(remote_port);
 
-	// FSocket * sock = nullptr;
-	//_sock = FTcpSocketBuilder(TEXT("test ros tcp"))
-	//  .AsReusable().AsNonBlocking();
+	if (!ipValid)
+	{
+		std::cout << "Given IP address is invalid: " << *address << std::endl;
+		return false;
+	}
 
-	_sock = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("test ros tcp"), false);
+	_sock = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->CreateSocket(NAME_Stream, TEXT("Rosbridge TCP client"), false);
 
-	// _sock->SetReceiveBufferSize(4000000, NewSize); // TODO what is the default?
+	/*const int32 ReceiveBufferSize = 4000000;
+	int32 ReceiveBufferSizeSet = 4000000;
+	if (!_sock->SetReceiveBufferSize(4000000, ReceiveBufferSizeSet) ||
+		ReceiveBufferSizeSet < ReceiveBufferSize)
+	{
+		std::cout << "Unable to set requested receiver buffer size" << std::endl;
+	}*/
 
 	if (!_sock->Connect(*addr))
 		return false;
 
-	// // Setting up the receiver thread
+	// Setting up the receiver thread
 	std::cout << "Setting up receiver thread..." << std::endl;
-	//receiverThread = std::move(std::thread([=]() {ReceiverThreadFunction(); return 1; }));
-
 	run_receiver_thread = true;
 	receiverThread = std::thread(&TCPConnection::ReceiverThreadFunction, this);
 	receiverThreadSetUp = true;
@@ -103,7 +100,6 @@ uint16_t TCPConnection::Fletcher16( const uint8_t *data, int count )
 
 int TCPConnection::ReceiverThreadFunction()
 {
-	uint32 count;
 	TArray<uint8> binary_buffer;
 	uint32_t buffer_size = 10 * 1024 * 1024;
 	binary_buffer.Reserve(buffer_size);
@@ -127,11 +123,10 @@ int TCPConnection::ReceiverThreadFunction()
 			}
 		}
 
-		count = 0;
-		if (!_sock->HasPendingData(count) || count == 0)
+		const FTimespan OneSecond(10 * 1000 * 1000);
+		if (!_sock->Wait(ESocketWaitConditions::WaitForRead, OneSecond))
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(2));
-			continue;
+			continue; // check if any errors occured
 		}
 
 		if (bson_only_mode_) {
@@ -139,7 +134,7 @@ int TCPConnection::ReceiverThreadFunction()
 				bson_msg_length_read = 0;
 				binary_buffer.SetNumUninitialized(4, false);
 				int32 bytes_read = 0;
-				if (_sock->Recv(binary_buffer.GetData(), 4, bytes_read)) {
+				if (_sock->Recv(binary_buffer.GetData(), 4, bytes_read) && bytes_read > 0) {
 					bson_msg_length_read += bytes_read;
 					if (bytes_read == 4) {
 #if PLATFORM_LITTLE_ENDIAN
@@ -158,14 +153,11 @@ int TCPConnection::ReceiverThreadFunction()
 					} else {
 						std::cerr << "bytes_read is not 4 in bson_state_read_length==true. It's: " << bytes_read << std::endl;
 					}
-
-				} else {
-					std::cerr << "Failed to recv() even though data is pending. Count vs. bytes_read:" << count << "," << bytes_read << std::endl;
 				}
 			} else {
 				// Message retreival mode
 				int32 bytes_read = 0;
-				if (_sock->Recv(binary_buffer.GetData() + bson_msg_length_read, bson_msg_length - bson_msg_length_read, bytes_read)) {
+				if (_sock->Recv(binary_buffer.GetData() + bson_msg_length_read, bson_msg_length - bson_msg_length_read, bytes_read) && bytes_read > 0) {
 
 					bson_msg_length_read += bytes_read;
 					if (bson_msg_length_read == bson_msg_length) {
@@ -182,13 +174,12 @@ int TCPConnection::ReceiverThreadFunction()
 					} else {
 						std::cout << "Binary buffer num is:" << binary_buffer.Num() << std::endl;
 					}
-				} else {
-					std::cerr << "Failed to recv() in message retreival mode even though data is pending. Count vs. bytes_read:" << count << "," << bytes_read << std::endl;
 				}
 			}
 		}
 		else {
 			FString result;
+			uint32 count = 0;
 			while (_sock->HasPendingData(count) && count > 0) {
 				FArrayReader data;
 				data.SetNumUninitialized(count);
@@ -211,15 +202,14 @@ int TCPConnection::ReceiverThreadFunction()
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			}
-			std::string received_data(TCHAR_TO_UTF8(*result));
-			if (received_data.length() == 0) {
+			if (result.Len() == 0) {
 				continue;
 			}
 
 			// TODO catch parse error properly
 			// auto j = json::parse(received_data);
 			json j;
-			j.Parse(received_data);
+			j.Parse(TCHAR_TO_UTF8(*result));
 
 			if (_incoming_message_callback)
 				_incoming_message_callback(j);

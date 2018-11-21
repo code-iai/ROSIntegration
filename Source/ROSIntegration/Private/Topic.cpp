@@ -184,7 +184,7 @@ void UTopic::PostInitProperties()
 
 void UTopic::BeginDestroy() {
 
-	if (!_State.Connected || !_ROSIntegrationCore || _ROSIntegrationCore->HasAnyFlags(EObjectFlags::RF_BeginDestroyed))
+	if (_Implementation && (!_State.Connected || !_ROSIntegrationCore || _ROSIntegrationCore->HasAnyFlags(EObjectFlags::RF_BeginDestroyed)))
 	{
 		// prevent any interaction with ROS during destruction
 		_Implementation->_Ric = nullptr;
