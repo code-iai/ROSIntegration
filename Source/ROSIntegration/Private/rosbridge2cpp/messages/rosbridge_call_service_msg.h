@@ -35,7 +35,7 @@ public:
 
 		if (!data.HasMember("service"))
 		{
-			std::cerr << "[ROSBridgeCallServiceMsg] Received 'call_service' message without 'service' field." << std::endl; // TODO: use UE_LOG
+			std::cerr << "[ROSBridgeCallServiceMsg] Received 'call_service' message without 'service' field." << std::endl;
 			return false;
 		}
 
@@ -56,7 +56,7 @@ public:
 			return false;
 
 		if (!bson_has_field(&bson, "service")) {
-			std::cerr << "[ROSBridgeCallServiceMsg] Received 'call_service' message without 'service' field." << std::endl; // TODO: use UE_LOG
+			std::cerr << "[ROSBridgeCallServiceMsg] Received 'call_service' message without 'service' field." << std::endl;
 			return false;
 		}
 
@@ -66,7 +66,7 @@ public:
 		key_found = false;
 
 		if (!bson_has_field(&bson, "args")) {
-			std::cerr << "[ROSBridgeCallServiceMsg] Received 'call_service' message without 'args' field." << std::endl; // TODO: use UE_LOG
+			std::cerr << "[ROSBridgeCallServiceMsg] Received 'call_service' message without 'args' field." << std::endl;
 			return false;
 		}
 
@@ -94,9 +94,8 @@ public:
 		add_if_value_changed(bson, "id", id_);
 
 		add_if_value_changed(bson, "service", service_);
-		if (args_bson_ != nullptr) {
-			if (!BSON_APPEND_DOCUMENT(&bson, "args", args_bson_))
-				std::cerr << "Error while appending 'args' bson to messge BSON" << std::endl; // TODO: use UE_LOG
+		if (args_bson_ != nullptr && !BSON_APPEND_DOCUMENT(&bson, "args", args_bson_)) {
+			std::cerr << "Error while appending 'args' bson to messge BSON" << std::endl;
 		}
 	}
 

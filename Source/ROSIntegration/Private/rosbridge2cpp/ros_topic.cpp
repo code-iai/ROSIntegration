@@ -46,7 +46,7 @@ namespace rosbridge2cpp {
 			return false;
 
 		if (!ros_.UnregisterTopicCallback(topic_name_, callback_handle)) { // Unregister callback in ROSBridge
-		  // failed to unregister callback - maybe the method is different from already registered callbacks
+			// failed to unregister callback - maybe the method is different from already registered callbacks
 			std::cerr << "[ROSTopic] Passed unknown callback to ROSTopic::unsubscribe. This callback is not registered in the ROSBridge instance. Aborting..." << std::endl;
 			return false;
 		}
@@ -58,8 +58,8 @@ namespace rosbridge2cpp {
 
 		std::cout << "[ROSTopic] No callbacks registered anymore - unsubscribe from topic" << std::endl;
 		// Handle unsubscription when no callback is registered anymore
-		// rapidjson::Document cmd;
-		// cmd.SetObject();
+		//rapidjson::Document cmd;
+		//cmd.SetObject();
 
 		ROSBridgeUnsubscribeMsg cmd(true);
 		cmd.id_ = subscribe_id_;

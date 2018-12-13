@@ -4,7 +4,7 @@
 
 #if PLATFORM_WINDOWS
 #include "WindowsHWrapper.h"
-#endif
+#endif // PLATFORM_WINDOWS
 
 #include <UObject/ObjectMacros.h>
 #include <UObject/Object.h>
@@ -36,7 +36,7 @@ public:
 
 		double value = rosbridge2cpp::Helper::get_double_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
 		if (!KeyFound && LogOnErrors) {
-			UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+			UE_LOG(LogROS, Error, TEXT("Key %s not present in data"), *Key);
 		}
 		return value;
 	}
@@ -47,7 +47,7 @@ public:
 
 		std::string value = rosbridge2cpp::Helper::get_utf8_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
 		if (!KeyFound && LogOnErrors) {
-			UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+			UE_LOG(LogROS, Error, TEXT("Key %s not present in data"), *Key);
 		}
 		return UTF8_TO_TCHAR(value.c_str());
 	}
@@ -58,7 +58,7 @@ public:
 
 		int32 value = rosbridge2cpp::Helper::get_int32_by_key(TCHAR_TO_UTF8(*Key), *msg, KeyFound);
 		if (!KeyFound && LogOnErrors) {
-			UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+			UE_LOG(LogROS, Error, TEXT("Key %s not present in data"), *Key);
 		}
 		return value;
 	}
@@ -84,8 +84,9 @@ public:
 		const uint8_t* data = rosbridge2cpp::Helper::get_array_by_key(TCHAR_TO_UTF8(*Key), *msg, array_size, KeyFound);
 		if (!KeyFound)
 		{
-			if (LogOnErrors)
-				UE_LOG(LogTemp, Error, TEXT("Key %s not present in data"), *Key);
+			if (LogOnErrors) {
+				UE_LOG(LogROS, Error, TEXT("Key %s not present in data"), *Key);
+			}
 			return TArray<T>();
 		}
 

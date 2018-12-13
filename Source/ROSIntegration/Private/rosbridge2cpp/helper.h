@@ -28,8 +28,8 @@ namespace rosbridge2cpp {
 			return buffer.GetString();
 		}
 
-		// dot_notation refers to MongoDB dot notation¬
-		// returns "" and sets success to true if suitable data can't be found via the dot notation¬
+		// dot_notation refers to MongoDB dot notation
+		// returns "" and sets success to true if suitable data can't be found via the dot notation
 		std::string static get_utf8_by_key(const char *dot_notation, bson_t &b, bool &success)
 		{
 			bson_iter_t iter;
@@ -46,8 +46,8 @@ namespace rosbridge2cpp {
 			return "";
 		}
 
-		// dot_notation refers to MongoDB dot notation¬
-		// returns INT32_MAX and sets success to 'false' if suitable data can't be found via the dot notation¬
+		// dot_notation refers to MongoDB dot notation
+		// returns INT32_MAX and sets success to 'false' if suitable data can't be found via the dot notation
 		int32_t static get_int32_by_key(const char *dot_notation, bson_t &b, bool &success)
 		{
 			bson_iter_t iter;
@@ -63,8 +63,8 @@ namespace rosbridge2cpp {
 			return INT32_MAX;
 		}
 
-		// dot_notation refers to MongoDB dot notation¬
-		// returns -1 and sets success to 'false' if suitable data can't be found via the dot notation¬
+		// dot_notation refers to MongoDB dot notation
+		// returns -1 and sets success to 'false' if suitable data can't be found via the dot notation
 		double static get_double_by_key(const char *dot_notation, bson_t &b, bool &success)
 		{
 			bson_iter_t iter;
@@ -79,10 +79,10 @@ namespace rosbridge2cpp {
 					std::cout << "Key found, but not double typed" << std::endl;
 				}
 				else {
-					//			  std::cout << "Key " << dot_notation <<" found. success is = " << success << std::endl;
-					std::cout << "Key " << dot_notation << " found." << std::endl;
+					//std::cout << "Key " << dot_notation << " found. success is = " << success << std::endl;
+					//std::cout << "Key " << dot_notation << " found." << std::endl;
 					success = true;
-					//			  std::cout << "								 success is now = " << success << std::endl;
+					//std::cout << "								 success is now = " << success << std::endl;
 					return bson_iter_double(&val);
 				}
 			}
@@ -91,8 +91,8 @@ namespace rosbridge2cpp {
 			return -1.0;
 		}
 
-		// dot_notation refers to MongoDB dot notation¬
-		// returns false and sets success to 'false' if suitable data can't be found via the dot notation¬
+		// dot_notation refers to MongoDB dot notation
+		// returns false and sets success to 'false' if suitable data can't be found via the dot notation
 		bool static get_bool_by_key(const char *dot_notation, bson_t &b, bool &success)
 		{
 			bson_iter_t iter;
@@ -108,7 +108,7 @@ namespace rosbridge2cpp {
 			return false;
 		}
 
-		// dot_notation refers to MongoDB dot notation¬
+		// dot_notation refers to MongoDB dot notation
 		// returns nullptr and sets success to 'false' if suitable data can't be found via the dot notation
 		//
 		// binary_data_length holds the size of the buffer where the returned pointer points to.
@@ -132,7 +132,7 @@ namespace rosbridge2cpp {
 			return nullptr;
 		}
 
-		// dot_notation refers to MongoDB dot notation¬
+		// dot_notation refers to MongoDB dot notation
 		// returns nullptr and sets success to 'false' if suitable data can't be found via the dot notation
 		//
 		// array_size holds the size in byte of the buffer where the returned pointer points to.

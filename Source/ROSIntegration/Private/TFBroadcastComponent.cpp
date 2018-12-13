@@ -91,14 +91,17 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 	// Setup the Frame Names
 	// The frame name of this component/actor
 	FString CurrentThisFrameName = ThisFrameName;
+#if WITH_EDITOR
 	if (UseActorLabelAsFrame)
 	{
 		CurrentThisFrameName = GetOwner()->GetActorLabel();
 	}
+#endif // WITH_EDITOR
 
 	// The frame name of the parent
 	FString CurrentParentFrameName = ParentFrameName;
 
+#if WITH_EDITOR
 	// Lookup the parent of this frame in hierarchy
 	if (UseParentActorLabelAsParentFrame)
 	{
@@ -110,9 +113,10 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 			// Please make sure that the child has set it's transformation to 'relative'
 			CoordsRelativeTo = ECoordinateType::COORDTYPE_RELATIVE;
 		} else {
-			UE_LOG(LogTemp, Error, TEXT("[TFBroadcast] UseParentActorLabelAsParentFrame==true and No Parent Component on %s - Add a parent actor or deactive UseParentActorLabelAsParentFrame"), *(GetOwner()->GetActorLabel()));
+			UE_LOG(LogROS, Error, TEXT("[TFBroadcast] UseParentActorLabelAsParentFrame==true and No Parent Component on %s - Add a parent actor or deactivate UseParentActorLabelAsParentFrame"), *(GetOwner()->GetActorLabel()));
 		}
 	}
+#endif // WITH_EDITOR
 
 	FVector ActorTranslation;
 	FQuat ActorRotation;
@@ -120,7 +124,11 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 	if (CoordsRelativeTo == ECoordinateType::COORDTYPE_RELATIVE) {
 		AActor* ParentActor = GetParentActor();
 		if (!ParentActor) {
-			UE_LOG(LogTemp, Error, TEXT("[TFBroadcast] CoordsRelativeTo == ECoordinateType::COORDTYPE_RELATIVE and No Parent Component on %s - Add a parent actor or use world coordinates. Skipping TF Broadcast"), *(GetOwner()->GetActorLabel()));
+#if WITH_EDITOR
+			UE_LOG(LogROS, Error, TEXT("[TFBroadcast] CoordsRelativeTo == ECoordinateType::COORDTYPE_RELATIVE and No Parent Component on %s - Add a parent actor or use world coordinates. Skipping TF Broadcast"), *(GetOwner()->GetActorLabel()));
+#else
+			UE_LOG(LogROS, Error, TEXT("[TFBroadcast] CoordsRelativeTo == ECoordinateType::COORDTYPE_RELATIVE and No Parent Component - Add a parent actor or use world coordinates. Skipping TF Broadcast"));
+#endif // WITH_EDITOR
 			return;
 		}
 		FTransform ThisTransformInWorldCoordinates = GetOwner()->GetRootComponent()->GetComponentTransform();

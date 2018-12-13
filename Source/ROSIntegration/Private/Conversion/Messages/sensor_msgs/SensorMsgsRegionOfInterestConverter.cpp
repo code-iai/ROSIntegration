@@ -10,11 +10,11 @@ USensorMsgsRegionOfInterestConverter::USensorMsgsRegionOfInterestConverter(const
 }
 
 bool USensorMsgsRegionOfInterestConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: RegionOfInterest receiving not implemented yet"));
+	UE_LOG(LogROS, Warning, TEXT("ROSIntegration: RegionOfInterest receiving not implemented yet"));
 	return false;
 }
 
 bool USensorMsgsRegionOfInterestConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
-	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: RegionOfInterest sending not implemented yet"));
+	UE_LOG(LogROS, Warning, TEXT("ROSIntegration: RegionOfInterest sending not implemented yet"));
 	return false;
 }

@@ -50,10 +50,10 @@ void ULookAtScanComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	FVector ThisActorLocation = OwningActor->GetActorLocation();
 	FRotator ThisActorRotation = OwningActor->GetActorRotation();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Actor is now at %f, %f, %f"), ThisActorLocation.X, ThisActorLocation.Y, ThisActorLocation.Z)
-	//UE_LOG(LogTemp, Warning, TEXT("Rotation is now at %f, %f, %f"), ThisActorRotation.Roll, ThisActorRotation.Pitch, ThisActorRotation.Yaw);
-	// UE_LOG(LogTemp, Warning, TEXT("max z offsets %f, %f"), MinOffSetZ, MaxOffSetZ);
-	// UE_LOG(LogTemp, Warning, TEXT("offsets %f, %f"), CurrentOffsetY, CurrentOffsetZ);
+	//UE_LOG(LogROS, Warning, TEXT("Actor is now at %f, %f, %f"), ThisActorLocation.X, ThisActorLocation.Y, ThisActorLocation.Z)
+	//UE_LOG(LogROS, Warning, TEXT("Rotation is now at %f, %f, %f"), ThisActorRotation.Roll, ThisActorRotation.Pitch, ThisActorRotation.Yaw);
+	//UE_LOG(LogROS, Warning, TEXT("max z offsets %f, %f"), MinOffSetZ, MaxOffSetZ);
+	//UE_LOG(LogROS, Warning, TEXT("offsets %f, %f"), CurrentOffsetY, CurrentOffsetZ);
 
 	// Do movement
 	if (TranslationActive) {

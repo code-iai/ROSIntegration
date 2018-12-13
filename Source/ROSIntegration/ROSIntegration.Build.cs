@@ -17,7 +17,7 @@ public class ROSIntegration : ModuleRules
 
 	private string ThirdPartyPath
 	{
-		get { return Path.GetFullPath(Path.Combine(ModulePath, "../../ThirdParty/")); }
+		get { return Path.GetFullPath(Path.Combine(ModulePath, "..", "..", "ThirdParty")); }
 	}
 
 	public ROSIntegration(ReadOnlyTargetRules Target) : base(Target)

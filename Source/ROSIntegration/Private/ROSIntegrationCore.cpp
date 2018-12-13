@@ -14,7 +14,7 @@ DEFINE_LOG_CATEGORY(LogROS);
 
 #define UNREAL_ROS_CHECK_KEY_FOUND \
 	if (!key_found) {\
-		UE_LOG(LogROS, Warning, TEXT("%s is not present in data"), *UTF8_TO_TCHAR(LookupKey.c_str()) );\
+		UE_LOG(LogROS, Warning, TEXT("%s is not present in data"), *FString(UTF8_TO_TCHAR(LookupKey.c_str())));\
 		return;\
 	}
 

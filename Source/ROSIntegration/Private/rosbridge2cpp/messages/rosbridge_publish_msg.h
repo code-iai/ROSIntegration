@@ -33,7 +33,7 @@ public:
 			return false;
 
 		if (!data.HasMember("topic")) {
-			std::cerr << "[ROSBridgePublishMsg] Received 'publish' message without 'topic' field." << std::endl; // TODO: use UE_LOG
+			std::cerr << "[ROSBridgePublishMsg] Received 'publish' message without 'topic' field." << std::endl; // TODO: use generic logging
 			return false;
 		}
 
@@ -101,9 +101,8 @@ public:
 		add_if_value_changed(bson, "type", type_);
 
 		BSON_APPEND_BOOL(&bson, "latch", latch_);
-		if (msg_bson_ != nullptr) {
-			if (!BSON_APPEND_DOCUMENT(&bson, "msg", msg_bson_))
-				std::cerr << "Error while appending 'msg' bson to messge BSON" << std::endl;
+		if (msg_bson_ != nullptr && !BSON_APPEND_DOCUMENT(&bson, "msg", msg_bson_)) {
+			std::cerr << "Error while appending 'msg' bson to messge BSON" << std::endl;
 		}
 	}
 

@@ -34,7 +34,7 @@ public:
 			return false;
 
 		if (!data.HasMember("service")) {
-			std::cerr << "[ROSBridgeServiceResponseMsg] Received 'service_response' message without 'service' field." << std::endl; // TODO: use UE_LOG
+			std::cerr << "[ROSBridgeServiceResponseMsg] Received 'service_response' message without 'service' field." << std::endl; // TODO: use generic logging
 			return false;
 		}
 
@@ -48,7 +48,7 @@ public:
 		result_ = data["result"].GetBool();
 
 		if (!data.HasMember("values")) {
-			return true;  // return true, since args is optional. Other parameters will not be set right now
+			return true; // return true, since args is optional. Other parameters will not be set right now
 		}
 
 		values_json_ = data["values"];
@@ -111,9 +111,8 @@ public:
 		add_if_value_changed(bson, "service", service_);
 
 		BSON_APPEND_BOOL(&bson, "result", result_);
-		if (values_bson_ != nullptr) {
-			if (!BSON_APPEND_DOCUMENT(&bson, "values", values_bson_))
-				std::cerr << "Error while appending 'values' bson to messge BSON" << std::endl;
+		if (values_bson_ != nullptr && !BSON_APPEND_DOCUMENT(&bson, "values", values_bson_)) {
+			std::cerr << "Error while appending 'values' bson to messge BSON" << std::endl;
 		}
 	}
 

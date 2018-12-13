@@ -10,14 +10,14 @@ UTf2MsgsTFMessageConverter::UTf2MsgsTFMessageConverter(const FObjectInitializer&
 }
 
 bool UTf2MsgsTFMessageConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) {
-	UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: TFMessage receiving not implemented yet"));
+	UE_LOG(LogROS, Warning, TEXT("ROSIntegration: TFMessage receiving not implemented yet"));
 	return false;
 }
 
 bool UTf2MsgsTFMessageConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
 	auto TFMessage = StaticCastSharedPtr<ROSMessages::tf2_msgs::TFMessage>(BaseMsg);
 	if (TFMessage->transforms.Num() == 0) {
-		UE_LOG(LogTemp, Warning, TEXT("No transform saved in TFMessage. Can't convert message"));
+		UE_LOG(LogROS, Warning, TEXT("No transform saved in TFMessage. Can't convert message"));
 		return false;
 	}
 
