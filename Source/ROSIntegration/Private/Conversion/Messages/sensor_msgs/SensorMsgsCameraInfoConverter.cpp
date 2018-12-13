@@ -50,6 +50,6 @@ bool USensorMsgsCameraInfoConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseM
 		"do_rectify", BCON_BOOL(CameraInfo->roi.do_rectify),
 		"}"
 	);
-	
+
 	return true;
 }

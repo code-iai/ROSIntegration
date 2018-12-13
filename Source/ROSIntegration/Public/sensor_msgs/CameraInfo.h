@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "ROSBaseMsg.h"
 #include "std_msgs/Header.h"

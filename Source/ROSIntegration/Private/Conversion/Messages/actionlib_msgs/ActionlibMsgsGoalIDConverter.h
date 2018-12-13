@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -43,7 +41,7 @@ public:
 		bson_t stamp;
 		BSON_APPEND_DOCUMENT_BEGIN(b, "stamp", &stamp);
 		BSON_APPEND_INT32(&stamp, "secs", g->stamp._Sec);
-  		BSON_APPEND_INT32(&stamp, "nsecs", g->stamp._NSec);
+		BSON_APPEND_INT32(&stamp, "nsecs", g->stamp._NSec);
 		bson_append_document_end(b, &stamp);
 		BSON_APPEND_UTF8(b, "id", TCHAR_TO_UTF8(*g->id));
 	}

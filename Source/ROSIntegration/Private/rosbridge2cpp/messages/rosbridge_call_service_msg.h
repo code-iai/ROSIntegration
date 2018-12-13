@@ -26,7 +26,7 @@ public:
 	// out of the given JSON data into this class
 	// 'args' will become null afterwards.
 	//
-	// This method parses the "service" and "args" fields from 
+	// This method parses the "service" and "args" fields from
 	// incoming publish messages into this class
 	bool FromJSON(rapidjson::Document &data)
 	{
@@ -106,11 +106,11 @@ public:
 
 	// WARNING:
 	// In contrast to the other bson variable above,
-	// this BSON instance will contain the full 
-	// received rosbridge Message 
+	// this BSON instance will contain the full
+	// received rosbridge Message
 	// when FromBSON has been called in bson_only_mode
 	//
-	// This is due to the absence of robust pointers to subdocuments 
+	// This is due to the absence of robust pointers to subdocuments
 	// in bson that are still valid to use when the parent document
 	// might get modified.
 	bson_t *full_msg_bson_ = nullptr;

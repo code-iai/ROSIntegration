@@ -21,7 +21,7 @@ public:
 	static bool _bson_extract_child_header(bson_t *b, FString key, ROSMessages::std_msgs::Header *h)
 	{
 		bool KeyFound = false;
-		
+
 		// TODO Check if rosbridge sends UINT64 or INT32 (there is no uint32 in bson)
 		h->seq =	  GetInt32FromBSON(key + ".seq", b, KeyFound);		if (!KeyFound) return false;
 		int32 Sec =   GetInt32FromBSON(key + ".stamp.secs", b, KeyFound);  if (!KeyFound) return false;

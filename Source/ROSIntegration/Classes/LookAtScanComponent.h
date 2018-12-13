@@ -14,7 +14,7 @@ class ROSINTEGRATION_API ULookAtScanComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	ULookAtScanComponent();
 

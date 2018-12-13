@@ -25,15 +25,15 @@ public:
 
 		KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(b, key + ".header", &ls->header); if (!KeyFound) return false;
 
-		ls->angle_min       = (float)GetDoubleFromBSON(key + ".angle_min", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		ls->angle_max       = (float)GetDoubleFromBSON(key + ".angle_max", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		ls->angle_increment = (float)GetDoubleFromBSON(key + ".angle_increment", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		ls->time_increment  = (float)GetDoubleFromBSON(key + ".time_increment", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		ls->scan_time       = (float)GetDoubleFromBSON(key + ".scan_time", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		ls->range_min       = (float)GetDoubleFromBSON(key + ".range_min", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		ls->range_max       = (float)GetDoubleFromBSON(key + ".range_max", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		ls->angle_min		= (float)GetDoubleFromBSON(key + ".angle_min", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		ls->angle_max		= (float)GetDoubleFromBSON(key + ".angle_max", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		ls->angle_increment	= (float)GetDoubleFromBSON(key + ".angle_increment", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		ls->time_increment	= (float)GetDoubleFromBSON(key + ".time_increment", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		ls->scan_time		= (float)GetDoubleFromBSON(key + ".scan_time", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		ls->range_min		= (float)GetDoubleFromBSON(key + ".range_min", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		ls->range_max		= (float)GetDoubleFromBSON(key + ".range_max", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 
-		ls->ranges      = GetFloatTArrayFromBSON(key + ".ranges", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		ls->ranges = GetFloatTArrayFromBSON(key + ".ranges", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 		ls->intensities = GetFloatTArrayFromBSON(key + ".intensities", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 
 		return true;

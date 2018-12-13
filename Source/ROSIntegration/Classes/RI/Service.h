@@ -17,7 +17,7 @@ class ROSINTEGRATION_API UService : public UObject
 	GENERATED_UCLASS_BODY()
 public:
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType);
-    void BeginDestroy() override;
+	void BeginDestroy() override;
 
 	bool Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler, bool HandleRequestsInGameThread);
 
@@ -34,30 +34,28 @@ public:
 	 */
 	bool CallService(TSharedPtr<FROSBaseServiceRequest> ServiceRequest, std::function<void(TSharedPtr<FROSBaseServiceResponse>)> ServiceResponse);
 
-    void MarkAsDisconnected();
-    bool Reconnect(UROSIntegrationCore* ROSIntegrationCore);
+	void MarkAsDisconnected();
+	bool Reconnect(UROSIntegrationCore* ROSIntegrationCore);
 
 protected:
 
-    virtual FString GetDetailedInfoInternal() const override;
+	virtual FString GetDetailedInfoInternal() const override;
 
-    UPROPERTY()
-    UROSIntegrationCore* _ROSIntegrationCore;
+	UPROPERTY()
+	UROSIntegrationCore* _ROSIntegrationCore;
 
 private:
 
-    struct State
-    {
-        bool Connected;
+	struct State
+	{
+		bool Connected;
+		bool Advertised;
+	} _State;
 
-        bool Advertised;
-    } _State;
-
-    // Helper to keep track of self-destruction for async functions
-    TSharedPtr<UService, ESPMode::ThreadSafe> _SelfPtr;
+	// Helper to keep track of self-destruction for async functions
+	TSharedPtr<UService, ESPMode::ThreadSafe> _SelfPtr;
 
 	// PIMPL
 	class Impl;
 	Impl* _Implementation;
-
 };

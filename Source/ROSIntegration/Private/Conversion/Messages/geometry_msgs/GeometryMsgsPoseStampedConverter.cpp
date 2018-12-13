@@ -18,7 +18,7 @@ bool UGeometryMsgsPoseStampedConverter::ConvertIncomingMessage(const ROSBridgePu
 	return true;
 }
 
-bool UGeometryMsgsPoseStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) 
+bool UGeometryMsgsPoseStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
 	auto PoseStamped = StaticCastSharedPtr<ROSMessages::geometry_msgs::PoseStamped>(BaseMsg);
 

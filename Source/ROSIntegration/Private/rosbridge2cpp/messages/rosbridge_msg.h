@@ -54,9 +54,9 @@ public:
 		{"service_response", SERVICE_RESPONSE}
 	};
 
-	// std::unordered_map<OpCode, std::string> reverse_op_code_mapping = { 
-	//   {OPCODE_UNDEFINED,"opcode_undefined"}, 
-	//   {FRAGMENT,"fragment"}, 
+	// std::unordered_map<OpCode, std::string> reverse_op_code_mapping = {
+	//   {OPCODE_UNDEFINED,"opcode_undefined"},
+	//   {FRAGMENT,"fragment"},
 	//   {PNG,"png"},
 	//   {SET_LEVEL,"set_level"},
 	//   {STATUS, "status"},

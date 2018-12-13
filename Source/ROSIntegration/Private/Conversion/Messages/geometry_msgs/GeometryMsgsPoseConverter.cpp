@@ -7,7 +7,7 @@ UGeometryMsgsPoseConverter::UGeometryMsgsPoseConverter(const FObjectInitializer&
 	_MessageType = "geometry_msgs/Pose";
 }
 
-bool UGeometryMsgsPoseConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) 
+bool UGeometryMsgsPoseConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
 	auto p = new ROSMessages::geometry_msgs::Pose();
 	BaseMsg = TSharedPtr<FROSBaseMsg>(p);

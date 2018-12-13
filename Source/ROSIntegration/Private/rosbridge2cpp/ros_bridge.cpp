@@ -82,10 +82,10 @@ namespace rosbridge2cpp {
 			return retval;
 
 			// // going from JSON to BSON
-			// std::string str_repr = Helper::get_string_from_rapidjson(data); 
+			// std::string str_repr = Helper::get_string_from_rapidjson(data);
 			// std::cout << "[ROSBridge] serializing from JSON to BSON for: " << str_repr << std::endl;
 			// // return transport_layer_.SendMessage(data,length);
-			// 
+			//
 			// bson_t bson;
 			// bson_error_t error;
 			// if (!bson_init_from_json(&bson, str_repr.c_str(), -1, &error)) {

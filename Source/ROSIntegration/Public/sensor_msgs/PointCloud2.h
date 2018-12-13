@@ -8,27 +8,27 @@ namespace ROSMessages {
 		class PointCloud2 : public FROSBaseMsg {
 		public:
 
-            // we use a local PointField definition here instead of sensor_msgs/PointField 
-            // to avoid unecessary bloat by deriving from FROSBaseMsg and it is only used for PointCloud2 msg anyway
-            struct PointField
-            {
-                enum EType
-                {
-                    INT8 = 1,
-                    UINT8 = 2,
-                    INT16 = 3,
-                    UINT16 = 4,
-                    INT32 = 5,
-                    UINT32 = 6,
-                    FLOAT32 = 7,
-                    FLOAT64 = 8
-                };
+			// we use a local PointField definition here instead of sensor_msgs/PointField 
+			// to avoid unecessary bloat by deriving from FROSBaseMsg and it is only used for PointCloud2 msg anyway
+			struct PointField
+			{
+				enum EType
+				{
+					INT8 = 1,
+					UINT8 = 2,
+					INT16 = 3,
+					UINT16 = 4,
+					INT32 = 5,
+					UINT32 = 6,
+					FLOAT32 = 7,
+					FLOAT64 = 8
+				};
 
-                FString name;
-                uint32 offset;
-                EType  datatype;
-                uint32 count;
-            };
+				FString name;
+				uint32 offset;
+				EType  datatype;
+				uint32 count;
+			};
 
 			PointCloud2() {
 				_MessageType = "sensor_msgs/PointCloud2";
@@ -36,20 +36,20 @@ namespace ROSMessages {
 
 			ROSMessages::std_msgs::Header header;
 
-            uint32 height;
-            uint32 width;
+			uint32 height;
+			uint32 width;
 
-            TArray<PointField> fields;
+			TArray<PointField> fields;
 
-            bool    is_bigendian;
-            uint32  point_step;
-            uint32  row_step;
+			bool	is_bigendian;
+			uint32	point_step;
+			uint32	row_step;
 
-            // To avoid copy operations of the point data, hand over a pointer to the data. 
+			// To avoid copy operations of the point data, hand over a pointer to the data. 
 			// Please note, that the memory this pointer points to must be valid until this message has been published.
-            const uint8* data_ptr;
+			const uint8* data_ptr;
 
-            bool is_dense;
+			bool is_dense;
 		};
 	}
 }
