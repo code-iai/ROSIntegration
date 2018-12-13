@@ -8,14 +8,14 @@ UGeometryMsgsPointConverter::UGeometryMsgsPointConverter(const FObjectInitialize
 	_MessageType = "geometry_msgs/Point";
 }
 
-bool UGeometryMsgsPointConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) 
+bool UGeometryMsgsPointConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
 	auto p = new ROSMessages::geometry_msgs::Point();
 	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
 	return _bson_extract_child_point(message->full_msg_bson_, "msg", p);
 }
 
-bool UGeometryMsgsPointConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) 
+bool UGeometryMsgsPointConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
 	auto Point = StaticCastSharedPtr<ROSMessages::geometry_msgs::Point>(BaseMsg);
 

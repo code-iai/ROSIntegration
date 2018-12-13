@@ -26,7 +26,7 @@ public:
 		if (!UGeometryMsgsPoseConverter::_bson_extract_child_pose(b, key + ".pose", &p->pose))
 			return false;
 
-		p->covariance = GetDoubleTArrayFromBSON(key + ".covariance", b, KeyFound); 
+		p->covariance = GetDoubleTArrayFromBSON(key + ".covariance", b, KeyFound);
 		if (!KeyFound || p->covariance.Num() != 36) // TODO: Magic Number?
 			return false;
 

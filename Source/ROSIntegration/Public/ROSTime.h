@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include <chrono>
 
 class ROSINTEGRATION_API FROSTime {

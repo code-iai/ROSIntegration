@@ -26,7 +26,7 @@ public:
 	enum ACTION_TYPE {
 		ACTION_ADD = 0,
 		ACTION_MODIFY = 0,
-		ACTION_DELETE = 2, 
+		ACTION_DELETE = 2,
 		ACTION_DELETEALL = 3
 	};
 

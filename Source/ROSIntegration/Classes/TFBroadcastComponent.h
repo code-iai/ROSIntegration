@@ -8,7 +8,7 @@
 UENUM(BlueprintType)
 enum class ECoordinateType : uint8
 {
-	COORDTYPE_RELATIVE 	UMETA(DisplayName = "Relative to Parent"),
+	COORDTYPE_RELATIVE	UMETA(DisplayName = "Relative to Parent"),
 	COORDTYPE_WORLD	UMETA(DisplayName = "World Coordinates")
 };
 
@@ -49,8 +49,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	FString ThisFrameName;
 
-	// If ticked, TFComponent will check which Actors owns the Actor with this Component. 
-	// It will then use the ActorLabel of the Parent as the ParentFrameName. 
+	// If ticked, TFComponent will check which Actors owns the Actor with this Component.
+	// It will then use the ActorLabel of the Parent as the ParentFrameName.
 	// When this mode is activated, the option 'CoordsRelativeTo' will be set to "Relative to Parent" and
 	// 'ParentFrameName' will be ignored.
 	UPROPERTY(EditAnywhere)

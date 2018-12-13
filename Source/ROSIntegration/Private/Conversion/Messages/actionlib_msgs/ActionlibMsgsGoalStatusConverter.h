@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -41,7 +39,7 @@ public:
 	static void _bson_append_goal_status(bson_t *b, ROSMessages::actionlib_msgs::GoalStatus *g)
 	{
 		UActionlibMsgsGoalIDConverter::_bson_append_child_goal_id(b, "goal_id", &(g->goal_id));
-  		BSON_APPEND_INT32(b, "status", g->status);
+		BSON_APPEND_INT32(b, "status", g->status);
 		BSON_APPEND_UTF8(b, "text", TCHAR_TO_UTF8(*g->text));
 	}
 };

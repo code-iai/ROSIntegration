@@ -109,7 +109,7 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 		if (ParentActor)
 		{
 			CurrentParentFrameName = ParentActor->GetActorLabel();
-			// Force set the CoordsRelativeTo Variable to RELATIVE 
+			// Force set the CoordsRelativeTo Variable to RELATIVE
 			// Please make sure that the child has set it's transformation to 'relative'
 			CoordsRelativeTo = ECoordinateType::COORDTYPE_RELATIVE;
 		} else {
@@ -165,7 +165,7 @@ void UTFBroadcastComponent::TickComponent(float DeltaTime,
 	TransformStamped.transform.rotation.y = RotationY;
 	TransformStamped.transform.rotation.z = RotationZ;
 	TransformStamped.transform.rotation.w = RotationW;
-	
+
 	TFMessage->transforms.Add(TransformStamped);
 
 	_TFTopic->Publish(TFMessage);

@@ -34,14 +34,14 @@ namespace rosbridge2cpp{
 	// Please note, that these callbacks shouldn't be anonymous entities such as lambdas,
 	// to allow to them to unregister them with unsubscribe()
 	//
-	// For every incoming message, the callback function will receive the "msg" 
+	// For every incoming message, the callback function will receive the "msg"
 	// field of the incoming ROSBridge packet for the given topic
 	//
-	// *WARNING* When using rapidjson transmission, be aware of moving operations 
+	// *WARNING* When using rapidjson transmission, be aware of moving operations
 	// in the topic callbacks.
 	// Things like:
 	// std::string x = message.msg_json_["data"];
-	// in the callbacks will move the data from the 
+	// in the callbacks will move the data from the
 	// the json result to the local variable
 	// When this happens, other callbacks that receive the same message
 	// will read 'Null' on msg_json_

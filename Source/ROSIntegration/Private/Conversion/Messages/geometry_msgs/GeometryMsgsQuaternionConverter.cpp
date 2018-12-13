@@ -7,7 +7,7 @@ UGeometryMsgsQuaternionConverter::UGeometryMsgsQuaternionConverter(const FObject
 	_MessageType = "geometry_msgs/Quaternion";
 }
 
-bool UGeometryMsgsQuaternionConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) 
+bool UGeometryMsgsQuaternionConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
 	auto p = new ROSMessages::geometry_msgs::Quaternion();
 	BaseMsg = TSharedPtr<FROSBaseMsg>(p);

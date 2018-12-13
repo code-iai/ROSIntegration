@@ -9,14 +9,14 @@ UStdMsgsHeaderConverter::UStdMsgsHeaderConverter(const FObjectInitializer& Objec
 	_MessageType = "std_msgs/Header";
 }
 
-bool UStdMsgsHeaderConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) 
+bool UStdMsgsHeaderConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
 	auto p = new ROSMessages::std_msgs::Header();
 	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
 	return _bson_extract_child_header(message->full_msg_bson_, "msg", p);
 }
 
-bool UStdMsgsHeaderConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) 
+bool UStdMsgsHeaderConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
 	auto h = StaticCastSharedPtr<ROSMessages::std_msgs::Header>(BaseMsg);
 

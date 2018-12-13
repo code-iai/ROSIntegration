@@ -33,7 +33,7 @@ public:
 			ROSMessages::std_msgs::Float32MultiArray ret;
 			subKeyFound = UStdMsgsFloat32MultiArrayConverter::_bson_extract_child_float_multi_array(subMsg, subKey, &ret, false);
 			return ret;
-		}); 
+		});
 		if (!KeyFound) return false;
 
 		gm->outer_start_index = GetInt32FromBSON(key + ".outer_start_index", b, KeyFound); if (!KeyFound) return false;
@@ -57,10 +57,10 @@ public:
 		_bson_append_tarray<FString>(b, "layers", gm->layers, [](bson_t *subb, const char *subKey, FString str) { BSON_APPEND_UTF8(subb, subKey, TCHAR_TO_UTF8(*str)); });
 		_bson_append_tarray<FString>(b, "basic_layers", gm->basic_layers, [](bson_t *subb, const char *subKey, FString str) { BSON_APPEND_UTF8(subb, subKey, TCHAR_TO_UTF8(*str)); });
 
-		_bson_append_tarray<ROSMessages::std_msgs::Float32MultiArray>(b, "data", gm->data, [](bson_t *subB, const char *subKey, ROSMessages::std_msgs::Float32MultiArray fma) { 
+		_bson_append_tarray<ROSMessages::std_msgs::Float32MultiArray>(b, "data", gm->data, [](bson_t *subB, const char *subKey, ROSMessages::std_msgs::Float32MultiArray fma) {
 			UStdMsgsFloat32MultiArrayConverter::_bson_append_child_float_multi_array(subB, subKey, &fma);
 		});
-		
+
 		BSON_APPEND_INT32(b, "outer_start_index", gm->outer_start_index);
 		BSON_APPEND_INT32(b, "inner_start_index", gm->inner_start_index);
 	}

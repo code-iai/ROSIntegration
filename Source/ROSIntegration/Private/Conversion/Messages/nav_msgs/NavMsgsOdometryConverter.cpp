@@ -18,13 +18,13 @@ bool UNavMsgsOdometryConverter::ConvertIncomingMessage(const ROSBridgePublishMsg
 	BaseMsg = TSharedPtr<FROSBaseMsg>(o);
 
 	bool KeyFound = false;
-	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(message->full_msg_bson_, TEXT("msg.header"), &o->header); 
+	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(message->full_msg_bson_, TEXT("msg.header"), &o->header);
 	if (!KeyFound) return false;
 
-	o->child_frame_id = GetFStringFromBSON(TEXT("msg.child_frame_id"), message->full_msg_bson_, KeyFound); 
+	o->child_frame_id = GetFStringFromBSON(TEXT("msg.child_frame_id"), message->full_msg_bson_, KeyFound);
 	if (!KeyFound) return false;
 
-	KeyFound = UGeometryMsgsPoseWithCovarianceConverter::_bson_extract_child_pose_with_covariance(message->full_msg_bson_, TEXT("msg.pose"), &o->pose); 
+	KeyFound = UGeometryMsgsPoseWithCovarianceConverter::_bson_extract_child_pose_with_covariance(message->full_msg_bson_, TEXT("msg.pose"), &o->pose);
 	if (!KeyFound) return false;
 
 	KeyFound = UGeometryMsgsTwistWithCovarianceConverter::_bson_extract_child_twist_with_covariance(message->full_msg_bson_, TEXT("msg.twist"), &o->twist);

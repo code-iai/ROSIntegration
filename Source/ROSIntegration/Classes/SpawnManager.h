@@ -37,7 +37,7 @@ public:
 	UWorld* _World;
 
 
-	// Warning: 
+	// Warning:
 	// Enqueued Elements will be deleted after the object has been spawned!
 	//TQueue<SpawnObjectMessage*, EQueueMode::Mpsc> _SpawnObjectMessageQueue; // Produces Segfaults :(
 	//UPROPERTY()

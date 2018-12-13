@@ -24,7 +24,7 @@ public:
 		bool KeyFound = false;
 
 		mal->dim = GetTArrayFromBSON<ROSMessages::std_msgs::MultiArrayDimension>(key + ".dim", b, KeyFound, [LogOnErrors](FString subKey, bson_t* subMsg, bool& subKeyFound)
-		{ 
+		{
 			ROSMessages::std_msgs::MultiArrayDimension ret;
 			subKeyFound = UStdMsgsMultiArrayDimensionConverter::_bson_extract_child_multi_array_dimension(subMsg, subKey, &ret, LogOnErrors);
 			return ret;
@@ -46,9 +46,9 @@ public:
 
 	static void _bson_append_multi_array_layout(bson_t *b, ROSMessages::std_msgs::MultiArrayLayout *mal)
 	{
-		_bson_append_tarray<ROSMessages::std_msgs::MultiArrayDimension>(b, "dim", mal->dim, [](bson_t *subb, const char *subKey, ROSMessages::std_msgs::MultiArrayDimension mad) 
-		{ 
-			UStdMsgsMultiArrayDimensionConverter::_bson_append_child_multi_array_dimension(subb, subKey, &mad); 
+		_bson_append_tarray<ROSMessages::std_msgs::MultiArrayDimension>(b, "dim", mal->dim, [](bson_t *subb, const char *subKey, ROSMessages::std_msgs::MultiArrayDimension mad)
+		{
+			UStdMsgsMultiArrayDimensionConverter::_bson_append_child_multi_array_dimension(subb, subKey, &mad);
 		});
 		BSON_APPEND_INT32(b, "data_offset", mal->data_offset);
 	}

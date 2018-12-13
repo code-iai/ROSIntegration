@@ -19,8 +19,8 @@ namespace rosbridge2cpp {
 		// Send Transform in BSON mode
 		void SendTransform(bson_t &bson);
 
-		// Accepts an json document (where .IsArray() is true) that contains 
-		// an array of geometry_msgs_transformstamped messages. 
+		// Accepts an json document (where .IsArray() is true) that contains
+		// an array of geometry_msgs_transformstamped messages.
 		// Only to be used in json mode
 		void SendTransforms(json &geometry_msgs_transformstamped_array_msg);
 

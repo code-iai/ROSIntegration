@@ -27,15 +27,15 @@ class ROSINTEGRATION_API UTopic: public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	
+
 	bool Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func);
 
 	bool Unsubscribe();
 
 	bool Advertise();
-	
+
 	bool Unadvertise();
-	
+
 	bool Publish(TSharedPtr<FROSBaseMsg> msg);
 
 	void BeginDestroy() override;
@@ -60,8 +60,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnFloat32Message(const float& Data);
 
-    UPROPERTY()
-    UROSIntegrationCore* _ROSIntegrationCore;
+	UPROPERTY()
+	UROSIntegrationCore* _ROSIntegrationCore;
 
 private:
 
@@ -75,8 +75,8 @@ private:
 	} _State;
 
 
-    UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
-    void Init(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
+	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
+	void Init(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
 
 	/**
 	 * Subscribe to the given topic
@@ -84,11 +84,11 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
 	bool Subscribe();
 
-    UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
-    bool PublishStringMessage(const FString& Message);
+	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
+	bool PublishStringMessage(const FString& Message);
 
-    // Helper to keep track of self-destruction for async functions
-    TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
+	// Helper to keep track of self-destruction for async functions
+	TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;
 
 	// PIMPL
 	class Impl;

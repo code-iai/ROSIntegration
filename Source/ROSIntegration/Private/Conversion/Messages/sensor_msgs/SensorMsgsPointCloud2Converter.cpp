@@ -10,7 +10,7 @@ USensorMsgsPointCloud2Converter::USensorMsgsPointCloud2Converter(const FObjectIn
 	_MessageType = "sensor_msgs/PointCloud2";
 }
 
-bool USensorMsgsPointCloud2Converter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg) 
+bool USensorMsgsPointCloud2Converter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
 	UE_LOG(LogROS, Warning, TEXT("ROSIntegration: PointCloud2 receiving not implemented yet"));
 	return false;
@@ -27,7 +27,7 @@ bool USensorMsgsPointCloud2Converter::ConvertOutgoingMessage(TSharedPtr<FROSBase
 	BSON_APPEND_INT32(*message, "height", PointCloud2->height);
 	BSON_APPEND_INT32(*message, "width", PointCloud2->width);
 
-	_bson_append_tarray<ROSMessages::sensor_msgs::PointCloud2::PointField>(*message, "fields", PointCloud2->fields, [] (bson_t* msg, const char* key, const ROSMessages::sensor_msgs::PointCloud2::PointField& point_field) 
+	_bson_append_tarray<ROSMessages::sensor_msgs::PointCloud2::PointField>(*message, "fields", PointCloud2->fields, [] (bson_t* msg, const char* key, const ROSMessages::sensor_msgs::PointCloud2::PointField& point_field)
 	{
 		bson_t PointField;
 		BSON_APPEND_DOCUMENT_BEGIN(msg, key, &PointField);
