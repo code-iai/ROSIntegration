@@ -19,14 +19,14 @@ public:
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	static bool _bson_extract_child_pose_with_covariance(bson_t *b, FString key, ROSMessages::geometry_msgs::PoseWithCovariance *p)
+	static bool _bson_extract_child_pose_with_covariance(bson_t *b, FString key, ROSMessages::geometry_msgs::PoseWithCovariance *p, bool LogOnErrors = true)
 	{
 		bool KeyFound = false;
 
-		if (!UGeometryMsgsPoseConverter::_bson_extract_child_pose(b, key + ".pose", &p->pose))
+		if (!UGeometryMsgsPoseConverter::_bson_extract_child_pose(b, key + ".pose", &p->pose, LogOnErrors))
 			return false;
 
-		p->covariance = GetDoubleTArrayFromBSON(key + ".covariance", b, KeyFound);
+		p->covariance = GetDoubleTArrayFromBSON(key + ".covariance", b, KeyFound, LogOnErrors);
 		if (!KeyFound || p->covariance.Num() != 36) // TODO: Magic Number?
 			return false;
 

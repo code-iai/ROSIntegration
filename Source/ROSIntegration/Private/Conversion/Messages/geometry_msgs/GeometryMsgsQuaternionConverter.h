@@ -19,14 +19,14 @@ public:
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
 
-	static bool _bson_extract_child_quaternion(bson_t *b, FString key, ROSMessages::geometry_msgs::Quaternion *q)
+	static bool _bson_extract_child_quaternion(bson_t *b, FString key, ROSMessages::geometry_msgs::Quaternion *q, bool LogOnErrors = true)
 	{
 		bool KeyFound = false;
 
-		q->x = GetDoubleFromBSON(key + ".x", b, KeyFound); if (!KeyFound) return false;
-		q->y = GetDoubleFromBSON(key + ".y", b, KeyFound); if (!KeyFound) return false;
-		q->z = GetDoubleFromBSON(key + ".z", b, KeyFound); if (!KeyFound) return false;
-		q->w = GetDoubleFromBSON(key + ".w", b, KeyFound); if (!KeyFound) return false;
+		q->x = GetDoubleFromBSON(key + ".x", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		q->y = GetDoubleFromBSON(key + ".y", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		q->z = GetDoubleFromBSON(key + ".z", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		q->w = GetDoubleFromBSON(key + ".w", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 		return true;
 	}
 
