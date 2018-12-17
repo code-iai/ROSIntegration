@@ -18,13 +18,13 @@ public:
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
 
-	static bool _bson_extract_child_vector3(bson_t *b, FString key, ROSMessages::geometry_msgs::Vector3 *p)
+	static bool _bson_extract_child_vector3(bson_t *b, FString key, ROSMessages::geometry_msgs::Vector3 *p, bool LogOnErrors = true)
 	{
 		bool KeyFound = false;
 
-		p->x = GetDoubleFromBSON(key + ".x", b, KeyFound); if (!KeyFound) return false;
-		p->y = GetDoubleFromBSON(key + ".y", b, KeyFound); if (!KeyFound) return false;
-		p->z = GetDoubleFromBSON(key + ".z", b, KeyFound); if (!KeyFound) return false;
+		p->x = GetDoubleFromBSON(key + ".x", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		p->y = GetDoubleFromBSON(key + ".y", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		p->z = GetDoubleFromBSON(key + ".z", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 		return true;
 	}
 

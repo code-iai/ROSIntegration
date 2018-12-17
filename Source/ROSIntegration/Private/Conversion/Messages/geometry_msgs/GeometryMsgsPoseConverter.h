@@ -20,10 +20,10 @@ public:
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	static bool _bson_extract_child_pose(bson_t *b, FString key, ROSMessages::geometry_msgs::Pose *p)
+	static bool _bson_extract_child_pose(bson_t *b, FString key, ROSMessages::geometry_msgs::Pose *p, bool LogOnErrors = true)
 	{
-		if(!UGeometryMsgsPointConverter::_bson_extract_child_point(b, key + ".position", &p->position)) return false;
-		if(!UGeometryMsgsQuaternionConverter::_bson_extract_child_quaternion(b, key + ".orientation", &p->orientation)) return false;
+		if (!UGeometryMsgsPointConverter::_bson_extract_child_point(b, key + ".position", &p->position, LogOnErrors)) return false;
+		if (!UGeometryMsgsQuaternionConverter::_bson_extract_child_quaternion(b, key + ".orientation", &p->orientation, LogOnErrors)) return false;
 
 		return true;
 	}
