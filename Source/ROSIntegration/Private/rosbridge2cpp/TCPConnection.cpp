@@ -145,7 +145,7 @@ int TCPConnection::ReceiverThreadFunction()
 							binary_buffer.GetData()[2] << 16 |
 							binary_buffer.GetData()[1] << 8 |
 							binary_buffer.GetData()[0]
-							);
+						);
 #else
 						bson_msg_length = *((uint32_t*)&binary_buffer[0]);
 #endif
@@ -156,7 +156,7 @@ int TCPConnection::ReceiverThreadFunction()
 						UE_LOG(LogROS, Error, TEXT("bytes_read is not 4 in bson_state_read_length==true. It's: %d"), bytes_read);
 					}
 				} else {
-					UE_LOG(LogROS, Error, TEXT("Failed to recv() even though data is pending. Count vs. bytes_read:%u,%d"), count, bytes_read);
+					UE_LOG(LogROS, Error, TEXT("Failed to recv()"));
 				}
 			} else {
 				// Message retrieval mode
@@ -179,7 +179,7 @@ int TCPConnection::ReceiverThreadFunction()
 						UE_LOG(LogROS, VeryVerbose, TEXT("Binary buffer num is: %d"), binary_buffer.Num());
 					}
 				} else {
-					UE_LOG(LogROS, Error, TEXT("Failed to recv() in message retreival mode even though data is pending. Count vs. bytes_read:%u,%d"), count, bytes_read);
+					UE_LOG(LogROS, Error, TEXT("Failed to recv()"));
 				}
 			}
 		}

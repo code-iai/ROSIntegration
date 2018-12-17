@@ -6,6 +6,7 @@
 #include "WindowsHWrapper.h"
 #endif // PLATFORM_WINDOWS
 
+#include "ROSIntegrationCore.h"
 #include <UObject/ObjectMacros.h>
 #include <UObject/Object.h>
 #include "rosbridge2cpp/messages/rosbridge_publish_msg.h"
