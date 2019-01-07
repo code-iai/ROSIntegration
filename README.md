@@ -65,7 +65,7 @@ This plugin has been tested with Unreal Engine versions;
     ![Change host and port to match your server](Documentation/ue4-setup-03.png)
 
  * Don't forget to save everything (Ctrl + Shift + S)
- * In some cases (for example on Linux), it might be necessary to call the Generate Project Files action on UE4 in order to fetch the new header files for the plugin.
+ * In some cases (for example on Linux), it might be necessary to call the Generate Project Files action on UE4 in order to fetch the new header files for the plugin. Reference: https://wiki.unrealengine.com/Generate_Visual_Studio_Project or https://wiki.unrealengine.com/Building_On_Linux#Generating_project_files_for_your_project
 
 ### C++ Topic Publish Example
 To get started, you can create a new C++ Actor and let it publish a message once at the BeginPlay Event.
