@@ -96,5 +96,11 @@ public class ROSIntegration : ModuleRules
 			PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "libbson-1.0.a"));
 			PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "linux"));
 		}
+		else if (Target.Platform == UnrealTargetPlatform.Mac)
+		{
+			Console.WriteLine("Using macOS BSON files");
+			PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "libbson-static-1.0.a"));
+			PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "mac"));
+		}
 	}
 }
