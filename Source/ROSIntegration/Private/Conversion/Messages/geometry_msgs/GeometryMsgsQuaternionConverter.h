@@ -43,8 +43,8 @@ public:
 	static void _bson_append_quaternion(bson_t *b, ROSMessages::geometry_msgs::Quaternion *q)
 	{
 		BSON_APPEND_DOUBLE(b, "x", q->x);
-		BSON_APPEND_DOUBLE(b, "y", q->x);
-		BSON_APPEND_DOUBLE(b, "z", q->x);
+		BSON_APPEND_DOUBLE(b, "y", q->y);
+		BSON_APPEND_DOUBLE(b, "z", q->z);
 		BSON_APPEND_DOUBLE(b, "w", q->w);
 	}
 };

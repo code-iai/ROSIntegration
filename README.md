@@ -143,6 +143,7 @@ std_msgs/Float32                   | ✓          | ✓
 std_msgs/Float32MultiArray         | ✓          | ✓
 std_msgs/MultiArrayDimension       | ✓          | ✓
 std_msgs/MultiArrayLayout          | ✓          | ✓
+std_msgs/UInt8MultiArray           | ✓          | ✓
 tf2_msgs/TFMessage                 | ✘          | ✓
 geometry_msgs/Point                | ✓          | ✓
 geometry_msgs/Pose                 | ✓          | ✓
