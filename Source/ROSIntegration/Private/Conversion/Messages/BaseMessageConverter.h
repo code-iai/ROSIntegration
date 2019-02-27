@@ -114,6 +114,11 @@ public:
 		// bson doesn't support float, only double. So we use GetDoubleFromBSON internally
 		return GetTArrayFromBSON<float>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetDoubleFromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
 	}
+	
+	static TArray<int32> GetInt32TArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true)
+	{
+		return GetTArrayFromBSON<int32>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetInt32FromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
+	}
 
 protected:
 
@@ -152,6 +157,12 @@ protected:
 		_bson_append_uint32_tarray(b, key, (TArray<uint32>)tarray);
 	}
 
+	// Helper function to append a TArray<int32> to a bson_t
+	static void _bson_append_int32_tarray(bson_t *b, const char *key, const TArray<int32>& tarray)
+	{
+		_bson_append_tarray<int32>(b, key, tarray, [](bson_t *subb, const char *subKey, int32 i) { BSON_APPEND_INT32(subb, subKey, i); });
+	}
+	
 	// Helper function to append a TArray<uint32> to a bson_t
 	static void _bson_append_uint32_tarray(bson_t *b, const char *key, const TArray<uint32>& tarray)
 	{
