@@ -161,6 +161,7 @@ nav_msgs/Odometry                  | ✓          | ✓
 rosgraph_msgs/Clock                | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
 sensor_msgs/Image                  | ✓          | ✓
+sensor_msgs/Imu                    | ✓          | ✓
 sensor_msgs/PointCloud2            | ✘          | ✓
 sensor_msgs/RegionOfInterest       | ✘          | ✘
 sensor_msgs/LaserScan              | ✓          | ✓
