@@ -5,6 +5,8 @@
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsQuaternionConverter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsVector3Converter.h"
 
+// http://docs.ros.org/melodic/api/sensor_msgs/html/msg/Imu.html
+
 USensorMsgsImuConverter::USensorMsgsImuConverter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -24,21 +26,21 @@ bool USensorMsgsImuConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* 
 	if (!KeyFound) return false;
 	
 	i->orientation_covariance = GetDoubleTArrayFromBSON("msg.orientation_covariance", message->full_msg_bson_, KeyFound);
-	if (!KeyFound || i->orientation_covariance.Num() != 9) // TODO: Magic Number?
+	if (!KeyFound || i->orientation_covariance.Num() != 9) // Size of covariance, 3x3 -> array of 9 see ROS IMU msg definition at above link
 		return false;
 	
 	KeyFound = UGeometryMsgsVector3Converter::_bson_extract_child_vector3(message->full_msg_bson_, "msg.angular_velocity",&i->angular_velocity);
 	if (!KeyFound) return false;
 
 	i->angular_velocity_covariance = GetDoubleTArrayFromBSON("msg.angular_velocity_covariance", message->full_msg_bson_, KeyFound);
-	if (!KeyFound || i->angular_velocity_covariance.Num() != 9) // TODO: Magic Number?
+	if (!KeyFound || i->angular_velocity_covariance.Num() != 9) // Size of covariance, 3x3 -> array of 9 see ROS IMU msg definition at above link
 		return false;
 
 	KeyFound = UGeometryMsgsVector3Converter::_bson_extract_child_vector3(message->full_msg_bson_, "msg.linear_acceleration",&i->linear_acceleration);
 	if (!KeyFound) return false;
 
 	i->linear_acceleration_covariance = GetDoubleTArrayFromBSON("msg.linear_acceleration_covariance", message->full_msg_bson_, KeyFound);
-	if (!KeyFound || i->linear_acceleration_covariance.Num() != 9) // TODO: Magic Number?
+	if (!KeyFound || i->linear_acceleration_covariance.Num() != 9) // Size of covariance, 3x3 -> array of 9 see ROS IMU msg definition at above link
 		return false;
 		
 	return true;
