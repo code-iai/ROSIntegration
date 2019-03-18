@@ -95,9 +95,13 @@ public:
 		bool elemFound = true;
 		for (int i = 0; elemFound; ++i)
 		{
-			T temp = keyToT(Key + "." + FString::FromInt(i), msg, elemFound);
+			FString iKey = Key + "." + FString::FromInt(i);
+			elemFound = bson_has_field(msg, TCHAR_TO_UTF8(*iKey));
 			if (elemFound)
+			{
+				T temp = keyToT(iKey, msg, elemFound);
 				ret.Add(temp);
+			}
 		}
 
 		return ret;
