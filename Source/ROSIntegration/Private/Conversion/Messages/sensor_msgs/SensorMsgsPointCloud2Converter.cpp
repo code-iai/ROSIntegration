@@ -12,8 +12,36 @@ USensorMsgsPointCloud2Converter::USensorMsgsPointCloud2Converter(const FObjectIn
 
 bool USensorMsgsPointCloud2Converter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	UE_LOG(LogROS, Warning, TEXT("ROSIntegration: PointCloud2 receiving not implemented yet"));
-	return false;
+	bool KeyFound = false;
+	bson_t *b = message->full_msg_bson_;
+
+	auto p = new ROSMessages::sensor_msgs::PointCloud2;
+	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
+
+	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(b, TEXT("msg.header"), &p->header); if (!KeyFound) return false;
+
+	p->height = GetInt32FromBSON("msg.height", b, KeyFound); if (!KeyFound) return false;
+	p->width = GetInt32FromBSON("msg.width", b, KeyFound); if (!KeyFound) return false;
+
+	p->fields = GetTArrayFromBSON<ROSMessages::sensor_msgs::PointCloud2::PointField>(FString("msg.fields"), b, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) {
+		ROSMessages::sensor_msgs::PointCloud2::PointField ret;
+		ret.name = GetFStringFromBSON(subKey + ".name", subMsg, subKeyFound);
+		ret.offset = GetInt32FromBSON(subKey + ".offset", subMsg, subKeyFound);
+		ret.datatype = static_cast<ROSMessages::sensor_msgs::PointCloud2::PointField::EType>( GetInt32FromBSON(subKey + ".datatype", subMsg, subKeyFound) );
+		ret.count = GetInt32FromBSON(subKey + ".count", subMsg, subKeyFound);
+		return ret;
+	});
+	if (!KeyFound) return false;
+
+	p->is_bigendian = GetBoolFromBSON("msg.is_bigendian", b, KeyFound); if (!KeyFound) return false;
+	p->is_dense = GetBoolFromBSON("msg.is_dense", b, KeyFound); if (!KeyFound) return false;
+	p->point_step = GetInt32FromBSON("msg.point_step", b, KeyFound); if (!KeyFound) return false;
+	p->row_step = GetInt32FromBSON("msg.row_step", b, KeyFound); if (!KeyFound) return false;
+
+	uint32_t binSize = 0;
+	p->data_ptr = rosbridge2cpp::Helper::get_binary_by_key("msg.data", *b, binSize, KeyFound);
+
+	return KeyFound;
 }
 
 bool USensorMsgsPointCloud2Converter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
