@@ -47,7 +47,7 @@ namespace ROSMessages {
 
 			// To avoid copy operations of the point data, hand over a pointer to the data. 
 			// Please note, that the memory this pointer points to must be valid until this message has been published.
-			// When receiving, please not that ROS sends vectors padded to 16 bytes, with 3 floats + 4 byte padding.
+			// When receiving, please note that ROS sends vectors padded to 16 bytes, with 3 floats + 4 byte padding.
 			const uint8* data_ptr;
 
 			bool is_dense;
