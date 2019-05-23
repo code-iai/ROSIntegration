@@ -17,6 +17,19 @@ ROS Functionality can be added to UObjects or AActors by using functions like Ad
 This currently includes an ActorComponent that can be added to AActors to easily publish their coordinates to TF.
 If you need Vision Support in your Unreal Project, you can also add the ROSIntegrationVision Plugin (https://github.com/code-iai/ROSIntegrationVision/) which is compatible with this Plugin.
 
+## Citations
+If you are using this Plugin in an academic context and you want to cite us, we would be happy if you could use the following reference:
+<pre>
+@inproceedings{mania19scenarios,
+  title = {A Framework for Self-Training Perceptual Agents in Simulated Photorealistic Environments},
+  author  = {Patrick Mania and Michael Beetz},
+  year = {2019},
+  booktitle = {International Conference on Robotics and Automation (ICRA)},
+  address = {Montreal, Canada},
+  bib2html_funding = {EASE, REFILLS}
+}
+</pre>
+
 ## Dependencies of this Plugin
 
 This Plugin utilizes BSON to achieve higher transferrates for binary data.
