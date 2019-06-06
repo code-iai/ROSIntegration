@@ -2,6 +2,7 @@
 
 #include <CoreMinimal.h>
 #include <Engine/GameInstance.h>
+#include <Engine/EngineTypes.h>
 #include "ROSIntegrationCore.h"
 
 #include "ROSIntegrationGameInstance.generated.h"
@@ -53,5 +54,5 @@ protected:
 private:
 
 	UPROPERTY()
-	class UTopic* ClockTopic;
+	class UTopic* ClockTopic = nullptr;
 };
