@@ -25,8 +25,7 @@ bool UGeometryMsgsPoseStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBa
 	*message = new bson_t;
 	bson_init(*message);
 
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(PoseStamped->header));
-	UGeometryMsgsPoseConverter::_bson_append_child_pose(*message, "pose", &(PoseStamped->pose));
+	_bson_append_pose_stamped(*message, PoseStamped.Get());
 
 	return true;
 }
