@@ -207,7 +207,7 @@ bool UTopic::Subscribe(std::function<void(TSharedPtr<FROSBaseMsg>)> func)
 bool UTopic::Unsubscribe()
 {
 	_State.Subscribed = false;
-	return _State.Connected && _Implementation->Unsubscribe();
+	return _State.Connected && _Implementation && _Implementation->Unsubscribe();
 }
 
 bool UTopic::Advertise()
