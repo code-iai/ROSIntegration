@@ -25,8 +25,7 @@ If you are using this Plugin in an academic context and you want to cite us, we 
   author  = {Patrick Mania and Michael Beetz},
   year = {2019},
   booktitle = {International Conference on Robotics and Automation (ICRA)},
-  address = {Montreal, Canada},
-  bib2html_funding = {EASE, REFILLS}
+  address = {Montreal, Canada}
 }
 </pre>
 
