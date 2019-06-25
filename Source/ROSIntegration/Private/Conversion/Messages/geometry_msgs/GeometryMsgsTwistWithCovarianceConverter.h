@@ -33,7 +33,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_twist_with_covariance(bson_t *b, const char *key, ROSMessages::geometry_msgs::TwistWithCovariance *t)
+	static void _bson_append_child_twist_with_covariance(bson_t *b, const char *key, const ROSMessages::geometry_msgs::TwistWithCovariance *t)
 	{
 		bson_t twist;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &twist);
@@ -41,7 +41,7 @@ public:
 		bson_append_document_end(b, &twist);
 	}
 
-	static void _bson_append_twist_with_covariance(bson_t *b, ROSMessages::geometry_msgs::TwistWithCovariance *t)
+	static void _bson_append_twist_with_covariance(bson_t *b, const ROSMessages::geometry_msgs::TwistWithCovariance *t)
 	{
 		UGeometryMsgsTwistConverter::_bson_append_child_twist(b, "twist", &(t->twist));
 		_bson_append_double_tarray(b, "covariance", t->covariance);

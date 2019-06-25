@@ -31,7 +31,7 @@ public:
 	}
 
 
-	static void _bson_append_child_quaternion(bson_t *b, const char *key, ROSMessages::geometry_msgs::Quaternion *q)
+	static void _bson_append_child_quaternion(bson_t *b, const char *key, const ROSMessages::geometry_msgs::Quaternion *q)
 	{
 		bson_t quat;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &quat);
@@ -40,7 +40,7 @@ public:
 	}
 
 
-	static void _bson_append_quaternion(bson_t *b, ROSMessages::geometry_msgs::Quaternion *q)
+	static void _bson_append_quaternion(bson_t *b, const ROSMessages::geometry_msgs::Quaternion *q)
 	{
 		BSON_APPEND_DOUBLE(b, "x", q->x);
 		BSON_APPEND_DOUBLE(b, "y", q->y);

@@ -30,7 +30,7 @@ public:
 	}
 
 
-	static void _bson_append_child_point(bson_t *b, const char *key, ROSMessages::geometry_msgs::Point *p)
+	static void _bson_append_child_point(bson_t *b, const char *key, const ROSMessages::geometry_msgs::Point *p)
 	{
 		bson_t point;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &point);
@@ -39,7 +39,7 @@ public:
 	}
 
 
-	static void _bson_append_point(bson_t *b, ROSMessages::geometry_msgs::Point *p)
+	static void _bson_append_point(bson_t *b, const ROSMessages::geometry_msgs::Point *p)
 	{
 		BSON_APPEND_DOUBLE(b, "x", p->x);
 		BSON_APPEND_DOUBLE(b, "y", p->y);

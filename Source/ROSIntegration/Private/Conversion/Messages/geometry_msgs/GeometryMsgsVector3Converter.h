@@ -28,7 +28,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_vector3(bson_t *b, const char *key, ROSMessages::geometry_msgs::Vector3 *v3)
+	static void _bson_append_child_vector3(bson_t *b, const char *key, const ROSMessages::geometry_msgs::Vector3 *v3)
 	{
 		bson_t vec;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &vec);
@@ -37,7 +37,7 @@ public:
 	}
 
 
-	static void _bson_append_vector3(bson_t *b, ROSMessages::geometry_msgs::Vector3 *v3)
+	static void _bson_append_vector3(bson_t *b, const ROSMessages::geometry_msgs::Vector3 *v3)
 	{
 		BSON_APPEND_DOUBLE(b, "x", v3->x);
 		BSON_APPEND_DOUBLE(b, "y", v3->y);

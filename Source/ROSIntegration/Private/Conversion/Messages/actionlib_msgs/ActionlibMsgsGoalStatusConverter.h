@@ -28,7 +28,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_goal_status(bson_t *b, const char *key, ROSMessages::actionlib_msgs::GoalStatus *g)
+	static void _bson_append_child_goal_status(bson_t *b, const char *key, const ROSMessages::actionlib_msgs::GoalStatus *g)
 	{
 		bson_t goalStatus;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &goalStatus);
@@ -36,7 +36,7 @@ public:
 		bson_append_document_end(b, &goalStatus);
 	}
 
-	static void _bson_append_goal_status(bson_t *b, ROSMessages::actionlib_msgs::GoalStatus *g)
+	static void _bson_append_goal_status(bson_t *b, const ROSMessages::actionlib_msgs::GoalStatus *g)
 	{
 		UActionlibMsgsGoalIDConverter::_bson_append_child_goal_id(b, "goal_id", &(g->goal_id));
 		BSON_APPEND_INT32(b, "status", g->status);

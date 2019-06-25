@@ -27,7 +27,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_twist(bson_t *b, const char *key, ROSMessages::geometry_msgs::Twist *t)
+	static void _bson_append_child_twist(bson_t *b, const char *key, const ROSMessages::geometry_msgs::Twist *t)
 	{
 		bson_t twist;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &twist);
@@ -35,7 +35,7 @@ public:
 		bson_append_document_end(b, &twist);
 	}
 
-	static void _bson_append_twist(bson_t *b, ROSMessages::geometry_msgs::Twist *t)
+	static void _bson_append_twist(bson_t *b, const ROSMessages::geometry_msgs::Twist *t)
 	{
 		UGeometryMsgsVector3Converter::_bson_append_child_vector3(b, "linear", &(t->linear));
 		UGeometryMsgsVector3Converter::_bson_append_child_vector3(b, "angular", &(t->angular));

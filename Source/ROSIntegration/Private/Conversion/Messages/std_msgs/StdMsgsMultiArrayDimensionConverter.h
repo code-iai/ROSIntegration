@@ -28,7 +28,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_multi_array_dimension(bson_t *b, const char *key, ROSMessages::std_msgs::MultiArrayDimension *mad)
+	static void _bson_append_child_multi_array_dimension(bson_t *b, const char *key, const ROSMessages::std_msgs::MultiArrayDimension *mad)
 	{
 		bson_t m;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &m);
@@ -37,7 +37,7 @@ public:
 	}
 
 
-	static void _bson_append_multi_array_dimension(bson_t *b, ROSMessages::std_msgs::MultiArrayDimension *mad)
+	static void _bson_append_multi_array_dimension(bson_t *b, const ROSMessages::std_msgs::MultiArrayDimension *mad)
 	{
 		BSON_APPEND_UTF8(b, "label", TCHAR_TO_UTF8(*mad->label));
 		BSON_APPEND_INT32(b, "size", mad->size);

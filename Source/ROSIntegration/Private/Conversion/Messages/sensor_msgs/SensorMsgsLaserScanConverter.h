@@ -39,7 +39,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_laser_scan(bson_t *b, const char *key, ROSMessages::sensor_msgs::LaserScan *ls)
+	static void _bson_append_child_laser_scan(bson_t *b, const char *key, const ROSMessages::sensor_msgs::LaserScan *ls)
 	{
 		bson_t layout;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &layout);
@@ -47,7 +47,7 @@ public:
 		bson_append_document_end(b, &layout);
 	}
 
-	static void _bson_append_laser_scan(bson_t *b, ROSMessages::sensor_msgs::LaserScan *ls)
+	static void _bson_append_laser_scan(bson_t *b, const ROSMessages::sensor_msgs::LaserScan *ls)
 	{
 		UStdMsgsHeaderConverter::_bson_append_header(b, &ls->header);
 

@@ -33,7 +33,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_pose_stamped(bson_t *b, const char *key, ROSMessages::geometry_msgs::PoseStamped * ps)
+	static void _bson_append_child_pose_stamped(bson_t *b, const char *key, const ROSMessages::geometry_msgs::PoseStamped * ps)
 	{
 		bson_t layout;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &layout);
@@ -41,7 +41,7 @@ public:
 		bson_append_document_end(b, &layout);
 	}
 
-	static void _bson_append_pose_stamped(bson_t *b, ROSMessages::geometry_msgs::PoseStamped * ps)
+	static void _bson_append_pose_stamped(bson_t *b, const ROSMessages::geometry_msgs::PoseStamped * ps)
 	{
 		UStdMsgsHeaderConverter::_bson_append_header(b, &(ps->header));
 		UGeometryMsgsPoseConverter::_bson_append_child_pose(b, "pose", &(ps->pose));

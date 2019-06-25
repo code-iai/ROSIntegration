@@ -29,7 +29,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_uint8_multi_array(bson_t *b, const char *key, ROSMessages::std_msgs::UInt8MultiArray *fma)
+	static void _bson_append_child_uint8_multi_array(bson_t *b, const char *key, const ROSMessages::std_msgs::UInt8MultiArray *fma)
 	{
 		bson_t layout;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &layout);
@@ -37,7 +37,7 @@ public:
 		bson_append_document_end(b, &layout);
 	}
 
-	static void _bson_append_uint8_multi_array(bson_t *b, ROSMessages::std_msgs::UInt8MultiArray *bma)
+	static void _bson_append_uint8_multi_array(bson_t *b, const ROSMessages::std_msgs::UInt8MultiArray *bma)
 	{
 		UStdMsgsMultiArrayLayoutConverter::_bson_append_child_multi_array_layout(b, "layout", &bma->layout);
 		bson_append_binary(b, "data", -1, BSON_SUBTYPE_BINARY, bma->data, bma->layout.dim[0].size);

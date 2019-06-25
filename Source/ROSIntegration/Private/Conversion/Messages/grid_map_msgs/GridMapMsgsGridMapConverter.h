@@ -50,7 +50,7 @@ public:
 		bson_append_document_end(b, &map);
 	}
 
-	static void _bson_append_grid_map(bson_t *b, ROSMessages::grid_map_msgs::GridMap *gm)
+	static void _bson_append_grid_map(bson_t *b, const ROSMessages::grid_map_msgs::GridMap *gm)
 	{
 		UGridMapMsgsGridMapInfoConverter::_bson_append_child_grid_map_info(b, "info", &gm->info);
 

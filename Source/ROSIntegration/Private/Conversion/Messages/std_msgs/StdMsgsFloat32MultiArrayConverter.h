@@ -29,7 +29,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_float_multi_array(bson_t *b, const char *key, ROSMessages::std_msgs::Float32MultiArray *fma)
+	static void _bson_append_child_float_multi_array(bson_t *b, const char *key, const ROSMessages::std_msgs::Float32MultiArray *fma)
 	{
 		bson_t layout;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &layout);
@@ -37,7 +37,7 @@ public:
 		bson_append_document_end(b, &layout);
 	}
 
-	static void _bson_append_float_multi_array(bson_t *b, ROSMessages::std_msgs::Float32MultiArray *fma)
+	static void _bson_append_float_multi_array(bson_t *b, const ROSMessages::std_msgs::Float32MultiArray *fma)
 	{
 		UStdMsgsMultiArrayLayoutConverter::_bson_append_child_multi_array_layout(b, "layout", &fma->layout);
 		_bson_append_float_tarray(b, "data", fma->data);
