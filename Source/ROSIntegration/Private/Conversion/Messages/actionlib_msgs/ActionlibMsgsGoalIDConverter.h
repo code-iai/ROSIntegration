@@ -28,7 +28,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_goal_id(bson_t *b, const char *key, ROSMessages::actionlib_msgs::GoalID *g)
+	static void _bson_append_child_goal_id(bson_t *b, const char *key, const ROSMessages::actionlib_msgs::GoalID *g)
 	{
 		bson_t goalID;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &goalID);
@@ -36,7 +36,7 @@ public:
 		bson_append_document_end(b, &goalID);
 	}
 
-	static void _bson_append_goal_id(bson_t *b, ROSMessages::actionlib_msgs::GoalID *g)
+	static void _bson_append_goal_id(bson_t *b, const ROSMessages::actionlib_msgs::GoalID *g)
 	{
 		bson_t stamp;
 		BSON_APPEND_DOCUMENT_BEGIN(b, "stamp", &stamp);

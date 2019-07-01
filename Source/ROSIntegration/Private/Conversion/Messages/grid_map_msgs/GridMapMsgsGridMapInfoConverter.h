@@ -33,7 +33,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_grid_map_info(bson_t *b, const char *key, ROSMessages::grid_map_msgs::GridMapInfo *g)
+	static void _bson_append_child_grid_map_info(bson_t *b, const char *key, const ROSMessages::grid_map_msgs::GridMapInfo *g)
 	{
 		bson_t info;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &info);
@@ -41,7 +41,7 @@ public:
 		bson_append_document_end(b, &info);
 	}
 
-	static void _bson_append_grid_map_info(bson_t *b, ROSMessages::grid_map_msgs::GridMapInfo *g)
+	static void _bson_append_grid_map_info(bson_t *b, const ROSMessages::grid_map_msgs::GridMapInfo *g)
 	{
 		UStdMsgsHeaderConverter::_bson_append_header(b, &(g->header));
 		BSON_APPEND_DOUBLE(b, "resolution", g->resolution);

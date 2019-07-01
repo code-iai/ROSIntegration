@@ -36,7 +36,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_multi_array_layout(bson_t *b, const char *key, ROSMessages::std_msgs::MultiArrayLayout *mal)
+	static void _bson_append_child_multi_array_layout(bson_t *b, const char *key, const ROSMessages::std_msgs::MultiArrayLayout *mal)
 	{
 		bson_t layout;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &layout);
@@ -44,7 +44,7 @@ public:
 		bson_append_document_end(b, &layout);
 	}
 
-	static void _bson_append_multi_array_layout(bson_t *b, ROSMessages::std_msgs::MultiArrayLayout *mal)
+	static void _bson_append_multi_array_layout(bson_t *b, const ROSMessages::std_msgs::MultiArrayLayout *mal)
 	{
 		_bson_append_tarray<ROSMessages::std_msgs::MultiArrayDimension>(b, "dim", mal->dim, [](bson_t *subb, const char *subKey, ROSMessages::std_msgs::MultiArrayDimension mad)
 		{

@@ -43,7 +43,7 @@ public:
 		bson_append_document_end(b, &mapmetadata);
 	}
 	
-	static void _bson_append_map_meta_data(bson_t *b, ROSMessages::nav_msgs::MapMetaData *mmd)
+	static void _bson_append_map_meta_data(bson_t *b, const ROSMessages::nav_msgs::MapMetaData *mmd)
 	{
 		bson_t map_load_time;
 		BSON_APPEND_DOCUMENT_BEGIN(b, "map_load_time", &map_load_time);

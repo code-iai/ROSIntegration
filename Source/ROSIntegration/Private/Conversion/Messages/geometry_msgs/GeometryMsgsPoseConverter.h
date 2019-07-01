@@ -28,7 +28,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_pose(bson_t *b, const char *key, ROSMessages::geometry_msgs::Pose *t)
+	static void _bson_append_child_pose(bson_t *b, const char *key, const ROSMessages::geometry_msgs::Pose *t)
 	{
 		bson_t pose;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &pose);
@@ -36,7 +36,7 @@ public:
 		bson_append_document_end(b, &pose);
 	}
 
-	static void _bson_append_pose(bson_t *b, ROSMessages::geometry_msgs::Pose *t)
+	static void _bson_append_pose(bson_t *b, const ROSMessages::geometry_msgs::Pose *t)
 	{
 		UGeometryMsgsPointConverter::_bson_append_child_point(b, "position", &(t->position));
 		UGeometryMsgsQuaternionConverter::_bson_append_child_quaternion(b, "orientation", &(t->orientation));

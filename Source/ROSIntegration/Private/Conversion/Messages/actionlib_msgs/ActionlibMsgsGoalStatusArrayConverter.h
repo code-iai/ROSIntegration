@@ -35,7 +35,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_goal_status_array(bson_t *b, const char *key, ROSMessages::actionlib_msgs::GoalStatusArray *g)
+	static void _bson_append_child_goal_status_array(bson_t *b, const char *key, const ROSMessages::actionlib_msgs::GoalStatusArray *g)
 	{
 		bson_t array;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &array);
@@ -43,7 +43,7 @@ public:
 		bson_append_document_end(b, &array);
 	}
 
-	static void _bson_append_goal_status_array(bson_t *b, ROSMessages::actionlib_msgs::GoalStatusArray *g)
+	static void _bson_append_goal_status_array(bson_t *b, const ROSMessages::actionlib_msgs::GoalStatusArray *g)
 	{
 		UStdMsgsHeaderConverter::_bson_append_header(b, &(g->header));
 		_bson_append_tarray<ROSMessages::actionlib_msgs::GoalStatus>(b, "status_list", g->status_list, [](bson_t *subb, const char *subKey, ROSMessages::actionlib_msgs::GoalStatus gs)
