@@ -170,6 +170,7 @@ geometry_msgs/Vector3              | ✓          | ✓
 grid_map_msgs/GridMap              | ✓          | ✓
 grid_map_msgs/GridMapInfo          | ✓          | ✓
 nav_msgs/Odometry                  | ✓          | ✓
+nav_msgs/Path                      | ✓          | ✓
 rosgraph_msgs/Clock                | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
 sensor_msgs/Image                  | ✓          | ✓
