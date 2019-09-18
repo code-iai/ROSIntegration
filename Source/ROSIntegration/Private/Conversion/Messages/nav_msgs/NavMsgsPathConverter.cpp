@@ -19,9 +19,9 @@ bool UNavMsgsPathConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* me
 	bool KeyFound = false;
 	bson_t *b = message->full_msg_bson_;
 
-	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(b, TEXT(".header"), &p->header); if (!KeyFound) return false;
+	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(b, TEXT("msg.header"), &p->header); if (!KeyFound) return false;
 
-	p->poses = GetTArrayFromBSON<ROSMessages::geometry_msgs::PoseStamped>(FString(".poses"), b, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) {
+	p->poses = GetTArrayFromBSON<ROSMessages::geometry_msgs::PoseStamped>(FString("msg.poses"), b, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) {
 		ROSMessages::geometry_msgs::PoseStamped ret;
 		subKeyFound = UGeometryMsgsPoseStampedConverter::_bson_extract_child_pose_stamped(subMsg, subKey, &ret);
 		return ret;
