@@ -5,19 +5,20 @@
 #include "rosgraph_msgs/Clock.h"
 #include "Misc/App.h"
 
+
 static void MarkAllROSObjectsAsDisconnected()
 {
 	for (TObjectIterator<UTopic> It; It; ++It)
 	{
 		UTopic* Topic = *It;
 
-		Topic->MarkAsDisconnected();
+		Topic->MarkAsDisconnected();  
 	}
 	for (TObjectIterator<UService> It; It; ++It)
 	{
 		UService* Service = *It;
 
-		Service->MarkAsDisconnected();
+		Service->MarkAsDisconnected();   
 	}
 }
 
@@ -25,12 +26,34 @@ void UROSIntegrationGameInstance::Init()
 {
 	if (bConnectToROS)
 	{
+		bool resLock = initMutex_.TryLock(); 
+		if (!resLock)
+		{
+			UE_LOG(LogROS, Display, TEXT("UROSIntegrationGameInstance::Init() - already connection to ROS bridge!"));
+			return; // EXIT POINT!
+		}
+
+		FLocker locker(&initMutex_);
+
+		UE_LOG(LogROS, Display, TEXT("UROSIntegrationGameInstance::Init() - connecting to ROS bridge..."));
+
 		FROSTime::SetUseSimTime(false);
 
-		ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass());
+		if (ROSIntegrationCore)
+		{
+			UROSIntegrationCore* oldRosCore = ROSIntegrationCore;
+			ROSIntegrationCore = nullptr;
+			oldRosCore->ConditionalBeginDestroy();
+		}
+
+		ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass()); // ORIGINAL 
 		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerHost, ROSBridgeServerPort);
 
-		GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth, 1.0f, true, 5.0f);
+		if (!bTimerSet)
+		{
+			bTimerSet = true; 
+			GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth, 1.0f, true, 5.0f);
+		}
 
 		if (bIsConnected)
 		{
@@ -42,7 +65,7 @@ void UROSIntegrationGameInstance::Init()
 			}
 			else
 			{
-				UE_LOG(LogROS, Error, TEXT("World not available in UROSIntegrationGameInstance::Init()!"));
+				UE_LOG(LogROS, Display, TEXT("World not available in UROSIntegrationGameInstance::Init()!"));
 			}
 		}
 		else if (!bReconnect)
@@ -62,7 +85,8 @@ void UROSIntegrationGameInstance::Init()
 
 			FWorldDelegates::OnWorldTickStart.AddUObject(this, &UROSIntegrationGameInstance::OnWorldTickStart);
 
-			ClockTopic = NewObject<UTopic>(UTopic::StaticClass());
+			ClockTopic = NewObject<UTopic>(UTopic::StaticClass()); // ORIGINAL
+
 			ClockTopic->Init(ROSIntegrationCore, FString(TEXT("/clock")), FString(TEXT("rosgraph_msgs/Clock")), 3);
 
 			ClockTopic->Advertise();
@@ -72,6 +96,8 @@ void UROSIntegrationGameInstance::Init()
 
 void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 {
+	if (!bCheckHealth) return; 
+
 	if (bIsConnected && ROSIntegrationCore->IsHealthy())
 	{
 		return;
@@ -125,19 +151,45 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 	UE_LOG(LogROS, Display, TEXT("Successfully reconnected to rosbridge %s:%u."), *ROSBridgeServerHost, ROSBridgeServerPort);
 }
 
+// N.B.: from log, first comes Shutdown() and then BeginDestroy()
 void UROSIntegrationGameInstance::Shutdown()
 {
-	GetTimerManager().ClearTimer(TimerHandle_CheckHealth);
+	UE_LOG(LogROS, Display, TEXT("ROS Game Instance - shutdown start"));
+	if (bConnectToROS)
+	{
+		if(bTimerSet) GetTimerManager().ClearTimer(TimerHandle_CheckHealth);
 
-	FWorldDelegates::OnWorldTickStart.RemoveAll(this);
+		if (bSimulateTime)
+		{
+			FWorldDelegates::OnWorldTickStart.RemoveAll(this);
+		}
+
+		MarkAllROSObjectsAsDisconnected(); // moved here from UROSIntegrationGameInstance::BeginDestroy()
+
+		UE_LOG(LogROS, Display, TEXT("ROS Game Instance - shutdown done"));
+	}
 }
 
 void UROSIntegrationGameInstance::BeginDestroy()
 {
 	// tell everyone (Topics, Services, etc.) they should stop any interaction with ROS.
-	MarkAllROSObjectsAsDisconnected();
+	if (bConnectToROS) 
+	{
+		UE_LOG(LogROS, Display, TEXT("ROS Game Instance - begin destroy - start"));
+
+		//MarkAllROSObjectsAsDisconnected();  // moved in UROSIntegrationGameInstance::Shutdown()
+
+		//ROSIntegrationCore->ConditionalBeginDestroy();
+		//ROSIntegrationCore = nullptr; // this brings troubles (reported from crash window on editor closing)
+
+		//ClockTopic->ConditionalBeginDestroy(); // this brings troubles (reported from crash window on editor closing)
+		
+		//if (GetWorld()) GetWorld()->ForceGarbageCollection(true);  // this brings troubles (reported from crash window on editor closing)
+	}
 
 	Super::BeginDestroy();
+
+	UE_LOG(LogROS, Display, TEXT("ROS Game Instance - begin destroy - done"));
 }
 
 void UROSIntegrationGameInstance::OnWorldTickStart(ELevelTick TickType, float DeltaTime)

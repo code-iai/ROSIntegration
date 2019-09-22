@@ -15,11 +15,11 @@ class ROSINTEGRATION_API UROSIntegrationGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
-	void BeginDestroy() override;
+	virtual void BeginDestroy() override;
 
 public:
 	UPROPERTY()
-	UROSIntegrationCore* ROSIntegrationCore;
+	UROSIntegrationCore* ROSIntegrationCore = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	FString ROSBridgeServerHost = "127.0.0.1";
@@ -42,17 +42,35 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	float FixedUpdateInterval = 0.01666666667;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
+	bool bCheckHealth = true;
+
 protected:
 	void CheckROSBridgeHealth();
 
 	void OnWorldTickStart(ELevelTick TickType, float DeltaTime);
 
 	FTimerHandle TimerHandle_CheckHealth;
+	bool bTimerSet = false;  // has the time been set?
 
 	bool bReconnect = false;
+
+	FCriticalSection initMutex_;
 
 private:
 
 	UPROPERTY()
 	class UTopic* ClockTopic = nullptr;
 };
+
+
+template<class T>
+class FLockGuard
+{
+	T* lockable_;
+public:
+	FLockGuard(T* lockable) : lockable_(lockable) { lockable->Lock(); }
+	~FLockGuard() { lockable_->Unlock(); }
+};
+typedef FLockGuard<FCriticalSection> FLocker;
+

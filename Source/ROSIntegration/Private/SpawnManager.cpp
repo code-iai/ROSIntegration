@@ -4,13 +4,14 @@
 USpawnManager::USpawnManager()
 {
 	UE_LOG(LogROS, Verbose, TEXT("USpawnManager::USpawnManager()"));
-	AddToRoot();
+	//AddToRoot();  // Luigi::REMOVED
 	//_SpawnObjectMessageQueue = new TQueue<SpawnObjectMessage, EQueueMode::Spsc>;
 }
 
 USpawnManager::~USpawnManager()
 {
-	RemoveFromRoot();
+	UE_LOG(LogROS, Display, TEXT("USpawnManager::~USpawnManager()"));
+	//RemoveFromRoot(); // Luigi::REMOVED
 }
 
 void USpawnManager::Tick(float DeltaTime)

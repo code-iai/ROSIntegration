@@ -8,6 +8,7 @@
 static TMap<FString, UBaseRequestConverter*> RequestConverterMap;
 static TMap<FString, UBaseResponseConverter*> ResponseConverterMap;
 
+
 // PIMPL
 class UService::Impl {
 	// hidden implementation details
@@ -26,14 +27,14 @@ public:
 			Unadvertise();
 		}
 
-		delete _ROSService;
+		if(_ROSService) delete _ROSService;
 	}
 
 	bool _HandleRequestsInGameThread;
-	UROSIntegrationCore* _Ric;
+	UROSIntegrationCore* _Ric = nullptr;
 	FString _ServiceName;
 	FString _ServiceType;
-	rosbridge2cpp::ROSService* _ROSService;
+	rosbridge2cpp::ROSService* _ROSService = nullptr;
 	std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> _ServiceRequestCallback;
 
 	UBaseResponseConverter* _ResponseConverter;
@@ -44,7 +45,7 @@ public:
 		_ServiceName = ServiceName;
 		_ServiceType = ServiceType;
 
-		_ROSService = new rosbridge2cpp::ROSService(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*ServiceName), TCHAR_TO_UTF8(*ServiceType));
+		_ROSService = new rosbridge2cpp::ROSService(Ric->_Implementation->Get()->_Ros, TCHAR_TO_UTF8(*ServiceName), TCHAR_TO_UTF8(*ServiceType));
 
 		// Construct static ConverterMaps
 		if (RequestConverterMap.Num() == 0)
@@ -133,7 +134,7 @@ public:
 				return;
 			}
 
-			_Ric->_Implementation->_Ros.SendMessage(response);
+			_Ric->_Implementation->Get()->_Ros.SendMessage(response);
 		};
 
 		if (_HandleRequestsInGameThread) {
@@ -208,7 +209,7 @@ bool UService::Unadvertise() {
 
 UService::UService(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-	, _SelfPtr(this)
+	, _SelfPtr(this, TDeleterNot())
 	, _Implementation(new UService::Impl())
 {
 	_State.Connected = true;
@@ -223,10 +224,11 @@ void UService::BeginDestroy() {
 		_Implementation->_Ric = nullptr;
 	}
 
-	delete _Implementation;
+	if (_Implementation) delete _Implementation;
 	_Implementation = nullptr;
 
 	Super::BeginDestroy();
+
 	_SelfPtr.Reset();
 }
 
@@ -259,7 +261,7 @@ bool UService::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 	_State.Connected = success;
 
 	oldImplementation->_Ric = nullptr; // prevent any interaction with ROS during destruction
-	delete oldImplementation;
+	if (oldImplementation) delete oldImplementation;
 	return success;
 }
 

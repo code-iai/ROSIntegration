@@ -10,7 +10,7 @@
 #include "SpawnManager.generated.h"
 
 /**
- * Seperate Spawning Class since received ROSBridge Messages will
+ * Separate Spawning Class since received ROSBridge Messages will
  * not have access to the GameThread directly.
  * However, this is necessary in order to use SpawnActor<T>
  */
