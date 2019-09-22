@@ -20,7 +20,7 @@ public:
 
 
 
-// wrapper of the private implementation of Rinside a UObject 
+// Wrapper of the private implementation of ROSIntegrationCore inside UObject 
 UCLASS()
 class ROSINTEGRATION_API UImpl : public UObject
 {
