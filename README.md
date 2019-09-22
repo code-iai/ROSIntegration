@@ -4,7 +4,7 @@ Currently, Windows and Linux are directly supported.
 
 The connection to the ROS world will be accomplished through http://wiki.ros.org/rosbridge_suite and https://github.com/sanic/rosbridge2cpp
 
-**[NEW]** (by [Luigi Freda](www.luigifreda.com))   
+**[NEW]** (by [Luigi Freda](http://www.luigifreda.com))   
 - fixed bugs with smart pointer management
 - tested under Unreal Engine **4.23**
 
