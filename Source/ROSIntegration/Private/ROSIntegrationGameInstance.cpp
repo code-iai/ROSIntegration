@@ -180,11 +180,11 @@ void UROSIntegrationGameInstance::BeginDestroy()
 		//MarkAllROSObjectsAsDisconnected();  // moved in UROSIntegrationGameInstance::Shutdown()
 
 		//ROSIntegrationCore->ConditionalBeginDestroy();
-		//ROSIntegrationCore = nullptr; // this brings troubles (reported from crash window on editor closing)
+		//ROSIntegrationCore = nullptr; 
 
-		//ClockTopic->ConditionalBeginDestroy(); // this brings troubles (reported from crash window on editor closing)
+		//ClockTopic->ConditionalBeginDestroy(); 
 		
-		//if (GetWorld()) GetWorld()->ForceGarbageCollection(true);  // this brings troubles (reported from crash window on editor closing)
+		//if (GetWorld()) GetWorld()->ForceGarbageCollection(true);  
 	}
 
 	Super::BeginDestroy();
