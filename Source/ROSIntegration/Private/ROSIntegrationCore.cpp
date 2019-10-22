@@ -20,7 +20,8 @@ DEFINE_LOG_CATEGORY(LogROS);
 
 
 // PIMPL
-class UROSIntegrationCore::Impl {
+class UImpl::Impl
+{
 	// hidden implementation details
 public:
 	bool _bson_test_mode;
@@ -31,11 +32,13 @@ public:
 
 	UWorld* _World = nullptr;
 
-	UPROPERTY()
-	USpawnManager* _SpawnManager;
+	//UPROPERTY() // this UPROPERTY is completely useless and its ignored by the metacompiler which works only on headers  
+	USpawnManager* _SpawnManager = nullptr;
 
 
 	std::unique_ptr<rosbridge2cpp::ROSTopic> _SpawnArrayMessageListener;
+
+public: 
 
 	void SpawnArrayMessageCallback(const ROSBridgePublishMsg& message)
 	{
@@ -245,8 +248,16 @@ public:
 		UE_LOG(LogROS, Warning, TEXT("RECEIVED SPAWN MESSAGE --- Not implemented yet. Use the SpawnArray topic instead"));
 	}
 
-	Impl() {
+	Impl()
+	{
 
+	}
+
+	~Impl()
+	{
+		UE_LOG(LogROS, Display, TEXT("UROSIntegrationCore ~Impl() "));
+		//_World = nullptr;
+		_SpawnManager = nullptr;
 	}
 
 	bool IsHealthy() const
@@ -257,6 +268,11 @@ public:
 	void SetWorld(UWorld* World)
 	{
 		_World = World;
+	}
+
+	void SetImplSpawnManager(USpawnManager* SpawnManager)
+	{
+		_SpawnManager = SpawnManager;
 	}
 
 	bool Init(FString ROSBridgeHost, int32 ROSBridgePort, bool bson_test_mode)
@@ -283,55 +299,126 @@ public:
 		// Listen to the object spawning thread
 		_SpawnMessageListener = std::unique_ptr<rosbridge2cpp::ROSTopic>(
 			new rosbridge2cpp::ROSTopic(_Ros, "/unreal_ros/spawn_objects", "visualization_msgs/Marker"));
-		_SpawnMessageListener->Subscribe(std::bind(&UROSIntegrationCore::Impl::SpawnMessageCallback, this, std::placeholders::_1));
+		_SpawnMessageListener->Subscribe(std::bind(&UImpl::Impl::SpawnMessageCallback, this, std::placeholders::_1));
 
 		_SpawnArrayMessageListener = std::unique_ptr<rosbridge2cpp::ROSTopic>(
 			new rosbridge2cpp::ROSTopic(_Ros, "/unreal_ros/spawn_objects_array", "visualization_msgs/MarkerArray"));
 		_SpawnArrayMessageListener->Subscribe(
-			std::bind(&UROSIntegrationCore::Impl::SpawnArrayMessageCallback, this, std::placeholders::_1));
+			std::bind(&UImpl::Impl::SpawnArrayMessageCallback, this, std::placeholders::_1));
 
-		_SpawnManager = NewObject<USpawnManager>();
+		//_SpawnManager = NewObject<USpawnManager>();
 		_SpawnManager->_World = _World;
 		_SpawnManager->_TickingActive = true;
 	}
 };
 
 
+
+// - - -  - - - 
+
+
+UImpl::UImpl()
+{
+	//Init();
+}
+
+UImpl::UImpl(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	//Init();
+}
+
+UImpl::~UImpl()
+{
+	UE_LOG(LogROS, Display, TEXT("UROSIntegrationCore ~UImpl() "));
+}
+
+void UImpl::Init()
+{
+	UE_LOG(LogROS, Display, TEXT("UImpl::Init() "));
+	impl_ = TSharedPtr<Impl>(new UImpl::Impl());
+
+}
+
+void UImpl::BeginDestroy()
+{
+	UE_LOG(LogROS, Display, TEXT("UImpl::BeginDestroy() "));
+
+	if(impl_) impl_.Reset();
+
+	Super::BeginDestroy();
+}
+
+void UImpl::SetImplSpawnManager(USpawnManager* SpawnManager)
+{
+	impl_->SetImplSpawnManager(SpawnManager);
+}
+
+
+// - - -  - - - 
+
+
 UROSIntegrationCore::UROSIntegrationCore(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
+	UE_LOG(LogROS, Display, TEXT("UROSIntegrationCore spawned "));
+}
+
+UROSIntegrationCore::~UROSIntegrationCore()
+{
+	UE_LOG(LogROS, Display, TEXT("UROSIntegrationCore ~UROSIntegrationCore() "));
 }
 
 bool UROSIntegrationCore::Init(FString ROSBridgeHost, int32 ROSBridgePort) {
 	UE_LOG(LogROS, Verbose, TEXT("CALLING INIT ON RIC IMPL()!"));
-	_Implementation = new UROSIntegrationCore::Impl;
-	return _Implementation->Init(ROSBridgeHost, ROSBridgePort, _bson_test_mode);
+
+	if(!_SpawnManager)	_SpawnManager = NewObject<USpawnManager>(USpawnManager::StaticClass()); // moved here from UImpl::Init()
+
+	//_Implementation = new UImpl::Impl;
+	if (!_Implementation)
+	{
+		_Implementation = NewObject<UImpl>(UImpl::StaticClass());
+		_Implementation->Init();
+		_Implementation->SetImplSpawnManager(_SpawnManager);
+	}
+	return _Implementation->Get()->Init(ROSBridgeHost, ROSBridgePort, _bson_test_mode);
 }
 
 
 bool UROSIntegrationCore::IsHealthy() const
 {
-	return _Implementation->IsHealthy();
+	return _Implementation->Get()->IsHealthy();
 }
 
 void UROSIntegrationCore::SetWorld(UWorld* World)
 {
 	assert(_Implementation);
-	_Implementation->SetWorld(World);
+	_Implementation->Get()->SetWorld(World);
 }
 
 void UROSIntegrationCore::InitSpawnManager()
 {
 	assert(_Implementation);
-	_Implementation->InitSpawnManager();
+	_Implementation->Get()->InitSpawnManager();
 }
 
 
 void UROSIntegrationCore::BeginDestroy()
 {
-	UE_LOG(LogROS, Verbose, TEXT("Begin Destroy on UROSIntegrationCore called"));
-	Super::BeginDestroy(); // TODO: Super::BeginDestroy at the end of this function!
+	UE_LOG(LogROS, Verbose, TEXT("ROS Integration Core - BeginDestroy() - start"));
+	//Super::BeginDestroy(); // TODO: Super::BeginDestroy at the end of this function! // This was the original position!
 
-	if (_Implementation) delete _Implementation;
+	if (_Implementation)
+	{
+		UE_LOG(LogROS, Verbose, TEXT("ROS Integration Core - BeginDestroy() - destroying implementation"));
+		_Implementation->ConditionalBeginDestroy();
+		_Implementation = nullptr;
+
+		//delete _Implementation;
+	}
 	// TODO delete spawnmanager / mark for GC by RemoveFromRoot()
+
+	Super::BeginDestroy(); // TODO: Super::BeginDestroy at the end of this function! // NEW POSITION!
+
+	UE_LOG(LogROS, Verbose, TEXT("ROS Integration Core - BeginDestroy() - done"));
 }

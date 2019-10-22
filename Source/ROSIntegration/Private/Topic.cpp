@@ -8,6 +8,7 @@
 static TMap<FString, UBaseMessageConverter*> TypeConverterMap;
 static TMap<EMessageType, FString> SupportedMessageTypes;
 
+
 // PIMPL
 class UTopic::Impl {
 	// hidden implementation details
@@ -25,14 +26,14 @@ public:
 			Unsubscribe();
 		}
 
-		delete _ROSTopic;
+		if(_ROSTopic) delete _ROSTopic;
 	}
 
-	UROSIntegrationCore* _Ric;
+	UROSIntegrationCore* _Ric = nullptr;
 	FString _Topic;
 	FString _MessageType;
 	int32 _QueueSize;
-	rosbridge2cpp::ROSTopic* _ROSTopic;
+	rosbridge2cpp::ROSTopic* _ROSTopic = nullptr;
 	UBaseMessageConverter* _Converter;
 	rosbridge2cpp::ROSCallbackHandle<rosbridge2cpp::FunVrROSPublishMsg> _CallbackHandle;
 
@@ -75,7 +76,7 @@ public:
 		if (result) {
 			_Callback = nullptr;
 			_CallbackHandle = rosbridge2cpp::ROSCallbackHandle<rosbridge2cpp::FunVrROSPublishMsg>();
-			delete _ROSTopic;
+			if(_ROSTopic) delete _ROSTopic;
 			_ROSTopic = nullptr;
 		}
 		return result;
@@ -141,7 +142,7 @@ public:
 		}
 		_Converter = *Converter;
 
-		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->_Ros, TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize);
+		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->Get()->_Ros, TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize);
 	}
 
 	void MessageCallback(const ROSBridgePublishMsg &message)
@@ -160,7 +161,7 @@ public:
 
 UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
-, _SelfPtr(this)
+, _SelfPtr(this, TDeleterNot())
 , _Implementation(new UTopic::Impl())
 {
 	_State.Connected = true;
@@ -191,10 +192,11 @@ void UTopic::BeginDestroy() {
 	}
 	_State.Connected = false;
 
-	delete _Implementation;
+	if(_Implementation) delete _Implementation;
 	_Implementation = nullptr;
 
 	Super::BeginDestroy();
+
 	_SelfPtr.Reset();
 }
 
@@ -259,7 +261,7 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 	_State.Connected = success;
 
 	oldImplementation->_Ric = nullptr; // prevent old topic from unsubscribing using the broken connection
-	delete oldImplementation;
+	if (oldImplementation) delete oldImplementation;
 	return success;
 }
 

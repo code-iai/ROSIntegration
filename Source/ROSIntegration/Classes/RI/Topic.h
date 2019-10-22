@@ -61,7 +61,7 @@ protected:
 	void OnFloat32Message(const float& Data);
 
 	UPROPERTY()
-	UROSIntegrationCore* _ROSIntegrationCore;
+	UROSIntegrationCore* _ROSIntegrationCore = nullptr;
 
 private:
 
@@ -92,5 +92,5 @@ private:
 
 	// PIMPL
 	class Impl;
-	Impl *_Implementation;
+	Impl *_Implementation = nullptr;
 };

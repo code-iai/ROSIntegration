@@ -42,7 +42,7 @@ protected:
 	virtual FString GetDetailedInfoInternal() const override;
 
 	UPROPERTY()
-	UROSIntegrationCore* _ROSIntegrationCore;
+	UROSIntegrationCore* _ROSIntegrationCore = nullptr;
 
 private:
 
@@ -57,5 +57,5 @@ private:
 
 	// PIMPL
 	class Impl;
-	Impl* _Implementation;
+	Impl* _Implementation = nullptr;
 };

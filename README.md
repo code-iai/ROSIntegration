@@ -4,6 +4,10 @@ Currently, Windows and Linux are directly supported.
 
 The connection to the ROS world will be accomplished through http://wiki.ros.org/rosbridge_suite and https://github.com/sanic/rosbridge2cpp
 
+**[NEW]** (by [Luigi Freda](http://www.luigifreda.com))   
+- fixed bugs with smart pointer management
+- tested under Unreal Engine **4.23**
+
 ## Description
 
 This Plugin contains the basic data structures to enable the user to communicate with a running roscore.
@@ -53,6 +57,7 @@ This plugin has been tested with Unreal Engine versions;
  * 4.18.3
  * 4.19.1, 4.19.2
  * 4.20.3
+ * **4.23** (by Luigi Freda, fixed bugs with smart pointer management)
 
 ## Usage
 
