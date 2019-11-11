@@ -260,8 +260,11 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 	}
 	_State.Connected = success;
 
-	oldImplementation->_Ric = nullptr; // prevent old topic from unsubscribing using the broken connection
-	if (oldImplementation) delete oldImplementation;
+	if (oldImplementation)
+	{
+		oldImplementation->_Ric = nullptr; // prevent old topic from unsubscribing using the broken connection
+		delete oldImplementation;
+	}
 	return success;
 }
 
