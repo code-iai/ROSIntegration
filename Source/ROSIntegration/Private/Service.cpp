@@ -260,8 +260,11 @@ bool UService::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 
 	_State.Connected = success;
 
-	oldImplementation->_Ric = nullptr; // prevent any interaction with ROS during destruction
-	if (oldImplementation) delete oldImplementation;
+	if (oldImplementation)
+	{
+		oldImplementation->_Ric = nullptr; // prevent any interaction with ROS during destruction
+		delete oldImplementation;
+	}
 	return success;
 }
 
