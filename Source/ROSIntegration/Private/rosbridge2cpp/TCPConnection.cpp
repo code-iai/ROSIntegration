@@ -156,7 +156,8 @@ int TCPConnection::ReceiverThreadFunction()
 						UE_LOG(LogROS, Error, TEXT("bytes_read is not 4 in bson_state_read_length==true. It's: %d"), bytes_read);
 					}
 				} else {
-					UE_LOG(LogROS, Error, TEXT("Failed to recv()"));
+					UE_LOG(LogROS, Error, TEXT("Failed to recv(); Closing receiver thread."));
+					run_receiver_thread = false;
 				}
 			} else {
 				// Message retrieval mode
