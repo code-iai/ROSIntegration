@@ -48,7 +48,7 @@ public:
 protected:
 	void CheckROSBridgeHealth();
 
-	void OnWorldTickStart(ELevelTick TickType, float DeltaTime);
+	void OnWorldTickStart(UWorld * World, ELevelTick TickType, float DeltaTime);
 
 	FTimerHandle TimerHandle_CheckHealth;
 	bool bTimerSet = false;  // has the time been set?
