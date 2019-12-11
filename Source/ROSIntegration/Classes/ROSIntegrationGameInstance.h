@@ -3,6 +3,7 @@
 #include <CoreMinimal.h>
 #include <Engine/GameInstance.h>
 #include <Engine/EngineTypes.h>
+#include <Runtime/Launch/Resources/Version.h>
 #include "ROSIntegrationCore.h"
 
 #include "ROSIntegrationGameInstance.generated.h"
@@ -48,7 +49,11 @@ public:
 protected:
 	void CheckROSBridgeHealth();
 
+#if ENGINE_MINOR_VERSION > 23
+	void OnWorldTickStart(UWorld * World, ELevelTick TickType, float DeltaTime);
+#else 
 	void OnWorldTickStart(ELevelTick TickType, float DeltaTime);
+#endif
 
 	FTimerHandle TimerHandle_CheckHealth;
 	bool bTimerSet = false;  // has the time been set?
