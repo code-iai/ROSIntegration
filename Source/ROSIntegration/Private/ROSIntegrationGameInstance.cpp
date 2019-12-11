@@ -192,7 +192,11 @@ void UROSIntegrationGameInstance::BeginDestroy()
 	UE_LOG(LogROS, Display, TEXT("ROS Game Instance - begin destroy - done"));
 }
 
+#if ENGINE_MINOR_VERSION > 23
 void UROSIntegrationGameInstance::OnWorldTickStart(UWorld * World, ELevelTick TickType, float DeltaTime)
+#else 
+void UROSIntegrationGameInstance::OnWorldTickStart(ELevelTick TickType, float DeltaTime)
+#endif
 {
 	if (bSimulateTime && TickType == ELevelTick::LEVELTICK_TimeOnly)
 	{
