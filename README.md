@@ -57,7 +57,7 @@ This plugin has been tested with Unreal Engine versions;
  * 4.19.1, 4.19.2
  * 4.20.3
  * **4.23** (by [Luigi Freda](http://www.luigifreda.com), fixed bugs with smart pointer management)
-
+ * 4.24 
 ## Usage
 
 ### Setting up the plugin
