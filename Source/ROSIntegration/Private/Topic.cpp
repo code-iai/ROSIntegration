@@ -268,6 +268,11 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 	return success;
 }
 
+bool UTopic::IsAdvertising() 
+{
+	return _State.Advertised;
+}
+
 FString UTopic::GetDetailedInfoInternal() const
 {
 	return _Implementation->_Topic;
