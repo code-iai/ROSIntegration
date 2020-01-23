@@ -136,8 +136,12 @@ public:
 		UBaseMessageConverter** Converter = TypeConverterMap.Find(MessageType);
 		if (!Converter)
 		{
-			UE_LOG(LogROS, Error, TEXT("MessageType %s is unknown. Can't find Converter to decode message"), *MessageType);
-			check(false);
+      UE_LOG(LogROS,
+			       Error, 
+			       TEXT("MessageType [%s] for Topic [%s] "
+				    "is unknown. Message ignored."), 
+			       *MessageType, 
+			       *Topic);
 			return;
 		}
 		_Converter = *Converter;
