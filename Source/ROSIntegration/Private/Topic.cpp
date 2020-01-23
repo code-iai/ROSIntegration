@@ -136,7 +136,7 @@ public:
 		UBaseMessageConverter** Converter = TypeConverterMap.Find(MessageType);
 		if (!Converter)
 		{
-      UE_LOG(LogROS,
+			UE_LOG(LogROS,
 			       Error, 
 			       TEXT("MessageType [%s] for Topic [%s] "
 				    "is unknown. Message ignored."), 
