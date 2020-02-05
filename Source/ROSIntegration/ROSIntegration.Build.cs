@@ -34,21 +34,10 @@ public class ROSIntegration : ModuleRules
 		Definitions.Add("RAPIDJSON_HAS_STDSTRING=1");
 #endif
 
-		PublicIncludePaths.AddRange(
-			new string[] {
-				// ... add public include paths required here ...
-			}
-		);
-
-
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				"ROSIntegration/Private",
-				"ROSIntegration/Private/rosbridge2cpp"
-				// ... add other private include paths required here ...
-			}
-		);
-
+    PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+		
+		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
+    PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private/rosbridge2cpp"));
 
 		PublicDependencyModuleNames.AddRange(
 			new string[]
@@ -66,8 +55,6 @@ public class ROSIntegration : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
 				"Sockets",
 				"Networking"
 				// ... add private dependencies that you statically link with here ...

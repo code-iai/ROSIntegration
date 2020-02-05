@@ -19,7 +19,7 @@ public:
 	ASpawnableObject(const FObjectInitializer& ObjectInitializer);
 
 	// A unique id that must be set by the caller
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category="SpawnableObject")
 	int32 Id;
 
 	UMaterialInstanceDynamic* TheMatInst;

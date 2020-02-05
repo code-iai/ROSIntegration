@@ -10,9 +10,9 @@
 	"DocsURL": "https://github.com/code-iai/ROSIntegration",
 	"MarketplaceURL": "",
 	"SupportURL": "https://github.com/code-iai/ROSIntegration",
-	"CanContainContent": true,
+	"CanContainContent": false,
 	"IsBetaVersion": false,
-	"Installed": false,
+	"Installed": true,
 	"EnabledByDefault": true,
 	"Modules": [
 		{
