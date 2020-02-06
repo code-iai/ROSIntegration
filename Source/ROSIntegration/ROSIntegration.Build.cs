@@ -34,10 +34,10 @@ public class ROSIntegration : ModuleRules
 		Definitions.Add("RAPIDJSON_HAS_STDSTRING=1");
 #endif
 
-    PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+    		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
 		
 		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
-    PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private/rosbridge2cpp"));
+    		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private/rosbridge2cpp"));
 
 		PublicDependencyModuleNames.AddRange(
 			new string[]

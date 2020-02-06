@@ -62,28 +62,6 @@ This plugin has been tested with Unreal Engine versions;
 
 ### Setting up the plugin
 
-#### Build standalone
-
- ```
- [Run UAT script] BuildPlugin -Plugin="[FULL PATH]/ROSIntegration.uplugin" -TargetPlatform=[Platform] -Package="[Desired Location]" -Rocket
- ```
- 
- * Link built plugin to `Plugins` directory of your project
- * Add plugin to `build.cs`
- ```
-		[Pulibc/Private]DependencyModuleNames.AddRange(new string[] { "ROSIntegration" });
- ```
- * Add to desired `uproject` (may be performed via Editor GUI as well).
- 
- ```
- "Plugins": [
-     {
-       "Name": "ROSIntegration",
-       "Enabled": true
-     }
- ]
- ```
-
 #### Build with a project
 
  * Create a new C++ Unreal Project, or open your existing project. Please note that the Plugin might not get compiled automatically in BP-only Projects (see [this Issue](https://github.com/code-iai/ROSIntegration/issues/19)).
@@ -106,6 +84,33 @@ This plugin has been tested with Unreal Engine versions;
 
  * Don't forget to save everything (Ctrl + Shift + S)
  * In some cases (for example on Linux), it might be necessary to call the Generate Project Files action on UE4 in order to fetch the new header files for the plugin. Reference: https://wiki.unrealengine.com/Generate_Visual_Studio_Project or https://wiki.unrealengine.com/Building_On_Linux#Generating_project_files_for_your_project
+ 
+
+#### Build standalone
+
+* Run the following 
+
+```
+[Run UAT script] BuildPlugin -Plugin="[FULL PATH]/ROSIntegration.uplugin" -TargetPlatform=[Platform] -Package="[Desired Location]" -Rocket
+```
+
+ *UE may create a HostProject for the plugin, in which case, you'll find the plugin built inside HostProject/Plugins*
+
+* Link to `Plugins` directory of your project
+* Add plugin to `build.cs`
+```
+		[Pulibc/Private]DependencyModuleNames.AddRange(new string[] { "ROSIntegration" });
+```
+* Add plugin to `uproject` (may be performed via Editor GUI as well).
+
+```
+"Plugins": [
+    {
+      "Name": "ROSIntegration",
+      "Enabled": true
+    }
+]
+```
 
 ### C++ Topic Publish Example
 To get started, you can create a new C++ Actor and let it publish a message once at the BeginPlay Event.
