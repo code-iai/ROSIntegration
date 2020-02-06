@@ -62,8 +62,6 @@ This plugin has been tested with Unreal Engine versions;
 
 ### Setting up the plugin
 
-#### Build with a project
-
  * Create a new C++ Unreal Project, or open your existing project. Please note that the Plugin might not get compiled automatically in BP-only Projects (see [this Issue](https://github.com/code-iai/ROSIntegration/issues/19)).
  * Add this repository to your `Plugins/` Folder in your Unreal project (copy the folder in so your structure looks like `MyUnrealProject/Plugins/ROSIntegration/ROSIntegration.uplugin`
  * Activate the Plugin in your UE4 project by opening your project and go to Edit -> Plugins. Search for ROSIntegration in the "other" section and activate it.
@@ -86,9 +84,9 @@ This plugin has been tested with Unreal Engine versions;
  * In some cases (for example on Linux), it might be necessary to call the Generate Project Files action on UE4 in order to fetch the new header files for the plugin. Reference: https://wiki.unrealengine.com/Generate_Visual_Studio_Project or https://wiki.unrealengine.com/Building_On_Linux#Generating_project_files_for_your_project
  
 
-#### Build standalone
+#### Build
 
-* Run the following 
+* Run the following: 
 
 ```
 [Run UAT script] BuildPlugin -Plugin="[FULL PATH]/ROSIntegration.uplugin" -TargetPlatform=[Platform] -Package="[Desired Location]" -Rocket
@@ -101,7 +99,7 @@ This plugin has been tested with Unreal Engine versions;
 ```
 [Public/Private]DependencyModuleNames.AddRange(new string[] { "ROSIntegration" });
 ```
-* Add plugin to `uproject` (may be performed via Editor GUI as well).
+* Add plugin to `uproject` (may be performed via Editor GUI as well)
 
 ```
 "Plugins": [
