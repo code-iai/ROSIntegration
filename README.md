@@ -99,7 +99,7 @@ This plugin has been tested with Unreal Engine versions;
 * Link to `Plugins` directory of your project
 * Add plugin to `build.cs`
 ```
-		[Pulibc/Private]DependencyModuleNames.AddRange(new string[] { "ROSIntegration" });
+[Public/Private]DependencyModuleNames.AddRange(new string[] { "ROSIntegration" });
 ```
 * Add plugin to `uproject` (may be performed via Editor GUI as well).
 
