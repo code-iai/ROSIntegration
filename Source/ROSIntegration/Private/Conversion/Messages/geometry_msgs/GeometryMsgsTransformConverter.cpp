@@ -9,8 +9,11 @@ UGeometryMsgsTransformConverter::UGeometryMsgsTransformConverter(const FObjectIn
 
 bool UGeometryMsgsTransformConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	UE_LOG(LogROS, Warning, TEXT("ROSIntegration: Transform receiving not implemented yet"));
-	return false;
+//    UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: Transform receiving not implemented yet")); // TODO: use ROS log
+    UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: Transform received"));
+    auto p = new ROSMessages::geometry_msgs::Transform;
+    BaseMsg = TSharedPtr<FROSBaseMsg>(p);
+    return (_bson_extract_child_transform(message->full_msg_bson_, "msg", p));
 }
 
 bool UGeometryMsgsTransformConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
