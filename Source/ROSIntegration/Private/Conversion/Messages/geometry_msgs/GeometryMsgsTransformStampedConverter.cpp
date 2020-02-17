@@ -12,8 +12,10 @@ UGeometryMsgsTransformStampedConverter::UGeometryMsgsTransformStampedConverter(c
 
 bool UGeometryMsgsTransformStampedConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	UE_LOG(LogROS, Warning, TEXT("ROSIntegration: TransformStamped receiving not implemented yet"));
-	return false;
+    UE_LOG(LogTemp, Warning, TEXT("ROSIntegration: TransformStamped received"));
+    auto p = new ROSMessages::geometry_msgs::TransformStamped;
+    BaseMsg = TSharedPtr<FROSBaseMsg>(p);
+    return (_bson_extract_child_transform_stamped(message->full_msg_bson_, "msg", p));
 }
 
 bool UGeometryMsgsTransformStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
