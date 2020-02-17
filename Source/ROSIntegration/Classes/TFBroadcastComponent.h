@@ -29,35 +29,35 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Activate this Component by setting this flag to TRUE
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="TFBroadcastComponent")
 	bool ComponentActive;
 
 	// How often shall this frame be published (in Hz)?
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="TFBroadcastComponent")
 	uint32 FrameRate;
 
 	// Sets wether the coordinates of this actor shall be published in world coordinates or relative to the owning Actor
 	// If you set 'relative' here, please make sure that the actor of this component has a parent actor.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="TFBroadcastComponent")
 	ECoordinateType CoordsRelativeTo;
 
 	// Name of the Parentframe. This value will be set in the header of the ROS TF Message.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="TFBroadcastComponent")
 	FString ParentFrameName;
 
 	// Name of this Frame. This value will be set in the child_frame_id of the ROS TF Message.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="TFBroadcastComponent")
 	FString ThisFrameName;
 
 	// If ticked, TFComponent will check which Actors owns the Actor with this Component.
 	// It will then use the ActorLabel of the Parent as the ParentFrameName.
 	// When this mode is activated, the option 'CoordsRelativeTo' will be set to "Relative to Parent" and
 	// 'ParentFrameName' will be ignored.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="TFBroadcastComponent")
 	bool UseParentActorLabelAsParentFrame;
 
 	// If ticked, the ActorLabel of owning Actor will be used. 'ThisFrameName' will be ignored when used.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="TFBroadcastComponent")
 	bool UseActorLabelAsFrame;
 
 	float FrameTime, TimePassed;

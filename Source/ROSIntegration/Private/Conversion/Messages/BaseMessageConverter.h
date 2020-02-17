@@ -13,7 +13,7 @@
 #include <cstring>
 #include <functional>
 #include <bson.h>
-#include "Public/std_msgs/Header.h"
+#include "std_msgs/Header.h"
 
 #include "BaseMessageConverter.generated.h"
 

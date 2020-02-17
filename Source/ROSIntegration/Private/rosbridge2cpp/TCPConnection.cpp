@@ -1,7 +1,12 @@
 #include "TCPConnection.h"
-#include <Networking.h>
-#include <iomanip>
+
 #include "ROSIntegrationCore.h"
+
+#include <iomanip>
+
+#include <Interfaces/IPv4/IPv4Address.h>
+#include <Serialization/ArrayReader.h>
+#include <SocketSubsystem.h>
 
 bool TCPConnection::Init(std::string ip_addr, int port)
 {
