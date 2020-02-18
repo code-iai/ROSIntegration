@@ -33,7 +33,7 @@ public:
 	}
 
 	// Helper function to append a std_msgs/Header to a bson_t
-	static void _bson_append_header(bson_t *b, ROSMessages::std_msgs::Header *h)
+	static void _bson_append_header(bson_t *b, const ROSMessages::std_msgs::Header *h)
 	{
 		bson_t *hdr = BCON_NEW(
 			"seq", BCON_INT32(h->seq),
