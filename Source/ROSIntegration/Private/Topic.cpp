@@ -84,15 +84,15 @@ public:
 
 	bool Advertise()
 	{
-		check(_ROSTopic);
-		return _ROSTopic->Advertise();
+		if (!_ROSTopic) UE_LOG(LogROS, Warning, TEXT("Trying to advertise null topic."))
+		return _ROSTopic && _ROSTopic->Advertise();
 	}
 
 
 	bool Unadvertise()
 	{
-		check(_ROSTopic);
-		return _ROSTopic->Unadvertise();
+		if (!_ROSTopic) UE_LOG(LogROS, Warning, TEXT("Trying to unadvertise null topic."))
+		return _ROSTopic && _ROSTopic->Unadvertise();
 	}
 
 
