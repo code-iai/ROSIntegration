@@ -84,14 +84,14 @@ public:
 
 	bool Advertise()
 	{
-		if (!_ROSTopic) UE_LOG(LogROS, Warning, TEXT("Trying to advertise null topic."))
+		if (!_ROSTopic) UE_LOG(LogROS, Warning, TEXT("Trying to advertise on an un-initialized topic."))
 		return _ROSTopic && _ROSTopic->Advertise();
 	}
 
 
 	bool Unadvertise()
 	{
-		if (!_ROSTopic) UE_LOG(LogROS, Warning, TEXT("Trying to unadvertise null topic."))
+		if (!_ROSTopic) UE_LOG(LogROS, Warning, TEXT("Trying to unadvertise on an un-initialized topic."))
 		return _ROSTopic && _ROSTopic->Unadvertise();
 	}
 
