@@ -3,7 +3,7 @@
 #include <CoreMinimal.h>
 
 #if PLATFORM_WINDOWS
-#include "WindowsHWrapper.h"
+#include "Windows/WindowsHWrapper.h"
 #endif // PLATFORM_WINDOWS
 
 #include "ROSIntegrationCore.h"
