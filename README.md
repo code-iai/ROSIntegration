@@ -49,7 +49,7 @@ roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 ```
 In our testing, we usually installed rosbridge on a Ubuntu Linux with ROS while the UE4 with ROSIntegration can be run on a Windows or Linux hosts. ROSBridge and UE4 with ROSIntegration don't need to be run on the same machine. So in order to run UE4 with ROSIntegration on Windows, you can either install a Linux Virtual Machine on your Windows Hosts or have a seperate, physical machine with Linux running in your network.
 
-This plugin has been tested with Unreal Engine versions;
+This plugin has previously been tested with Unreal Engine versions;
 
  * 4.17.3
  * 4.18.2
@@ -58,6 +58,9 @@ This plugin has been tested with Unreal Engine versions;
  * 4.20.3
  * **4.23** (by [Luigi Freda](http://www.luigifreda.com), fixed bugs with smart pointer management)
  * 4.24 
+ 
+Please note that this list is a tracker of which UE4 versions have been previously tested. It is not guaranteed that the most recent version of ROSIntegration is working with all previous UE4 versions.
+
 ## Usage
 
 ### Setting up the plugin
