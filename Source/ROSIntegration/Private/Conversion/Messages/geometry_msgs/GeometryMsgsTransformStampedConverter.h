@@ -3,7 +3,7 @@
 #include <CoreMinimal.h>
 #include <UObject/ObjectMacros.h>
 #include <UObject/Object.h>
-#include "TransformStamped.h"
+#include "geometry_msgs/TransformStamped.h"
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "Conversion/Messages/std_msgs/StdMsgsHeaderConverter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsTransformConverter.h"
