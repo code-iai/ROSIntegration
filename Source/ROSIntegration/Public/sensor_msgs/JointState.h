@@ -11,7 +11,8 @@ namespace ROSMessages {
 				_MessageType = "sensor_msgs/JointState";
 			}
 
-			/**# This is a message that holds data to describe the state of a set of torque controlled joints.
+			/**
+			# This is a message that holds data to describe the state of a set of torque controlled joints.
 			#
 			# The state of each joint(revolute or prismatic) is defined by :
 			#  * the position of the joint (rad or m),
