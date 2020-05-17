@@ -7,13 +7,14 @@ USensorMsgsJointStateConverter::USensorMsgsJointStateConverter(const FObjectInit
 }
 
 bool USensorMsgsJointStateConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg>& BaseMsg) {
-	std::unique_ptr<ROSMessages::sensor_msgs::JointState> joint_state_msg = std::make_unique<ROSMessages::sensor_msgs::JointState>();
-	BaseMsg = TSharedPtr<FROSBaseMsg>(joint_state_msg.get());
+
+	auto joint_state_msg = new ROSMessages::sensor_msgs::JointState();
+	BaseMsg = TSharedPtr<FROSBaseMsg>(joint_state_msg);
 
 	const FString key = "msg";
 	bool KeyFound = false;
 
-	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(message->full_msg_bson_, TEXT("msg.header"), &joint_state_msg->header);
+	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(message->full_msg_bson_, key + ".header", &joint_state_msg->header);
 	if (!KeyFound) return false;
 
 	joint_state_msg->name = UBaseMessageConverter::GetTArrayFromBSON<FString>(key + ".name", message->full_msg_bson_, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetFStringFromBSON(subKey, subMsg, subKeyFound, false); });
@@ -39,7 +40,7 @@ bool USensorMsgsJointStateConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseM
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(JointStateMessage->header));
 
 	// parent class utility methods
-	UBaseMessageConverter::_bson_append_double_tarray(*message, "position", JointStateMessage->position); 
+	UBaseMessageConverter::_bson_append_double_tarray(*message, "position", JointStateMessage->position);
 	UBaseMessageConverter::_bson_append_double_tarray(*message, "velocity", JointStateMessage->velocity);
 	UBaseMessageConverter::_bson_append_double_tarray(*message, "effort", JointStateMessage->effort);
 
