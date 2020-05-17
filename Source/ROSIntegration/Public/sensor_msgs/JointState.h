@@ -32,7 +32,7 @@ namespace ROSMessages {
 			*/
 			ROSMessages::std_msgs::Header header;
 
-			TArray<Fstring> name;		// the joint name
+			TArray<FString> name;		// the joint name
 			TArray<double> position;	// the position of the joint (rad or m),
 			TArray<double> velocity;	// the velocity of the joint (rad/s or m/s)
 			TArray<double> effort;		// the effort that is applied in the joint (Nm or N)

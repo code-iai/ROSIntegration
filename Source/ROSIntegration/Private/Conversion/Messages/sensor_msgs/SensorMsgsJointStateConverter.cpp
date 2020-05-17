@@ -10,7 +10,7 @@ bool USensorMsgsJointStateConverter::ConvertIncomingMessage(const ROSBridgePubli
 	ROSMessages::sensor_msgs::JointState* joint_state_msg = new ROSMessages::sensor_msgs::JointState;
 	BaseMsg = TSharedPtr<FROSBaseMsg>(joint_state_msg);
 
-	constexpr FString key = "msg"
+	const FString key = "msg";
 	bool KeyFound = false;
 
 	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(message->full_msg_bson_, TEXT("msg.header"), &joint_state_msg->header);
