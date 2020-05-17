@@ -40,6 +40,7 @@ bool USensorMsgsJointStateConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseM
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(JointStateMessage->header));
 
 	// parent class utility methods
+	UBaseMessageConverter::_bson_append_tarray<FString>(*message, "name", JointStateMessage->name, [](bson_t *subb, const char *subKey, FString str) { BSON_APPEND_UTF8(subb, subKey, TCHAR_TO_UTF8(*str)); });
 	UBaseMessageConverter::_bson_append_double_tarray(*message, "position", JointStateMessage->position);
 	UBaseMessageConverter::_bson_append_double_tarray(*message, "velocity", JointStateMessage->velocity);
 	UBaseMessageConverter::_bson_append_double_tarray(*message, "effort", JointStateMessage->effort);
