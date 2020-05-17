@@ -7,8 +7,8 @@ USensorMsgsJointStateConverter::USensorMsgsJointStateConverter(const FObjectInit
 }
 
 bool USensorMsgsJointStateConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg>& BaseMsg) {
-	ROSMessages::sensor_msgs::JointState* joint_state_msg = new ROSMessages::sensor_msgs::JointState;
-	BaseMsg = TSharedPtr<FROSBaseMsg>(joint_state_msg);
+	std::unique_ptr<ROSMessages::sensor_msgs::JointState> joint_state_msg = std::make_unique<ROSMessages::sensor_msgs::JointState>();
+	BaseMsg = TSharedPtr<FROSBaseMsg>(joint_state_msg.get());
 
 	const FString key = "msg";
 	bool KeyFound = false;
