@@ -5,6 +5,7 @@
 #include <iomanip>
 
 #include <Interfaces/IPv4/IPv4Address.h>
+#include <IPAddress.h>
 #include <Serialization/ArrayReader.h>
 #include <SocketSubsystem.h>
 
