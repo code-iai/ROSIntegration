@@ -89,5 +89,11 @@ public class ROSIntegration : ModuleRules
 			PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "libbson-static-1.0.a"));
 			PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "mac"));
 		}
+		else if (Target.Platform == UnrealTargetPlatform.Android)
+		{
+			Console.WriteLine("Using Linux BSON files for Android build");
+			PublicAdditionalLibraries.Add(Path.Combine(BSONPath, "lib", "libbson-static-android-1.0.a"));
+			PublicIncludePaths.Add(Path.Combine(BSONPath, "include", "linux"));
+		}
 	}
 }
