@@ -4,7 +4,7 @@
 #include <Components/ActorComponent.h>
 #include "RI/Topic.h"
 #include "ROSIntegrationGameInstance.h"
-#include "std_msgs/StdMsgsString.h"
+#include "std_msgs/String.h"
 
 #include "LookAtScanComponent.generated.h"
 
