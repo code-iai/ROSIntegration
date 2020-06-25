@@ -209,6 +209,7 @@ rosgraph_msgs/Clock                | ✓          | ✓
 sensor_msgs/CameraInfo             | ✘          | ✓
 sensor_msgs/Image                  | ✓          | ✓
 sensor_msgs/Imu                    | ✓          | ✓
+sensor_msgs/JointState             | ✓          | ✓
 sensor_msgs/NavSatFix              | ✓          | ✓
 sensor_msgs/NavSatStatus           | ✓          | ✓
 sensor_msgs/PointCloud2            | ✓          | ✓
