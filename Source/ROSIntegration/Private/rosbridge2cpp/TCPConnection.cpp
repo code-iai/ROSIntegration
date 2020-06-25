@@ -5,6 +5,9 @@
 #include <iomanip>
 
 #include <Interfaces/IPv4/IPv4Address.h>
+#if ENGINE_MINOR_VERSION < 23
+	#include <IPAddress.h>
+#endif
 #include <Serialization/ArrayReader.h>
 #include <SocketSubsystem.h>
 
