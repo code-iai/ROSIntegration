@@ -48,18 +48,14 @@
 # ifndef NOMINMAX
 #  define NOMINMAX
 # endif
-# include <winsock2.h>
-#  ifndef WIN32_LEAN_AND_MEAN
-#   define WIN32_LEAN_AND_MEAN
-#   include "Windows/AllowWindowsPlatformTypes.h"
-#   include "Windows/MinWindows.h"
-#   include "Windows/HideWindowsPlatformTypes.h"
-#   undef  WIN32_LEAN_AND_MEAN
-#  else
-#   include "Windows/AllowWindowsPlatformTypes.h"
-#   include "Windows/MinWindows.h"
-#   include "Windows/HideWindowsPlatformTypes.h"
-# endif
+// Necessary for WinSock TCP to avoid collision with TEXT
+#include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/PreWindowsApi.h"
+#include "Windows/MinWindows.h"
+#include <winsock2.h>
+// Necessary for restoring UE4 TEXT
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformTypes.h"
 #include <direct.h>
 #include <io.h>
 #endif
