@@ -37,8 +37,11 @@
 #include "bson-config.h"
 #include "bson-macros.h"
 
-
 #ifdef BSON_OS_WIN32
+// Necessary for WinSock TCP to avoid collision with TEXT
+#include "Windows/AllowWindowsPlatformTypes.h"
+#include "Windows/PreWindowsApi.h"
+
 # if defined(_WIN32_WINNT) && (_WIN32_WINNT < 0x0600)
 #  undef _WIN32_WINNT
 # endif
@@ -48,21 +51,16 @@
 # ifndef NOMINMAX
 #  define NOMINMAX
 # endif
-# include <winsock2.h>
-#  ifndef WIN32_LEAN_AND_MEAN
-#   define WIN32_LEAN_AND_MEAN
-#   include "Windows/AllowWindowsPlatformTypes.h"
-#   include "Windows/MinWindows.h"
-#   include "Windows/HideWindowsPlatformTypes.h"
-#   undef  WIN32_LEAN_AND_MEAN
-#  else
-#   include "Windows/AllowWindowsPlatformTypes.h"
-#   include "Windows/MinWindows.h"
-#   include "Windows/HideWindowsPlatformTypes.h"
-# endif
+#include "Windows/MinWindows.h"
+#include <winsock2.h>
 #include <direct.h>
 #include <io.h>
+// Necessary for restoring UE4 TEXT
+#include "Windows/PostWindowsApi.h"
+#include "Windows/HideWindowsPlatformTypes.h"
 #endif
+
+
 
 
 #ifdef BSON_OS_UNIX
