@@ -50,9 +50,9 @@ protected:
 	void CheckROSBridgeHealth();
 
 #if ENGINE_MINOR_VERSION > 23
-	void OnWorldTickStart(UWorld * World, ELevelTick TickType, float DeltaTime);
+	virtual void OnWorldTickStart(UWorld * World, ELevelTick TickType, float DeltaTime);
 #else 
-	void OnWorldTickStart(ELevelTick TickType, float DeltaTime);
+	virtual void OnWorldTickStart(ELevelTick TickType, float DeltaTime);
 #endif
 
 	FTimerHandle TimerHandle_CheckHealth;
@@ -61,8 +61,6 @@ protected:
 	bool bReconnect = false;
 
 	FCriticalSection initMutex_;
-
-private:
 
 	UPROPERTY()
 	class UTopic* ClockTopic = nullptr;
