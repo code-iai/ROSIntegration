@@ -178,8 +178,8 @@ ExampleTopic->Subscribe(SubscribeCallback);
 ![Use the bluprint topic instance](Documentation/bp_topic-02.png)
 
 ### C++ Service Request example
-
-TODO
+@tsender provided some documentation on this topic here:
+https://github.com/code-iai/ROSIntegration/issues/134#issuecomment-830543445
 
 ### Supported Message Types
 
