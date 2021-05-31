@@ -184,7 +184,10 @@ void UTopic::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	OnConstruct();
+	if (GetOuter()->GetWorld())
+	{
+		OnConstruct();
+	}
 }
 
 void UTopic::BeginDestroy() {
