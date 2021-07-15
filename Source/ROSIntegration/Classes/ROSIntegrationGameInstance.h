@@ -49,7 +49,7 @@ public:
 protected:
 	void CheckROSBridgeHealth();
 
-#if ENGINE_MINOR_VERSION > 23
+#if ENGINE_MINOR_VERSION > 23 || ENGINE_MAJOR_VERSION >4
 	virtual void OnWorldTickStart(UWorld * World, ELevelTick TickType, float DeltaTime);
 #else 
 	virtual void OnWorldTickStart(ELevelTick TickType, float DeltaTime);
