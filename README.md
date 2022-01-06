@@ -187,6 +187,7 @@ Topic Message Type                 | ROS to UE4 | UE4 to ROS
 ---------------------------------- | ---------- | ----------
 std_msgs/Header                    | ✓          | ✓
 std_msgs/String                    | ✓          | ✓
+std_msgs/Bool                      | ✓          | ✓
 std_msgs/Float32                   | ✓          | ✓
 std_msgs/Float32MultiArray         | ✓          | ✓
 std_msgs/MultiArrayDimension       | ✓          | ✓
@@ -229,7 +230,9 @@ rospy_tutorials/AddTwoIntsResponse | ✓          | ✓
 
 ### Implementing New Message Types
 
-To be able to send and receive message types with ROSIntegration we need two things: the message definition, as well as a converter of the data in that definition from and to BSON. For reference how to do that look into the message definitions in `Source\ROSIntegration\Public`, and the converters in `Source\ROSIntegration\Private\Conversion\Messages`.
+To be able to send and receive message types with ROSIntegration we need two things: the message definition, as well as a converter of the data in that definition from and to BSON. For reference how to do that look into the message definitions in `Source\ROSIntegration\Public`, and the converters in `Source\ROSIntegration\Private\Conversion\Messages`. 
+
+**Note**: Inside your overridden `ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)`, make sure you create the new bson_t message with one of the following two commands: `*message = bson_new()` or `*message = BCON_NEW(...)`. These two commands initialize the bson_t message on the heap. Do NOT use the `bson_init(*message)` command because this will initialize the bson_t message on the stack, which is not what we want.
 
 If you need one of the standard message types provided by ROS, you should implement them inside the ROSIntegration's folder structure. Please keep to the naming convention of the ROS documentation for the message definition.
 If you want to implement your own messages you can do that in your own project. You only need to add something like the following to the Build.cs-file of your project:
