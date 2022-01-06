@@ -18,8 +18,7 @@ bool UGridMapMsgsGridMapInfoConverter::ConvertOutgoingMessage(TSharedPtr<FROSBas
 {
 	auto Info = StaticCastSharedPtr<ROSMessages::grid_map_msgs::GridMapInfo>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_grid_map_info(*message, Info.Get());
 
 	return true;

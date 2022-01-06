@@ -32,8 +32,7 @@ bool UNavMsgsOccupancyGridConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseM
 {
 	auto grid = StaticCastSharedPtr<ROSMessages::nav_msgs::OccupancyGrid>(BaseMsg);
 	
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(grid->header));
 	

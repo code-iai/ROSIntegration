@@ -18,8 +18,7 @@ bool UActionlibMsgsGoalStatusArrayConverter::ConvertOutgoingMessage(TSharedPtr<F
 {
 	auto GoalStatusArray = StaticCastSharedPtr<ROSMessages::actionlib_msgs::GoalStatusArray>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_goal_status_array(*message, GoalStatusArray.Get());
 
 	return true;

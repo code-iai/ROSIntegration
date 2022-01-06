@@ -37,8 +37,7 @@ bool UNavMsgsOdometryConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> B
 {
 	auto Odometry = StaticCastSharedPtr<ROSMessages::nav_msgs::Odometry>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(Odometry->header));
 

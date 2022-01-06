@@ -120,7 +120,6 @@ namespace rosbridge2cpp {
 		}
 
 		bson_t* message = bson_new();
-		bson_init(message);
 		msg.ToBSON(*message);
 
 		{

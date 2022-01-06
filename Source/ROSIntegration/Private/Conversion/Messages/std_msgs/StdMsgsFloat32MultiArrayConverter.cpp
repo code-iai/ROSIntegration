@@ -17,8 +17,7 @@ bool UStdMsgsFloat32MultiArrayConverter::ConvertOutgoingMessage(TSharedPtr<FROSB
 {
 	auto mad = StaticCastSharedPtr<ROSMessages::std_msgs::Float32MultiArray>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_float_multi_array(*message, mad.Get());
 
 	return true;

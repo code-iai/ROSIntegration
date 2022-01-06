@@ -19,8 +19,7 @@ bool UGeometryMsgsPointConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg>
 {
 	auto Point = StaticCastSharedPtr<ROSMessages::geometry_msgs::Point>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_point(*message, Point.Get());
 
 	return true;

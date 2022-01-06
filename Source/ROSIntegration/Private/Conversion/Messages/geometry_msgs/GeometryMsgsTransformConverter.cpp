@@ -20,8 +20,7 @@ bool UGeometryMsgsTransformConverter::ConvertOutgoingMessage(TSharedPtr<FROSBase
 {
 	auto Transform = StaticCastSharedPtr<ROSMessages::geometry_msgs::Transform>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_transform(*message, Transform.Get());
 
 	return true;

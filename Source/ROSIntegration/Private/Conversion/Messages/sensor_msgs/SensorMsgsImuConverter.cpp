@@ -50,8 +50,7 @@ bool USensorMsgsImuConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> Bas
 {
 	auto Imu = StaticCastSharedPtr<ROSMessages::sensor_msgs::Imu>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(Imu->header));
 

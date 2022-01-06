@@ -17,8 +17,7 @@ bool UGridMapMsgsGridMapConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg
 {
 	auto map = StaticCastSharedPtr<ROSMessages::grid_map_msgs::GridMap>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_grid_map(*message, map.Get());
 
 	return true;

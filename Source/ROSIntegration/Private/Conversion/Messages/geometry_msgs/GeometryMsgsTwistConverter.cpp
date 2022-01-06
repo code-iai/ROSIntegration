@@ -18,8 +18,7 @@ bool UGeometryMsgsTwistConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg>
 {
 	auto Twist = StaticCastSharedPtr<ROSMessages::geometry_msgs::Twist>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_twist(*message, Twist.Get());
 
 	return true;

@@ -21,8 +21,7 @@ bool UNavMsgsMapMetaDataConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg
 {
 	auto map = StaticCastSharedPtr<ROSMessages::nav_msgs::MapMetaData>(BaseMsg);
 	
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_map_meta_data(*message, map.Get());
 	
 	return true;

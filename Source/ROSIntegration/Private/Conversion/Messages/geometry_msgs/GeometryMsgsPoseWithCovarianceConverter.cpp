@@ -18,8 +18,7 @@ bool UGeometryMsgsPoseWithCovarianceConverter::ConvertOutgoingMessage(TSharedPtr
 {
 	auto Pose = StaticCastSharedPtr<ROSMessages::geometry_msgs::PoseWithCovariance>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_pose_with_covariance(*message, Pose.Get());
 
 	return true;

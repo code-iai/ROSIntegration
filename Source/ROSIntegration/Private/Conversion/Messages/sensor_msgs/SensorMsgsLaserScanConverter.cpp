@@ -17,8 +17,7 @@ bool USensorMsgsLaserScanConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMs
 {
 	auto mad = StaticCastSharedPtr<ROSMessages::sensor_msgs::LaserScan>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_laser_scan(*message, mad.Get());
 
 	return true;

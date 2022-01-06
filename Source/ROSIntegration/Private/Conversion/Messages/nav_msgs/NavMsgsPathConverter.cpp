@@ -35,8 +35,7 @@ bool UNavMsgsPathConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseM
 {
 	auto Path = StaticCastSharedPtr<ROSMessages::nav_msgs::Path>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(Path->header));
 	_bson_append_tarray<ROSMessages::geometry_msgs::PoseStamped>(*message, "poses", Path->poses, [](bson_t* msg, const char* key, const ROSMessages::geometry_msgs::PoseStamped& pose_stamped)

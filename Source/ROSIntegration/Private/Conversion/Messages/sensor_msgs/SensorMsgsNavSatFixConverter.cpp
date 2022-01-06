@@ -45,8 +45,7 @@ bool USensorMsgsNavSatFixConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMs
 {
 	auto nsf = StaticCastSharedPtr<ROSMessages::sensor_msgs::NavSatFix>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(nsf->header));
 	USensorMsgsNavSatStatusConverter::_bson_append_child_nav_sat_status(*message, "status", &(nsf->status));

@@ -22,8 +22,7 @@ bool UGeometryMsgsTransformStampedConverter::ConvertOutgoingMessage(TSharedPtr<F
 {
 	auto TransformStamped = StaticCastSharedPtr<ROSMessages::geometry_msgs::TransformStamped>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(TransformStamped->header));
 	BSON_APPEND_UTF8(*message, "child_frame_id", TCHAR_TO_UTF8(*TransformStamped->child_frame_id));
 	UGeometryMsgsTransformConverter::_bson_append_child_transform(*message, "transform", &(TransformStamped->transform));

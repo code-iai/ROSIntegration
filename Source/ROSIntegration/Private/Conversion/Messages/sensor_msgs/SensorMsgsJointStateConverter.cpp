@@ -34,8 +34,7 @@ bool USensorMsgsJointStateConverter::ConvertIncomingMessage(const ROSBridgePubli
 bool USensorMsgsJointStateConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
 	auto JointStateMessage = StaticCastSharedPtr<ROSMessages::sensor_msgs::JointState>(BaseMsg);
 	
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
 	UStdMsgsHeaderConverter::_bson_append_header(*message, &(JointStateMessage->header));
 
