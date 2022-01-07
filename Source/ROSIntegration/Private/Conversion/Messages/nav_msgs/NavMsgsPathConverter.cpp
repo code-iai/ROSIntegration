@@ -37,7 +37,7 @@ bool UNavMsgsPathConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseM
 
 	*message = bson_new();
 
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(Path->header));
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(Path->header));
 	_bson_append_tarray<ROSMessages::geometry_msgs::PoseStamped>(*message, "poses", Path->poses, [](bson_t* msg, const char* key, const ROSMessages::geometry_msgs::PoseStamped& pose_stamped)
 	{
 		UGeometryMsgsPoseStampedConverter::_bson_append_child_pose_stamped(msg, key, &pose_stamped);

@@ -43,7 +43,7 @@ public:
 
 	static void _bson_append_pose_stamped(bson_t *b, const ROSMessages::geometry_msgs::PoseStamped * ps)
 	{
-		UStdMsgsHeaderConverter::_bson_append_header(b, &(ps->header));
+		UStdMsgsHeaderConverter::_bson_append_child_header(b, "header", &(ps->header));
 		UGeometryMsgsPoseConverter::_bson_append_child_pose(b, "pose", &(ps->pose));
 	}
 };

@@ -49,7 +49,7 @@ public:
 
 	static void _bson_append_laser_scan(bson_t *b, const ROSMessages::sensor_msgs::LaserScan *ls)
 	{
-		UStdMsgsHeaderConverter::_bson_append_header(b, &ls->header);
+		UStdMsgsHeaderConverter::_bson_append_child_header(b, "header", &ls->header);
 
 		BSON_APPEND_DOUBLE(b, "angle_min", ls->angle_min);
 		BSON_APPEND_DOUBLE(b, "angle_max", ls->angle_max);

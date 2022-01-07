@@ -36,7 +36,7 @@ bool USensorMsgsJointStateConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseM
 	
 	*message = bson_new();
 
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(JointStateMessage->header));
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(JointStateMessage->header));
 
 	// parent class utility methods
 	UBaseMessageConverter::_bson_append_tarray<FString>(*message, "name", JointStateMessage->name, [](bson_t *subb, const char *subKey, FString str) { BSON_APPEND_UTF8(subb, subKey, TCHAR_TO_UTF8(*str)); });

@@ -34,7 +34,7 @@ bool UNavMsgsOccupancyGridConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseM
 	
 	*message = bson_new();
 	
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(grid->header));
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(grid->header));
 	
 	UNavMsgsMapMetaDataConverter::_bson_append_child_map_meta_data(*message, "info", &(grid->info));
 	

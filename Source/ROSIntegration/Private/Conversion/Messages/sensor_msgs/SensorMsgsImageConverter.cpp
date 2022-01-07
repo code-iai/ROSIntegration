@@ -29,6 +29,7 @@ bool USensorMsgsImageConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> B
 	"}",
 	"height", BCON_INT32(Image->height),
 	"width", BCON_INT32(Image->width),
+	"is_bigendian", BCON_INT32(Image->is_bigendian),
 	"encoding", BCON_UTF8(TCHAR_TO_UTF8(*Image->encoding)),
 	"step", BCON_INT32(Image->step)
 	);

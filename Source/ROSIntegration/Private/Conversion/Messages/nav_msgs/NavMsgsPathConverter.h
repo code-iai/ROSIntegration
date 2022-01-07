@@ -47,7 +47,7 @@ public:
 
 	static void _bson_append_path(bson_t *b, const ROSMessages::nav_msgs::Path * path)
 	{
-		UStdMsgsHeaderConverter::_bson_append_header(b, &(path->header));
+		UStdMsgsHeaderConverter::_bson_append_child_header(b, "header", &(path->header));
 		_bson_append_tarray<ROSMessages::geometry_msgs::PoseStamped>(b, "poses", path->poses, [](bson_t* msg, const char* key, const ROSMessages::geometry_msgs::PoseStamped& pose_stamped)
 		{
 			UGeometryMsgsPoseStampedConverter::_bson_append_child_pose_stamped(msg, key, &pose_stamped);

@@ -49,7 +49,7 @@ bool USensorMsgsPointCloud2Converter::ConvertOutgoingMessage(TSharedPtr<FROSBase
 	auto PointCloud2 = StaticCastSharedPtr<ROSMessages::sensor_msgs::PointCloud2>(BaseMsg);
 
 	*message = bson_new();
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(PointCloud2->header));
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(PointCloud2->header));
 
 	BSON_APPEND_INT32(*message, "height", PointCloud2->height);
 	BSON_APPEND_INT32(*message, "width", PointCloud2->width);
