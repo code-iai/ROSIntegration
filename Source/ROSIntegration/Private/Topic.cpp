@@ -101,8 +101,7 @@ public:
 		bson_t *bson_message = nullptr;
 
 		if (ConvertMessage(msg, &bson_message)) {
-			return _ROSTopic->Publish(bson_message);
-			//bson_destroy(bson_message); // Not necessary, since bson memory will be freed in the rosbridge core code
+			return _ROSTopic->Publish(bson_message); // bson memory will be freed in the rosbridge core code after the message is published
 		}
 		else {
 			UE_LOG(LogROS, Error, TEXT("Failed to ConvertMessage in UTopic::Publish()"));
