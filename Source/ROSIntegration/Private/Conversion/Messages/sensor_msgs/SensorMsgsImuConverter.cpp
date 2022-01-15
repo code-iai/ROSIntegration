@@ -50,10 +50,9 @@ bool USensorMsgsImuConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> Bas
 {
 	auto Imu = StaticCastSharedPtr<ROSMessages::sensor_msgs::Imu>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(Imu->header));
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(Imu->header));
 
 	UGeometryMsgsQuaternionConverter::_bson_append_child_quaternion(*message, "orientation", &(Imu->orientation));
 	_bson_append_double_tarray(*message, "orientation_covariance", Imu->orientation_covariance);

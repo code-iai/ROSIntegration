@@ -45,10 +45,9 @@ bool USensorMsgsNavSatFixConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMs
 {
 	auto nsf = StaticCastSharedPtr<ROSMessages::sensor_msgs::NavSatFix>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(nsf->header));
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(nsf->header));
 	USensorMsgsNavSatStatusConverter::_bson_append_child_nav_sat_status(*message, "status", &(nsf->status));
 	BSON_APPEND_DOUBLE(*message, "latitude", nsf->latitude);
 	BSON_APPEND_DOUBLE(*message, "longitude", nsf->longitude);

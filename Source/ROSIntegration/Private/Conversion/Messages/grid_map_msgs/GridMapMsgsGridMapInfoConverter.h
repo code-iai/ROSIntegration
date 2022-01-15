@@ -43,7 +43,7 @@ public:
 
 	static void _bson_append_grid_map_info(bson_t *b, const ROSMessages::grid_map_msgs::GridMapInfo *g)
 	{
-		UStdMsgsHeaderConverter::_bson_append_header(b, &(g->header));
+		UStdMsgsHeaderConverter::_bson_append_child_header(b, "header", &(g->header));
 		BSON_APPEND_DOUBLE(b, "resolution", g->resolution);
 		BSON_APPEND_DOUBLE(b, "length_x", g->length_x);
 		BSON_APPEND_DOUBLE(b, "length_y", g->length_y);

@@ -17,8 +17,7 @@ bool USensorMsgsNavSatStatusConverter::ConvertOutgoingMessage(TSharedPtr<FROSBas
 {
 	auto nss = StaticCastSharedPtr<ROSMessages::sensor_msgs::NavSatStatus>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_nav_sat_status(*message, nss.Get());
 
 	return true;

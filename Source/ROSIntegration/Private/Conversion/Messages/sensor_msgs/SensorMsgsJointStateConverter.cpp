@@ -34,10 +34,9 @@ bool USensorMsgsJointStateConverter::ConvertIncomingMessage(const ROSBridgePubli
 bool USensorMsgsJointStateConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) {
 	auto JointStateMessage = StaticCastSharedPtr<ROSMessages::sensor_msgs::JointState>(BaseMsg);
 	
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(JointStateMessage->header));
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(JointStateMessage->header));
 
 	// parent class utility methods
 	UBaseMessageConverter::_bson_append_tarray<FString>(*message, "name", JointStateMessage->name, [](bson_t *subb, const char *subKey, FString str) { BSON_APPEND_UTF8(subb, subKey, TCHAR_TO_UTF8(*str)); });

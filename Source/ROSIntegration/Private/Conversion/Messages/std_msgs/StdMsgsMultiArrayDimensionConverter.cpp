@@ -17,8 +17,7 @@ bool UStdMsgsMultiArrayDimensionConverter::ConvertOutgoingMessage(TSharedPtr<FRO
 {
 	auto mad = StaticCastSharedPtr<ROSMessages::std_msgs::MultiArrayDimension>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_multi_array_dimension(*message, mad.Get());
 
 	return true;

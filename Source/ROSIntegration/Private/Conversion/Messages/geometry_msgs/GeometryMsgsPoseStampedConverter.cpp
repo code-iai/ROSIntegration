@@ -22,9 +22,7 @@ bool UGeometryMsgsPoseStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBa
 {
 	auto PoseStamped = StaticCastSharedPtr<ROSMessages::geometry_msgs::PoseStamped>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
-
+	*message = bson_new();
 	_bson_append_pose_stamped(*message, PoseStamped.Get());
 
 	return true;

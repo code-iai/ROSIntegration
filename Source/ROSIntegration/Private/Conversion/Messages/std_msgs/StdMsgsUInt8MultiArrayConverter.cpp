@@ -17,8 +17,7 @@ bool UStdMsgsUInt8MultiArrayConverter::ConvertOutgoingMessage(TSharedPtr<FROSBas
 {
 	auto bma = StaticCastSharedPtr<ROSMessages::std_msgs::UInt8MultiArray>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_uint8_multi_array(*message, bma.Get());
 
 	return true;

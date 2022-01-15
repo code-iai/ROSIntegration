@@ -18,8 +18,7 @@ bool UGeometryMsgsQuaternionConverter::ConvertOutgoingMessage(TSharedPtr<FROSBas
 {
 	auto Quaternion = StaticCastSharedPtr<ROSMessages::geometry_msgs::Quaternion>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_quaternion(*message, Quaternion.Get());
 
 	return true;

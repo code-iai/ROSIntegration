@@ -18,8 +18,7 @@ bool UGeometryMsgsPoseConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> 
 {
 	auto Pose = StaticCastSharedPtr<ROSMessages::geometry_msgs::Pose>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_pose(*message, Pose.Get());
 
 	return true;

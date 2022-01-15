@@ -37,10 +37,9 @@ bool UNavMsgsOdometryConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> B
 {
 	auto Odometry = StaticCastSharedPtr<ROSMessages::nav_msgs::Odometry>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 
-	UStdMsgsHeaderConverter::_bson_append_header(*message, &(Odometry->header));
+	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(Odometry->header));
 
 	const char* id = TCHAR_TO_UTF8(*Odometry->child_frame_id);
 	BSON_APPEND_UTF8(*message, "child_frame_id", id);

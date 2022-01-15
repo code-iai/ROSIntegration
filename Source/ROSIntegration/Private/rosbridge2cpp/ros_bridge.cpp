@@ -70,15 +70,15 @@ namespace rosbridge2cpp {
 	bool ROSBridge::SendMessage(ROSBridgeMsg &msg)
 	{
 		if (bson_only_mode()) {
-			bson_t message = BSON_INITIALIZER;
-			msg.ToBSON(message);
+			bson_t* message = bson_new();
+			msg.ToBSON(*message);
 			//size_t offset;
 
-			const uint8_t *bson_data = bson_get_data(&message);
-			uint32_t bson_size = message.len;
+			const uint8_t *bson_data = bson_get_data(message);
+			uint32_t bson_size = message->len;
 			spinlock::scoped_lock_wait_for_short_task lock(transport_layer_access_mutex_);
 			bool retval = transport_layer_.SendMessage(bson_data, bson_size);
-			bson_destroy(&message); // TODO needed?
+			bson_destroy(message);
 			return retval;
 
 			// // going from JSON to BSON
@@ -120,7 +120,6 @@ namespace rosbridge2cpp {
 		}
 
 		bson_t* message = bson_new();
-		bson_init(message);
 		msg.ToBSON(*message);
 
 		{

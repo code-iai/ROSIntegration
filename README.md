@@ -187,6 +187,7 @@ Topic Message Type                 | ROS to UE4 | UE4 to ROS
 ---------------------------------- | ---------- | ----------
 std_msgs/Header                    | ✓          | ✓
 std_msgs/String                    | ✓          | ✓
+std_msgs/Bool                      | ✓          | ✓
 std_msgs/Float32                   | ✓          | ✓
 std_msgs/Float32MultiArray         | ✓          | ✓
 std_msgs/MultiArrayDimension       | ✓          | ✓
@@ -215,7 +216,7 @@ sensor_msgs/JointState             | ✓          | ✓
 sensor_msgs/NavSatFix              | ✓          | ✓
 sensor_msgs/NavSatStatus           | ✓          | ✓
 sensor_msgs/PointCloud2            | ✓          | ✓
-sensor_msgs/RegionOfInterest       | ✘          | ✘
+sensor_msgs/RegionOfInterest       | ✓          | ✓
 sensor_msgs/LaserScan              | ✓          | ✓
 actionlib_msgs/GoalID              | ✓          | ✓
 actionlib_msgs/GoalStatus          | ✓          | ✓
@@ -229,7 +230,7 @@ rospy_tutorials/AddTwoIntsResponse | ✓          | ✓
 
 ### Implementing New Message Types
 
-To be able to send and receive message types with ROSIntegration we need two things: the message definition, as well as a converter of the data in that definition from and to BSON. For reference how to do that look into the message definitions in `Source\ROSIntegration\Public`, and the converters in `Source\ROSIntegration\Private\Conversion\Messages`.
+To be able to send and receive message types with ROSIntegration we need two things: the message definition, as well as a converter of the data in that definition from and to BSON. For reference how to do that look into the message definitions in `Source\ROSIntegration\Public`, and the converters in `Source\ROSIntegration\Private\Conversion\Messages`. To avoid any memory leaks, please follow the same steps as done in this repo when implementing your overriden `ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)`. It is also recommended that you make your custom converters user-friendly by creating helper functions like `_bson_append_child_msg(...)` and `_bson_append_msg(...)` as you see in most of our message converter header files. If you do create such helper functions, follow our convention to avoid any memory leaks.
 
 If you need one of the standard message types provided by ROS, you should implement them inside the ROSIntegration's folder structure. Please keep to the naming convention of the ROS documentation for the message definition.
 If you want to implement your own messages you can do that in your own project. You only need to add something like the following to the Build.cs-file of your project:

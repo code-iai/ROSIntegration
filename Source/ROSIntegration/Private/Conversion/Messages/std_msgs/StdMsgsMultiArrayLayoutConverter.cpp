@@ -18,8 +18,7 @@ bool UStdMsgsMultiArrayLayoutConverter::ConvertOutgoingMessage(TSharedPtr<FROSBa
 {
 	auto Pose = StaticCastSharedPtr<ROSMessages::std_msgs::MultiArrayLayout>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_multi_array_layout(*message, Pose.Get());
 
 	return true;

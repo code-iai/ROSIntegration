@@ -18,8 +18,7 @@ bool UActionlibMsgsGoalIDConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMs
 {
 	auto GoalID = StaticCastSharedPtr<ROSMessages::actionlib_msgs::GoalID>(BaseMsg);
 
-	*message = new bson_t;
-	bson_init(*message);
+	*message = bson_new();
 	_bson_append_goal_id(*message, GoalID.Get());
 
 	return true;

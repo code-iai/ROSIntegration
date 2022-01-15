@@ -23,26 +23,33 @@ public:
 		bool KeyFound = false;
 		
 		// TODO Check if rosbridge sends UINT64 or INT32 (there is no uint32 in bson)
-		h->seq =	  GetInt32FromBSON(key + ".seq", b, KeyFound, LogOnErrors);		if (!KeyFound) return false;
-		int32 Sec =   GetInt32FromBSON(key + ".stamp.secs", b, KeyFound, LogOnErrors);  if (!KeyFound) return false;
-		int32 NSec =  GetInt32FromBSON(key + ".stamp.nsecs", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		h->seq = GetInt32FromBSON(key + ".seq", b, KeyFound, LogOnErrors);		if (!KeyFound) return false;
+		int32 Sec = GetInt32FromBSON(key + ".stamp.secs", b, KeyFound, LogOnErrors);  if (!KeyFound) return false;
+		int32 NSec = GetInt32FromBSON(key + ".stamp.nsecs", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 		h->frame_id = GetFStringFromBSON(key + ".frame_id", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 		h->time = FROSTime(Sec, NSec);
 
 		return true;
 	}
 
-	// Helper function to append a std_msgs/Header to a bson_t
-	static void _bson_append_header(bson_t *b, const ROSMessages::std_msgs::Header *h)
+	static void _bson_append_child_header(bson_t* b, const char* key, const ROSMessages::std_msgs::Header* header)
 	{
-		bson_t *hdr = BCON_NEW(
-			"seq", BCON_INT32(h->seq),
-			"stamp", "{",
-			"secs", BCON_INT32(h->time._Sec),
-			"nsecs", BCON_INT32(h->time._NSec),
-			"}",
-			"frame_id", BCON_UTF8(TCHAR_TO_ANSI(*h->frame_id))
-		);
-		BSON_APPEND_DOCUMENT(b, "header", hdr);
+		bson_t child;
+		BSON_APPEND_DOCUMENT_BEGIN(b, key, &child);
+		_bson_append_header(&child, header);
+		bson_append_document_end(b, &child);
+	}
+
+	static void _bson_append_header(bson_t *b, const ROSMessages::std_msgs::Header *header)
+	{
+		BSON_APPEND_INT32(b, "seq", header->seq);
+
+		bson_t stamp;
+		BSON_APPEND_DOCUMENT_BEGIN(b, "stamp", &stamp);
+		BSON_APPEND_INT32(&stamp, "secs", header->time._Sec);
+		BSON_APPEND_INT32(&stamp, "nsecs", header->time._NSec);
+		bson_append_document_end(b, &stamp);
+
+		BSON_APPEND_UTF8(b, "frame_id", TCHAR_TO_UTF8(*header->frame_id));
 	}
 };
