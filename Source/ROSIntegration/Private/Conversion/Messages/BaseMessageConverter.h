@@ -124,8 +124,6 @@ public:
 		return GetTArrayFromBSON<int32>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetInt32FromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
 	}
 
-protected:
-
 	// Helper function to append a TArray<float> to a bson_t
 	static void _bson_append_float_tarray(bson_t *b, const char *key, const TArray<float>& tarray)
 	{

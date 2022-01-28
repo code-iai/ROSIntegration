@@ -6,7 +6,7 @@ namespace ROSMessages{
 	namespace geometry_msgs {
 		class Quaternion: public FROSBaseMsg {
 		public:
-			Quaternion() : Quaternion(0, 0, 0, 0) {}
+			Quaternion() : Quaternion(0, 0, 0, 1) {} // Base quaternion should be the identity quaternion
 
 			Quaternion(double x, double y, double z, double w) : x(x), y(y), z(z), w(w){
 				_MessageType = "geometry_msgs/Quaternion";

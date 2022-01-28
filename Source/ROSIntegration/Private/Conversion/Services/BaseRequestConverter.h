@@ -5,6 +5,7 @@
 #include <UObject/Object.h>
 #include "rosbridge2cpp/messages/rosbridge_call_service_msg.h"
 #include "ROSBaseServiceRequest.h"
+#include "Conversion/Messages/BaseMessageConverter.h"
 #include <bson.h>
 
 #include "BaseRequestConverter.generated.h"

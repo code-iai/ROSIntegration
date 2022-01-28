@@ -5,6 +5,7 @@
 #include <UObject/Object.h>
 #include "rosbridge2cpp/messages/rosbridge_service_response_msg.h"
 #include "ROSBaseServiceResponse.h"
+#include "Conversion/Messages/BaseMessageConverter.h"
 
 #include "BaseResponseConverter.generated.h"
 
