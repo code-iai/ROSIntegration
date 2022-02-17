@@ -33,7 +33,7 @@ public:
 		return true;
 	}
 
-	static void _bson_append_child_pose_with_covariance(bson_t *b, const char *key, ROSMessages::geometry_msgs::PoseWithCovariance *t)
+	static void _bson_append_child_pose_with_covariance(bson_t *b, const char *key, const ROSMessages::geometry_msgs::PoseWithCovariance *t)
 	{
 		bson_t pose;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &pose);

@@ -19,10 +19,10 @@ public:
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	static bool _bson_extract_child_twist(bson_t *b, FString key, ROSMessages::geometry_msgs::Twist *p, bool LogOnErrors = true)
+	static bool _bson_extract_child_twist(bson_t *b, FString key, ROSMessages::geometry_msgs::Twist *t, bool LogOnErrors = true)
 	{
-		if (!UGeometryMsgsVector3Converter::_bson_extract_child_vector3(b, key + ".linear", &p->linear, LogOnErrors)) return false;
-		if (!UGeometryMsgsVector3Converter::_bson_extract_child_vector3(b, key + ".angular", &p->angular, LogOnErrors)) return false;
+		if (!UGeometryMsgsVector3Converter::_bson_extract_child_vector3(b, key + ".linear", &t->linear, LogOnErrors)) return false;
+		if (!UGeometryMsgsVector3Converter::_bson_extract_child_vector3(b, key + ".angular", &t->angular, LogOnErrors)) return false;
 
 		return true;
 	}

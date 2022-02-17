@@ -27,7 +27,7 @@ public:
         return true;
     }
     
-    static void _bson_append_child_transform(bson_t *b, const char *key, ROSMessages::geometry_msgs::Transform *t)
+    static void _bson_append_child_transform(bson_t *b, const char *key, const ROSMessages::geometry_msgs::Transform *t)
 	{
 		bson_t tform;
 		BSON_APPEND_DOCUMENT_BEGIN(b, key, &tform);
@@ -35,7 +35,7 @@ public:
 		bson_append_document_end(b, &tform);
 	}
 
-	static void _bson_append_transform(bson_t *b, ROSMessages::geometry_msgs::Transform *t)
+	static void _bson_append_transform(bson_t *b, const ROSMessages::geometry_msgs::Transform *t)
 	{
 		UGeometryMsgsVector3Converter::_bson_append_child_vector3(b, "translation", &(t->translation));
 		UGeometryMsgsQuaternionConverter::_bson_append_child_quaternion(b, "rotation", &(t->rotation));
