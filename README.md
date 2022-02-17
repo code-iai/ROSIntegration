@@ -202,6 +202,7 @@ geometry_msgs/Quaternion           | ✓          | ✓
 geometry_msgs/Transform            | ✓          | ✓
 geometry_msgs/TransformStamped     | ✓          | ✓
 geometry_msgs/Twist                | ✓          | ✓
+geometry_msgs/TwistStamped         | ✓          | ✓
 geometry_msgs/TwistWithCovariance  | ✓          | ✓
 geometry_msgs/Vector3              | ✓          | ✓
 grid_map_msgs/GridMap              | ✓          | ✓
