@@ -6,6 +6,8 @@ The connection to the ROS world will be accomplished through http://wiki.ros.org
 
 UE 4.23 support has been recently added by Luigi Freda (see tested versions below)
 
+ROS2 support was recently added by [@tsender](https://github.com/tsender). Checkout the `ros2` branch for more details.
+
 ## Description
 
 This Plugin contains the basic data structures to enable the user to communicate with a running roscore.
@@ -60,6 +62,8 @@ This plugin has previously been tested with Unreal Engine versions;
  * 4.20.3
  * **4.23** (by [Luigi Freda](http://www.luigifreda.com), fixed bugs with smart pointer management)
  * 4.24 
+ * 4.25
+ * 4.26
  
 Please note that this list is a tracker of which UE4 versions have been previously tested. It is not guaranteed that the most recent version of ROSIntegration is working with all previous UE4 versions.
 
