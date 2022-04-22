@@ -6,8 +6,6 @@ The connection to the ROS world will be accomplished through http://wiki.ros.org
 
 UE 4.23 support has been recently added by Luigi Freda (see tested versions below)
 
-**ROS2 support was recently added by [@tsender](https://github.com/tsender). Checkout the `ros2` branch for more details.**
-
 ## Description
 
 This Plugin contains the basic data structures to enable the user to communicate with a running roscore.
