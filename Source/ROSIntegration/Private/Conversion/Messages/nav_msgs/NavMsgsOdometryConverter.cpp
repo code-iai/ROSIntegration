@@ -1,8 +1,7 @@
 #include "Conversion/Messages/nav_msgs/NavMsgsOdometryConverter.h"
 
 
-UNavMsgsOdometryConverter::UNavMsgsOdometryConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UNavMsgsOdometryConverter::UNavMsgsOdometryConverter()
 {
 	_MessageType = "nav_msgs/Odometry";
 }
@@ -17,7 +16,6 @@ bool UNavMsgsOdometryConverter::ConvertIncomingMessage(const ROSBridgePublishMsg
 bool UNavMsgsOdometryConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
 	auto CastMsg = StaticCastSharedPtr<ROSMessages::nav_msgs::Odometry>(BaseMsg);
-
 	*message = bson_new();
 	_bson_append_odometry(*message, CastMsg.Get());
 	return true;

@@ -1,29 +1,22 @@
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsPoseStampedConverter.h"
 
 
-UGeometryMsgsPoseStampedConverter::UGeometryMsgsPoseStampedConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UGeometryMsgsPoseStampedConverter::UGeometryMsgsPoseStampedConverter()
 {
 	_MessageType = "geometry_msgs/PoseStamped";
 }
 
 bool UGeometryMsgsPoseStampedConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	auto p = new ROSMessages::geometry_msgs::PoseStamped();
-	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
-
-	if (!UStdMsgsHeaderConverter::_bson_extract_child_header(message->full_msg_bson_, TEXT("msg.header"), &p->header)) return false;
-	if (!UGeometryMsgsPoseConverter::_bson_extract_child_pose(message->full_msg_bson_, TEXT("msg.pose"), &p->pose)) return false;
-
-	return true;
+	auto msg = new ROSMessages::geometry_msgs::PoseStamped();
+	BaseMsg = TSharedPtr<FROSBaseMsg>(msg);
+	return _bson_extract_child_pose_stamped(message->full_msg_bson_, "msg", msg);;
 }
 
 bool UGeometryMsgsPoseStampedConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
-	auto PoseStamped = StaticCastSharedPtr<ROSMessages::geometry_msgs::PoseStamped>(BaseMsg);
-
+	auto CastMsg = StaticCastSharedPtr<ROSMessages::geometry_msgs::PoseStamped>(BaseMsg);
 	*message = bson_new();
-	_bson_append_pose_stamped(*message, PoseStamped.Get());
-
+	_bson_append_pose_stamped(*message, CastMsg.Get());
 	return true;
 }

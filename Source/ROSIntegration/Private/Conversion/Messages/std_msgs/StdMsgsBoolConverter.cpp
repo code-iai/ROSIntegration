@@ -4,8 +4,7 @@
 #include "Conversion/Messages/std_msgs/StdMsgsBoolConverter.h"
 
 
-UStdMsgsBoolConverter::UStdMsgsBoolConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UStdMsgsBoolConverter::UStdMsgsBoolConverter()
 {
 	_MessageType = "std_msgs/Bool";
 }

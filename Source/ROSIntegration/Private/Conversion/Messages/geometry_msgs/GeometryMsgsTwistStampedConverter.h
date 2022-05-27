@@ -1,29 +1,27 @@
 #pragma once
 
-#include <CoreMinimal.h>
-#include <UObject/ObjectMacros.h>
-#include <UObject/Object.h>
+#include "CoreMinimal.h"
 #include "Conversion/Messages/BaseMessageConverter.h"
-#include "geometry_msgs/TwistStamped.h"
 #include "Conversion/Messages/std_msgs/StdMsgsHeaderConverter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsTwistConverter.h"
-
+#include "geometry_msgs/TwistStamped.h"
 #include "GeometryMsgsTwistStampedConverter.generated.h"
 
 
 UCLASS()
 class ROSINTEGRATION_API UGeometryMsgsTwistStampedConverter : public UBaseMessageConverter
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UGeometryMsgsTwistStampedConverter();
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-	static bool _bson_extract_child_twist_stamped(bson_t *b, FString key, ROSMessages::geometry_msgs::TwistStamped *t, bool LogOnErrors = true)
+	static bool _bson_extract_child_twist_stamped(bson_t *b, FString key, ROSMessages::geometry_msgs::TwistStamped *msg, bool LogOnErrors = true)
 	{
-		if (!UStdMsgsHeaderConverter::_bson_extract_child_header(b, key + ".header", &t->header)) return false;
-		if (!UGeometryMsgsTwistConverter::_bson_extract_child_twist(b, key + ".twist", &t->twist, LogOnErrors)) return false;
+		if (!UStdMsgsHeaderConverter::_bson_extract_child_header(b, key + ".header", &msg->header)) return false;
+		if (!UGeometryMsgsTwistConverter::_bson_extract_child_twist(b, key + ".twist", &msg->twist, LogOnErrors)) return false;
 
 		return true;
 	}

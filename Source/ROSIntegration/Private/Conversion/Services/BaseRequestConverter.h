@@ -1,22 +1,20 @@
 #pragma once
 
-#include <CoreMinimal.h>
-#include <UObject/ObjectMacros.h>
-#include <UObject/Object.h>
+#include "CoreMinimal.h"
 #include "rosbridge2cpp/messages/rosbridge_call_service_msg.h"
 #include "ROSBaseServiceRequest.h"
 #include "Conversion/Messages/BaseMessageConverter.h"
-#include <bson.h>
-
 #include "BaseRequestConverter.generated.h"
 
 
 UCLASS()
-class ROSINTEGRATION_API UBaseRequestConverter: public UObject
+class ROSINTEGRATION_API UBaseRequestConverter: public UBaseMessageConverter
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UBaseRequestConverter();
+
 	UPROPERTY()
 	FString _ServiceType;
 

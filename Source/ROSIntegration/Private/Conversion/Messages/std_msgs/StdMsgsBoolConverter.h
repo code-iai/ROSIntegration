@@ -7,15 +7,14 @@
 #include "std_msgs/Bool.h"
 #include "StdMsgsBoolConverter.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
-class UStdMsgsBoolConverter : public UBaseMessageConverter
+class ROSINTEGRATION_API UStdMsgsBoolConverter : public UBaseMessageConverter
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UStdMsgsBoolConverter();
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 	

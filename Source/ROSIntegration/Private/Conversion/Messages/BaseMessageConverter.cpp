@@ -1,8 +1,7 @@
 #include "Conversion/Messages/BaseMessageConverter.h"
 
 
-UBaseMessageConverter::UBaseMessageConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UBaseMessageConverter::UBaseMessageConverter()
 {
 }
 

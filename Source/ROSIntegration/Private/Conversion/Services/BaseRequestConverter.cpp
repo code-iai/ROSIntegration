@@ -1,8 +1,7 @@
 #include "Conversion/Services/BaseRequestConverter.h"
 
 
-UBaseRequestConverter::UBaseRequestConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UBaseRequestConverter::UBaseRequestConverter()
 {
 }
 

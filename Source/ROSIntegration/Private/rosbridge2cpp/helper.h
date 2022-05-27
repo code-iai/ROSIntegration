@@ -64,6 +64,23 @@ namespace rosbridge2cpp {
 		}
 
 		// dot_notation refers to MongoDB dot notation
+		// returns INT32_MAX and sets success to 'false' if suitable data can't be found via the dot notation
+		int64_t static get_int64_by_key(const char *dot_notation, bson_t &b, bool &success)
+		{
+			bson_iter_t iter;
+			bson_iter_t val;
+
+			if (bson_iter_init(&iter, &b) &&
+				bson_iter_find_descendant(&iter, dot_notation, &val) &&
+				BSON_ITER_HOLDS_INT64(&val)) {
+				success = true;
+				return bson_iter_int64(&val);
+			}
+			success = false;
+			return INT64_MAX;
+		}
+
+		// dot_notation refers to MongoDB dot notation
 		// returns -1 and sets success to 'false' if suitable data can't be found via the dot notation
 		double static get_double_by_key(const char *dot_notation, bson_t &b, bool &success)
 		{

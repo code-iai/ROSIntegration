@@ -1,8 +1,7 @@
 #include "Conversion/Messages/std_msgs/StdMsgsStringConverter.h"
 
 
-UStdMsgsStringConverter::UStdMsgsStringConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UStdMsgsStringConverter::UStdMsgsStringConverter()
 {
 	_MessageType = "std_msgs/String";
 }

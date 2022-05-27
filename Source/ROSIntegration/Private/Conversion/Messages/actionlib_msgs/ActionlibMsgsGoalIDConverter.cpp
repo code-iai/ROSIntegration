@@ -1,25 +1,22 @@
 #include "Conversion/Messages/actionlib_msgs/ActionlibMsgsGoalIDConverter.h"
 
 
-UActionlibMsgsGoalIDConverter::UActionlibMsgsGoalIDConverter(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+UActionlibMsgsGoalIDConverter::UActionlibMsgsGoalIDConverter()
 {
 	_MessageType = "actionlib_msgs/GoalID";
 }
 
 bool UActionlibMsgsGoalIDConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	auto g = new ROSMessages::actionlib_msgs::GoalID();
-	BaseMsg = TSharedPtr<FROSBaseMsg>(g);
-	return _bson_extract_child_goal_id(message->full_msg_bson_, "msg", g);
+	auto msg = new ROSMessages::actionlib_msgs::GoalID();
+	BaseMsg = TSharedPtr<FROSBaseMsg>(msg);
+	return _bson_extract_child_goal_id(message->full_msg_bson_, "msg", msg);
 }
 
 bool UActionlibMsgsGoalIDConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
-	auto GoalID = StaticCastSharedPtr<ROSMessages::actionlib_msgs::GoalID>(BaseMsg);
-
+	auto CastMSG = StaticCastSharedPtr<ROSMessages::actionlib_msgs::GoalID>(BaseMsg);
 	*message = bson_new();
-	_bson_append_goal_id(*message, GoalID.Get());
-
+	_bson_append_goal_id(*message, CastMSG.Get());
 	return true;
 }

@@ -1,50 +1,45 @@
 #pragma once
 
-#include <CoreMinimal.h>
-#include <UObject/ObjectMacros.h>
-#include <UObject/Object.h>
+#include "CoreMinimal.h"
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "geometry_msgs/Quaternion.h"
-
 #include "GeometryMsgsQuaternionConverter.generated.h"
 
 
 UCLASS()
 class ROSINTEGRATION_API UGeometryMsgsQuaternionConverter: public UBaseMessageConverter
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 
 public:
+	UGeometryMsgsQuaternionConverter();
 	virtual bool ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg);
 	virtual bool ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message);
 
-
-	static bool _bson_extract_child_quaternion(bson_t *b, FString key, ROSMessages::geometry_msgs::Quaternion *q, bool LogOnErrors = true)
+	static bool _bson_extract_child_quaternion(bson_t *b, FString key, ROSMessages::geometry_msgs::Quaternion *msg, bool LogOnErrors = true)
 	{
 		bool KeyFound = false;
 
-		q->x = GetDoubleFromBSON(key + ".x", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		q->y = GetDoubleFromBSON(key + ".y", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		q->z = GetDoubleFromBSON(key + ".z", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		q->w = GetDoubleFromBSON(key + ".w", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		msg->x = GetDoubleFromBSON(key + ".x", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		msg->y = GetDoubleFromBSON(key + ".y", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		msg->z = GetDoubleFromBSON(key + ".z", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		msg->w = GetDoubleFromBSON(key + ".w", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
 		return true;
 	}
 
-
-	static void _bson_append_child_quaternion(bson_t *b, const char *key, const ROSMessages::geometry_msgs::Quaternion *q)
+	static void _bson_append_child_quaternion(bson_t *b, const char *key, const ROSMessages::geometry_msgs::Quaternion *msg)
 	{
-		bson_t quat;
-		BSON_APPEND_DOCUMENT_BEGIN(b, key, &quat);
-		_bson_append_quaternion(&quat, q);
-		bson_append_document_end(b, &quat);
+		bson_t child;
+		BSON_APPEND_DOCUMENT_BEGIN(b, key, &child);
+		_bson_append_quaternion(&child, msg);
+		bson_append_document_end(b, &child);
 	}
 
-
-	static void _bson_append_quaternion(bson_t *b, const ROSMessages::geometry_msgs::Quaternion *q)
+	static void _bson_append_quaternion(bson_t *b, const ROSMessages::geometry_msgs::Quaternion *msg)
 	{
-		BSON_APPEND_DOUBLE(b, "x", q->x);
-		BSON_APPEND_DOUBLE(b, "y", q->y);
-		BSON_APPEND_DOUBLE(b, "z", q->z);
-		BSON_APPEND_DOUBLE(b, "w", q->w);
+		BSON_APPEND_DOUBLE(b, "x", msg->x);
+		BSON_APPEND_DOUBLE(b, "y", msg->y);
+		BSON_APPEND_DOUBLE(b, "z", msg->z);
+		BSON_APPEND_DOUBLE(b, "w", msg->w);
 	}
 };
