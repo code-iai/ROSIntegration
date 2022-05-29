@@ -263,6 +263,11 @@ PrivateIncludePaths.AddRange(
 
 Then you can create the message definition and the converter in your own projects source tree. You can just copy and paste the files of a similar standard message, but don't forget to replace the `ROSINTEGRATION_API` with your own API macro created by Unreal.
 
+### Overriding the rosbridge Connection Settings from Within the Level
+You can now add a `ROSBridgeParamOverride` actor to a level, allowing you to use different rosbridge connection settings for that level only (compared to what is defined in the ROSIntegrationGameInstance settings).
+
+When might this be useful? Say you have a powerful enough computer that can handle multiple independent UE4 simulations at the same time, and you want to run as many simulations as possible to collect data effeciently (perhaps you are training a reinforcement learning algorithm). If you create copies of your main level (saved with different names) and use different ROS topic names within each level, then you can launch each level in a new UE4 editor on the same computer. If using a single rosbridge node for all of these UE4 instances results in considerable delays, then you can then add the `ROSBridgeParamOverride` actor to each level so that each level uses its own rosbridge node.
+
 ### FAQ
 * Question: My Topic/Service gets closed/unadvertised or my UE4 crashes around one minute after Begin Play.
 Answer: This might be a problem relating to the Garbage Collection of UE4. Please make sure that you declare your class member attributes as UPROPERTYs. See also: https://github.com/code-iai/ROSIntegration/issues/32
