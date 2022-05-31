@@ -42,8 +42,10 @@ To enable the communcation between Unreal and ROS, you will need a running ROSBr
 
 The recommended way to install rosbridge is from source (requires the `rosauth` package):
 ```
-sudo apt-get install rosauth
+sudo apt-get install ros-ROS1_DISTRO-rosauth # Replace ROS1_DISTRO with the distro you are using
 cd ~/ros_workspace/
+source devel/setup.bash
+cd src/
 git clone -b ros1 https://github.com/RobotWebTools/rosbridge_suite.git
 cd ..
 catkin_make
@@ -51,14 +53,14 @@ source devel/setup.bash
 ```
 Even though you could install rosbridge using apt via:
 ```
-sudo apt-get install ros-kinetic-rosbridge-suite
+sudo apt-get install ros-ROS1_DISTRO-rosbridge-suite # Replace ROS1_DISTRO with the distro you are using
 ```
-if you were using ROS Kinetic, there have been numersous issues where these apt packages do not reflect the code in the `ros1` branch. Hence, it is best to install from source. After installing rosbridge, you can enable the bson_mode like this:
+there have been numersous issues where these apt packages do not reflect the code in the `ros1` branch. Hence, it is best to install from source. After installing rosbridge, you can enable the bson_mode like this:
 
 ```
 roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 ```
-If UE4 and rosbridge are both running, then you should see the rosbridge node subscribe to two topics beginning with `/unreal_ros/`. If you do NOT see this, then you likely have a problem with your rosbridge installation.
+**How to verify the rosbridge-UE4 connection:** Make sure UE4 is configured to use the ROSIntegrationGameInstance (see below) and set the connection parameters. If UE4 and rosbridge are both running, then you should see the rosbridge node subscribe to two topics with the prefix `/unreal_ros/`. If you do NOT see this, then you likely have a problem with your rosbridge installation.
 
 <!-- **Important**: The most recent rosbridge versions changed the transmission method. Since ROSIntegration can not handle this new method yet, please make sure to check out these issue on how to install a compatible rosbridge version: https://github.com/code-iai/ROSIntegration/issues/141 & https://github.com/code-iai/ROSIntegration/issues/139 -->
 
