@@ -38,16 +38,31 @@ It uses http://mongoc.org/libbson/ to encode and decode the whole ROS communicat
 Since BSON is not included in Unreal Engine (yet), its code has to be added to this plugin.
 Currently, this plugin comes with a pre-compiled libbson for Windows x64 and Linux x64 which doesn't need any additional configuration.
 
-To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. As an example for ROS kinetic, you can install it with:
+To enable the communcation between Unreal and ROS, you will need a running ROSBridge (https://github.com/RobotWebTools/rosbridge_suite) with bson_mode. Note: Please use rosbridge with version=>0.8.0 to get full BSON support.
+
+The recommended way to install rosbridge is from source (requires the `rosauth` package):
 ```
-sudo apt-get install ros-kinetic-rosbridge-suite
+sudo apt-get install ros-ROS1_DISTRO-rosauth # Replace ROS1_DISTRO with the distro you are using
+cd ~/ros_workspace/
+source devel/setup.bash
+cd src/
+git clone -b ros1 https://github.com/RobotWebTools/rosbridge_suite.git
+cd ..
+catkin_make
+source devel/setup.bash
 ```
-Note: Please use rosbridge with version=>0.8.0 to get full BSON support. After installing rosbridge, you can enable the bson_mode like this:
+Even though you could install rosbridge using apt via:
+```
+sudo apt-get install ros-ROS1_DISTRO-rosbridge-suite # Replace ROS1_DISTRO with the distro you are using
+```
+there have been numersous issues where these apt packages do not reflect the code in the `ros1` branch. Hence, it is best to install from source. After installing rosbridge, you can enable the bson_mode like this:
 
 ```
 roslaunch rosbridge_server rosbridge_tcp.launch bson_only_mode:=True
 ```
-**Important**: The most recent rosbridge versions changed the transmission method. Since ROSIntegration can not handle this new method yet, please make sure to check out these issue on how to install a compatible rosbridge version: https://github.com/code-iai/ROSIntegration/issues/141 & https://github.com/code-iai/ROSIntegration/issues/139
+**How to verify the rosbridge-UE4 connection:** Make sure UE4 is configured to use the ROSIntegrationGameInstance (see below) and set the connection parameters. If UE4 and rosbridge are both running, then you should see the rosbridge node subscribe to two topics with the prefix `/unreal_ros/`. If you do NOT see this, then you likely have a problem with your rosbridge installation.
+
+<!-- **Important**: The most recent rosbridge versions changed the transmission method. Since ROSIntegration can not handle this new method yet, please make sure to check out these issue on how to install a compatible rosbridge version: https://github.com/code-iai/ROSIntegration/issues/141 & https://github.com/code-iai/ROSIntegration/issues/139 -->
 
 In our testing, we usually installed rosbridge on a Ubuntu Linux with ROS while the UE4 with ROSIntegration can be run on a Windows or Linux hosts. ROSBridge and UE4 with ROSIntegration don't need to be run on the same machine. So in order to run UE4 with ROSIntegration on Windows, you can either install a Linux Virtual Machine on your Windows Hosts or have a seperate, physical machine with Linux running in your network.
 
@@ -60,6 +75,8 @@ This plugin has previously been tested with Unreal Engine versions;
  * 4.20.3
  * **4.23** (by [Luigi Freda](http://www.luigifreda.com), fixed bugs with smart pointer management)
  * 4.24 
+ * 4.25
+ * 4.26
  
 Please note that this list is a tracker of which UE4 versions have been previously tested. It is not guaranteed that the most recent version of ROSIntegration is working with all previous UE4 versions.
 
@@ -202,6 +219,7 @@ geometry_msgs/Quaternion           | ✓          | ✓
 geometry_msgs/Transform            | ✓          | ✓
 geometry_msgs/TransformStamped     | ✓          | ✓
 geometry_msgs/Twist                | ✓          | ✓
+geometry_msgs/TwistStamped         | ✓          | ✓
 geometry_msgs/TwistWithCovariance  | ✓          | ✓
 geometry_msgs/Vector3              | ✓          | ✓
 grid_map_msgs/GridMap              | ✓          | ✓
@@ -246,6 +264,11 @@ PrivateIncludePaths.AddRange(
 ```
 
 Then you can create the message definition and the converter in your own projects source tree. You can just copy and paste the files of a similar standard message, but don't forget to replace the `ROSINTEGRATION_API` with your own API macro created by Unreal.
+
+### Overriding the rosbridge Connection Settings from Within the Level
+You can now add a `ROSBridgeParamOverride` actor to a level, allowing you to use different rosbridge connection settings for that level only (compared to what is defined in the ROSIntegrationGameInstance settings).
+
+When might this be useful? Say you have a powerful enough computer that can handle multiple independent UE4 simulations at the same time, and you want to run as many simulations as possible to collect data effeciently (perhaps you are training a reinforcement learning algorithm). If you create copies of your main level (saved with different names) and use different ROS topic names within each level, then you can launch each level in a new UE4 editor on the same computer. If using a single rosbridge node for all of these UE4 instances results in considerable delays, then you can then add the `ROSBridgeParamOverride` actor to each level so that each level uses its own rosbridge node.
 
 ### FAQ
 * Question: My Topic/Service gets closed/unadvertised or my UE4 crashes around one minute after Begin Play.

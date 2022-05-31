@@ -1,8 +1,7 @@
 #include "Conversion/Messages/std_msgs/StdMsgsFloat32Converter.h"
 
 
-UStdMsgsFloat32Converter::UStdMsgsFloat32Converter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UStdMsgsFloat32Converter::UStdMsgsFloat32Converter()
 {
 	_MessageType = "std_msgs/Float32";
 }

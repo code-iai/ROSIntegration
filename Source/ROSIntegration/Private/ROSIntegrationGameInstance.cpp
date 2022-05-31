@@ -4,6 +4,8 @@
 #include "ROSTime.h"
 #include "rosgraph_msgs/Clock.h"
 #include "Misc/App.h"
+#include "ROSBridgeParamOverride.h"
+#include "Kismet/GameplayStatics.h"
 
 
 static void MarkAllROSObjectsAsDisconnected()
@@ -24,6 +26,8 @@ static void MarkAllROSObjectsAsDisconnected()
 
 void UROSIntegrationGameInstance::Init()
 {
+	Super::Init();
+
 	if (bConnectToROS)
 	{
 		bool resLock = initMutex_.TryLock(); 
@@ -44,6 +48,25 @@ void UROSIntegrationGameInstance::Init()
 			UROSIntegrationCore* oldRosCore = ROSIntegrationCore;
 			ROSIntegrationCore = nullptr;
 			oldRosCore->ConditionalBeginDestroy();
+		}
+
+		// Find AROSBridgeParamOverride actor, if it exists, to override ROS connection parameters
+		TArray<AActor*> TempArray;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AROSBridgeParamOverride::StaticClass(), TempArray);
+		if (TempArray.Num() > 0)
+		{
+			AROSBridgeParamOverride* OverrideParams = Cast<AROSBridgeParamOverride>(TempArray[0]);
+			if (OverrideParams)
+			{
+				UE_LOG(LogROS, Display, TEXT("ROSIntegrationGameInstance::Init() - Found AROSBridgeParamOverride to override ROS connection parameters."));
+				ROSBridgeServerHost = OverrideParams->ROSBridgeServerHost;
+				ROSBridgeServerPort = OverrideParams->ROSBridgeServerPort;
+				bConnectToROS = OverrideParams->bConnectToROS;
+				bSimulateTime = OverrideParams->bSimulateTime;
+				bUseFixedUpdateInterval = OverrideParams->bUseFixedUpdateInterval;
+				FixedUpdateInterval = OverrideParams->FixedUpdateInterval;
+				bCheckHealth = OverrideParams->bCheckHealth;
+			}
 		}
 
 		ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass()); // ORIGINAL 
@@ -168,6 +191,7 @@ void UROSIntegrationGameInstance::Shutdown()
 
 		UE_LOG(LogROS, Display, TEXT("ROS Game Instance - shutdown done"));
 	}
+	Super::Shutdown();
 }
 
 void UROSIntegrationGameInstance::BeginDestroy()

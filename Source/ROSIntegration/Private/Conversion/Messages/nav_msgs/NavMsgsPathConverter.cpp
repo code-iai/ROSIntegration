@@ -1,47 +1,22 @@
-#include "NavMsgsPathConverter.h"
-
-#include "nav_msgs/Path.h"
-#include "Conversion/Messages/std_msgs/StdMsgsHeaderConverter.h"
-#include "Conversion/Messages/geometry_msgs/GeometryMsgsPoseStampedConverter.h"
+#include "Conversion/Messages/nav_msgs/NavMsgsPathConverter.h"
 
 
-UNavMsgsPathConverter::UNavMsgsPathConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UNavMsgsPathConverter::UNavMsgsPathConverter()
 {
 	_MessageType = "nav_msgs/Path";
 }
 
 bool UNavMsgsPathConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	auto p = new ROSMessages::nav_msgs::Path();
-	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
-
-	bool KeyFound = false;
-	bson_t *b = message->full_msg_bson_;
-
-	KeyFound = UStdMsgsHeaderConverter::_bson_extract_child_header(b, TEXT("msg.header"), &p->header); if (!KeyFound) return false;
-
-	p->poses = GetTArrayFromBSON<ROSMessages::geometry_msgs::PoseStamped>(FString("msg.poses"), b, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) {
-		ROSMessages::geometry_msgs::PoseStamped ret;
-		subKeyFound = UGeometryMsgsPoseStampedConverter::_bson_extract_child_pose_stamped(subMsg, subKey, &ret);
-		return ret;
-	});
-	if (!KeyFound) return false;
-
-	return true;
+	auto msg = new ROSMessages::nav_msgs::Path();
+	BaseMsg = TSharedPtr<FROSBaseMsg>(msg);
+	return _bson_extract_child_path(message->full_msg_bson_, "msg", msg);
 }
 
 bool UNavMsgsPathConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
-	auto Path = StaticCastSharedPtr<ROSMessages::nav_msgs::Path>(BaseMsg);
-
+	auto CastMsg = StaticCastSharedPtr<ROSMessages::nav_msgs::Path>(BaseMsg);
 	*message = bson_new();
-
-	UStdMsgsHeaderConverter::_bson_append_child_header(*message, "header", &(Path->header));
-	_bson_append_tarray<ROSMessages::geometry_msgs::PoseStamped>(*message, "poses", Path->poses, [](bson_t* msg, const char* key, const ROSMessages::geometry_msgs::PoseStamped& pose_stamped)
-	{
-		UGeometryMsgsPoseStampedConverter::_bson_append_child_pose_stamped(msg, key, &pose_stamped);
-	});
-
+	_bson_append_path(*message, CastMsg.Get());
 	return true;
 }

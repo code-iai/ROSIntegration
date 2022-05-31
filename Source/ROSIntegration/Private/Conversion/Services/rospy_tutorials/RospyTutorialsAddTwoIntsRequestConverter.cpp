@@ -2,8 +2,7 @@
 #include "rospy_tutorials/AddTwoIntsRequest.h"
 
 
-URospyTutorialsAddTwoIntsRequestConverter::URospyTutorialsAddTwoIntsRequestConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+URospyTutorialsAddTwoIntsRequestConverter::URospyTutorialsAddTwoIntsRequestConverter()
 {
 	_ServiceType = "rospy_tutorials/AddTwoInts";
 }

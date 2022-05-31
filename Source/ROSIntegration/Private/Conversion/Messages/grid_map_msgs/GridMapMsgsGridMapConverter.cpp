@@ -1,24 +1,21 @@
 #include "GridMapMsgsGridMapConverter.h"
 
-UGridMapMsgsGridMapConverter::UGridMapMsgsGridMapConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UGridMapMsgsGridMapConverter::UGridMapMsgsGridMapConverter()
 {
 	_MessageType = "grid_map_msgs/GridMap";
 }
 
 bool UGridMapMsgsGridMapConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	auto p = new ROSMessages::grid_map_msgs::GridMap;
-	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
-	return _bson_extract_child_grid_map(message->full_msg_bson_, "msg", p);
+	auto msg = new ROSMessages::grid_map_msgs::GridMap;
+	BaseMsg = TSharedPtr<FROSBaseMsg>(msg);
+	return _bson_extract_child_grid_map(message->full_msg_bson_, "msg", msg);
 }
 
 bool UGridMapMsgsGridMapConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
-	auto map = StaticCastSharedPtr<ROSMessages::grid_map_msgs::GridMap>(BaseMsg);
-
+	auto CastMsg = StaticCastSharedPtr<ROSMessages::grid_map_msgs::GridMap>(BaseMsg);
 	*message = bson_new();
-	_bson_append_grid_map(*message, map.Get());
-
+	_bson_append_grid_map(*message, CastMsg.Get());
 	return true;
 }

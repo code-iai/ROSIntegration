@@ -1,25 +1,22 @@
 #include "StdMsgsMultiArrayLayoutConverter.h"
 
 
-UStdMsgsMultiArrayLayoutConverter::UStdMsgsMultiArrayLayoutConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+UStdMsgsMultiArrayLayoutConverter::UStdMsgsMultiArrayLayoutConverter()
 {
 	_MessageType = "std_msgs/MultiArrayLayout";
 }
 
 bool UStdMsgsMultiArrayLayoutConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg> &BaseMsg)
 {
-	auto p = new ROSMessages::std_msgs::MultiArrayLayout;
-	BaseMsg = TSharedPtr<FROSBaseMsg>(p);
-	return _bson_extract_child_multi_array_layout(message->full_msg_bson_, "msg", p);
+	auto msg = new ROSMessages::std_msgs::MultiArrayLayout;
+	BaseMsg = TSharedPtr<FROSBaseMsg>(msg);
+	return _bson_extract_child_multi_array_layout(message->full_msg_bson_, "msg", msg);
 }
 
 bool UStdMsgsMultiArrayLayoutConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
-	auto Pose = StaticCastSharedPtr<ROSMessages::std_msgs::MultiArrayLayout>(BaseMsg);
-
+	auto CastMsg = StaticCastSharedPtr<ROSMessages::std_msgs::MultiArrayLayout>(BaseMsg);
 	*message = bson_new();
-	_bson_append_multi_array_layout(*message, Pose.Get());
-
+	_bson_append_multi_array_layout(*message, CastMsg.Get());
 	return true;
 }

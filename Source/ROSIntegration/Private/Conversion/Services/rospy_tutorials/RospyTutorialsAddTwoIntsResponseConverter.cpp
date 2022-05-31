@@ -4,8 +4,7 @@
 #include <bson.h>
 
 
-URospyTutorialsAddTwoIntsResponseConverter::URospyTutorialsAddTwoIntsResponseConverter(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+URospyTutorialsAddTwoIntsResponseConverter::URospyTutorialsAddTwoIntsResponseConverter()
 {
 	_ServiceType = "rospy_tutorials/AddTwoInts";
 }
