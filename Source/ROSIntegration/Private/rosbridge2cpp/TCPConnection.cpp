@@ -141,12 +141,11 @@ int TCPConnection::ReceiverThreadFunction()
 
 		if (bson_only_mode_) {
 			if (bson_state_read_length) {
-				bson_msg_length_read = 0;
 				binary_buffer.SetNumUninitialized(4, false);
 				int32 bytes_read = 0;
-				if (_sock->Recv(binary_buffer.GetData(), 4, bytes_read) && bytes_read > 0) {
+				if (_sock->Recv(binary_buffer.GetData() + bson_msg_length_read, 4 - bson_msg_length_read, bytes_read) && bytes_read > 0) {
 					bson_msg_length_read += bytes_read;
-					if (bytes_read == 4) {
+					if (bson_msg_length_read == 4) { // receive until we have all 4 bytes for the size variable
 #if PLATFORM_LITTLE_ENDIAN
 						bson_msg_length = (
 							binary_buffer.GetData()[3] << 24 |
@@ -159,9 +158,11 @@ int TCPConnection::ReceiverThreadFunction()
 #endif
 						// Indicate the message retrieval mode
 						bson_state_read_length = false;
-						binary_buffer.SetNumUninitialized(bson_msg_length, false);
-					} else {
-						UE_LOG(LogROS, Error, TEXT("bytes_read is not 4 in bson_state_read_length==true. It's: %d"), bytes_read);
+						binary_buffer.SetNumUninitialized(bson_msg_length, false);  // bson_msg_length includes the 4 bytes for the size variable
+					} else if (bson_msg_length_read > 4) {
+						UE_LOG(LogROS, Error, 
+							TEXT("bson_msg_length_read is greater than 4 during bson_state_read_length==true. It's: %d"),
+							bson_msg_length_read);
 					}
 				} else {
 					UE_LOG(LogROS, Error, TEXT("Failed to recv(); Closing receiver thread."));
@@ -176,8 +177,9 @@ int TCPConnection::ReceiverThreadFunction()
 					if (bson_msg_length_read == bson_msg_length) {
 						// Full received message!
 						bson_state_read_length = true;
+						bson_msg_length_read = 0; // reset to wait for next 4 bytes size variable of next message
 						bson_t b;
-						if (!bson_init_static(&b, binary_buffer.GetData(), bson_msg_length_read)) {
+						if (!bson_init_static(&b, binary_buffer.GetData(), bson_msg_length)) {
 							UE_LOG(LogROS, Error, TEXT("Error on BSON parse - Ignoring message"));
 							continue;
 						}
