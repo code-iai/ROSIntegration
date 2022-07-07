@@ -176,6 +176,10 @@ UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
 	{
 		SupportedMessageTypes.Add(EMessageType::String, TEXT("std_msgs/String"));
 		SupportedMessageTypes.Add(EMessageType::Float32, TEXT("std_msgs/Float32"));
+		SupportedMessageTypes.Add(EMessageType::PoseStamped, TEXT("geometry_msgs/PoseStamped"));
+		SupportedMessageTypes.Add(EMessageType::TwistStamped, TEXT("geometry_msgs/TwistStamped"));
+		SupportedMessageTypes.Add(EMessageType::Twist, TEXT("geometry_msgs/Twist"));
+		SupportedMessageTypes.Add(EMessageType::HomePosition, TEXT("mavros_msgs/HomePosition"));
 	}
 }
 
@@ -232,7 +236,7 @@ bool UTopic::Unadvertise()
 
 bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg)
 {
-	return _State.Connected && _Implementation->Publish(msg);
+	return msg != nullptr && _State.Connected && _Implementation->Publish(msg);
 }
 
 void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize)
@@ -345,6 +349,123 @@ bool UTopic::Subscribe()
 				}
 				break;
 			}
+			case EMessageType::PoseStamped:
+			{
+				auto ConcretePoseStampedMessage = StaticCastSharedPtr<ROSMessages::geometry_msgs::PoseStamped>(msg);
+				if (ConcretePoseStampedMessage.IsValid())
+				{
+					const FVector Pos = FVector(
+						ConcretePoseStampedMessage->pose.position.x * 100,
+						ConcretePoseStampedMessage->pose.position.y * 100,
+						ConcretePoseStampedMessage->pose.position.z * -100);
+
+					const FQuat Quat = FQuat(
+						ConcretePoseStampedMessage->pose.orientation.x,
+						ConcretePoseStampedMessage->pose.orientation.y * -1,
+						ConcretePoseStampedMessage->pose.orientation.w * -1,
+						ConcretePoseStampedMessage->pose.orientation.z * -1);
+
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Pos, Quat, SelfPtr]()
+						{
+							if (!SelfPtr.IsValid()) return;
+							FRotator Rot = Quat.Rotator();
+							Rot.Yaw -= 90;
+							float temp = Rot.Pitch;
+							Rot.Pitch = Rot.Roll;
+							Rot.Roll = temp*-1;
+							OnPoseStampedMessage(Pos, Rot);
+						});
+				}
+				break;
+			}
+			case EMessageType::TwistStamped:
+			{
+				auto ConcreteTwistStampedMessage = StaticCastSharedPtr<ROSMessages::geometry_msgs::TwistStamped>(msg);
+				if (ConcreteTwistStampedMessage.IsValid())
+				{
+					const FVector Linear = FVector(
+						ConcreteTwistStampedMessage->twist.linear.x * 100,
+						ConcreteTwistStampedMessage->twist.linear.y * 100,
+						ConcreteTwistStampedMessage->twist.linear.z * 100);
+
+					const FVector Angular = FVector(
+						ConcreteTwistStampedMessage->twist.angular.x,
+						ConcreteTwistStampedMessage->twist.angular.y * -1,
+						ConcreteTwistStampedMessage->twist.angular.z);
+
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Linear, Angular, SelfPtr]()
+						{
+							if (!SelfPtr.IsValid()) return;
+							OnTwistStampedMessage(Linear, Angular);
+						});
+				}
+				break;
+			}
+			case EMessageType::Twist:
+			{
+				auto ConcreteTwistMessage = StaticCastSharedPtr<ROSMessages::geometry_msgs::Twist>(msg);
+				if (ConcreteTwistMessage.IsValid())
+				{
+					const FVector Linear = FVector(
+						ConcreteTwistMessage->linear.x * 100,
+						ConcreteTwistMessage->linear.y * -100,
+						ConcreteTwistMessage->linear.z * 100);
+
+					const FVector Angular = FVector(
+						ConcreteTwistMessage->angular.x,
+						ConcreteTwistMessage->angular.y * -1,
+						ConcreteTwistMessage->angular.z);
+
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Linear, Angular, SelfPtr]()
+						{
+							if (!SelfPtr.IsValid()) return;
+							OnTwistMessage(Linear, Angular);
+						});
+				}
+				break;
+			}
+
+			case EMessageType::HomePosition:
+			{
+				auto ConcreteHomePositionMessage = StaticCastSharedPtr<ROSMessages::mavros_msgs::HomePosition>(msg);
+				if (ConcreteHomePositionMessage.IsValid())
+				{
+					const FVector Geo = FVector(
+						ConcreteHomePositionMessage->geo.latitude,
+						ConcreteHomePositionMessage->geo.longitude,
+						ConcreteHomePositionMessage->geo.altitude);
+
+					const FVector Position = FVector(
+						ConcreteHomePositionMessage->position.x * 100,
+						ConcreteHomePositionMessage->position.y * 100,
+						ConcreteHomePositionMessage->position.z * -100);
+
+					const FQuat Orientation = FQuat(
+						ConcreteHomePositionMessage->orientation.x,
+						ConcreteHomePositionMessage->orientation.y * -1,
+						ConcreteHomePositionMessage->orientation.w * -1,
+						ConcreteHomePositionMessage->orientation.z * -1);
+
+					const FVector Approach = FVector(
+						ConcreteHomePositionMessage->approach.x,
+						ConcreteHomePositionMessage->approach.y,
+						ConcreteHomePositionMessage->approach.z);
+
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Geo, Position, Orientation, Approach, SelfPtr]()
+						{
+							FRotator Rot = Orientation.Rotator();
+							Rot.Yaw += 180;
+
+							if (!SelfPtr.IsValid()) return;
+							OnHomePositionMessage(Geo, Position, Rot, Approach);
+						});
+				}
+				break;
+			}
 			default:
 				unimplemented();
 				break;
@@ -372,5 +493,50 @@ bool UTopic::PublishStringMessage(const FString& Message)
 
 	TSharedPtr<ROSMessages::std_msgs::String> msg = MakeShareable(new ROSMessages::std_msgs::String);
 	msg->_Data = Message;
+	return _Implementation->Publish(msg);
+}
+
+
+
+bool UTopic::PublishTwistStampedMessage(const FVector& Linear, const FVector& Angular)
+{
+
+	if (!_State.Advertised)
+	{
+		if (!Advertise())
+		{
+			return false;
+		}
+	}
+
+	TSharedPtr<ROSMessages::geometry_msgs::TwistStamped> msg = MakeShareable(new ROSMessages::geometry_msgs::TwistStamped);
+	msg->twist.linear = Linear;
+	msg->twist.linear.y *= -1;
+	msg->twist.angular = Angular;
+	msg->twist.angular.z *= -1;
+	msg->twist.angular.y *= -1;
+
+	return _Implementation->Publish(msg);
+}
+
+
+bool UTopic::PublishTwistMessage(const FVector& Linear, const FVector& Angular)
+{
+
+	if (!_State.Advertised)
+	{
+		if (!Advertise())
+		{
+			return false;
+		}
+	}
+
+	TSharedPtr<ROSMessages::geometry_msgs::Twist> msg = MakeShareable(new ROSMessages::geometry_msgs::Twist);
+	msg->linear = Linear;
+	float temp = msg->linear.y;
+	msg->linear.y = msg->linear.x;
+	msg->linear.x = temp;
+	msg->angular = Angular;
+	msg->angular.z *= -1;
 	return _Implementation->Publish(msg);
 }

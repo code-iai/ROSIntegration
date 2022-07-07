@@ -224,6 +224,7 @@ geometry_msgs/TwistWithCovariance  | ✓          | ✓
 geometry_msgs/Vector3              | ✓          | ✓
 grid_map_msgs/GridMap              | ✓          | ✓
 grid_map_msgs/GridMapInfo          | ✓          | ✓
+mavros_msgs/HomePosition           | ✓          | ✓
 nav_msgs/Odometry                  | ✓          | ✓
 nav_msgs/Path                      | ✓          | ✓
 rosgraph_msgs/Clock                | ✓          | ✓
