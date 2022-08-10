@@ -20,6 +20,10 @@ public:
         PrimaryActorTick.bCanEverTick = false; // No need to tick
     }
 
+	// Protocol for connecting to rosbridge websocket server, use "tcp" or "ws"
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	FString ROSBridgeServerProtocol = "tcp";
+
     // IP address of the rosbridge websocket server
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	FString ROSBridgeServerHost = "127.0.0.1";

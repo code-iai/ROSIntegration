@@ -45,7 +45,7 @@ public:
 		_ServiceName = ServiceName;
 		_ServiceType = ServiceType;
 
-		_ROSService = new rosbridge2cpp::ROSService(Ric->_Implementation->Get()->_Ros, TCHAR_TO_UTF8(*ServiceName), TCHAR_TO_UTF8(*ServiceType));
+		_ROSService = new rosbridge2cpp::ROSService(Ric->_Implementation->Get()->GetBridge(), TCHAR_TO_UTF8(*ServiceName), TCHAR_TO_UTF8(*ServiceType));
 
 		// Construct static ConverterMaps
 		if (RequestConverterMap.Num() == 0)
@@ -134,7 +134,7 @@ public:
 				return;
 			}
 
-			_Ric->_Implementation->Get()->_Ros.SendMessage(response);
+			_Ric->_Implementation->Get()->GetBridge().SendMessage(response);
 		};
 
 		if (_HandleRequestsInGameThread) {

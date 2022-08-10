@@ -59,6 +59,7 @@ void UROSIntegrationGameInstance::Init()
 			if (OverrideParams)
 			{
 				UE_LOG(LogROS, Display, TEXT("ROSIntegrationGameInstance::Init() - Found AROSBridgeParamOverride to override ROS connection parameters."));
+				ROSBridgeServerProtocol = OverrideParams->ROSBridgeServerProtocol;
 				ROSBridgeServerHost = OverrideParams->ROSBridgeServerHost;
 				ROSBridgeServerPort = OverrideParams->ROSBridgeServerPort;
 				bConnectToROS = OverrideParams->bConnectToROS;
@@ -70,7 +71,7 @@ void UROSIntegrationGameInstance::Init()
 		}
 
 		ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass()); // ORIGINAL 
-		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerHost, ROSBridgeServerPort);
+		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerProtocol, ROSBridgeServerHost, ROSBridgeServerPort);
 
 		if (!bTimerSet)
 		{
