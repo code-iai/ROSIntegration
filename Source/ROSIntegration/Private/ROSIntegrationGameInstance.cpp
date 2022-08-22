@@ -6,7 +6,10 @@
 #include "Misc/App.h"
 #include "ROSBridgeParamOverride.h"
 #include "Kismet/GameplayStatics.h"
+#include "ros_version.h"
 
+// Define ROS_VERSION here
+uint8 ROS_VERSION = 1;
 
 static void MarkAllROSObjectsAsDisconnected()
 {
@@ -58,17 +61,26 @@ void UROSIntegrationGameInstance::Init()
 			AROSBridgeParamOverride* OverrideParams = Cast<AROSBridgeParamOverride>(TempArray[0]);
 			if (OverrideParams)
 			{
-				UE_LOG(LogROS, Display, TEXT("ROSIntegrationGameInstance::Init() - Found AROSBridgeParamOverride to override ROS connection parameters."));
+				UE_LOG(LogROS, Display, TEXT("UROSIntegrationGameInstance::Init() - Found AROSBridgeParamOverride to override ROS connection parameters."));
 				ROSBridgeServerHost = OverrideParams->ROSBridgeServerHost;
 				ROSBridgeServerPort = OverrideParams->ROSBridgeServerPort;
+				ROS_VERSION = OverrideParams->ROSVersion;
 				bConnectToROS = OverrideParams->bConnectToROS;
 				bSimulateTime = OverrideParams->bSimulateTime;
 				bUseFixedUpdateInterval = OverrideParams->bUseFixedUpdateInterval;
 				FixedUpdateInterval = OverrideParams->FixedUpdateInterval;
 				bCheckHealth = OverrideParams->bCheckHealth;
 			}
+			else
+			{
+				ROS_VERSION = ROSVersion;
+			}
 		}
-
+		else
+		{
+			ROS_VERSION = ROSVersion;
+		}
+		
 		ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass()); // ORIGINAL 
 		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerHost, ROSBridgeServerPort);
 
@@ -80,6 +92,7 @@ void UROSIntegrationGameInstance::Init()
 
 		if (bIsConnected)
 		{
+			UE_LOG(LogROS, Display, TEXT("UROSIntegrationGameInstance::Init() - Connected to ROS %u rosbridge at %s:%u"), ROS_VERSION, *ROSBridgeServerHost, ROSBridgeServerPort)
 			UWorld* CurrentWorld = GetWorld();
 			if (CurrentWorld)
 			{
@@ -171,7 +184,7 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 		}
 	}
 
-	UE_LOG(LogROS, Display, TEXT("Successfully reconnected to rosbridge %s:%u."), *ROSBridgeServerHost, ROSBridgeServerPort);
+	UE_LOG(LogROS, Display, TEXT("Successfully reconnected to ROS %u rosbridge %s:%u."), ROS_VERSION, *ROSBridgeServerHost, ROSBridgeServerPort);
 }
 
 // N.B.: from log, first comes Shutdown() and then BeginDestroy()

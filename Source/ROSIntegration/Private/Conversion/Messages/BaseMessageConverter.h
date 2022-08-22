@@ -13,6 +13,7 @@
 #include <bson.h>
 #include "std_msgs/Header.h"
 #include "ROSTime.h"
+#include "ros_version.h"
 
 #include "BaseMessageConverter.generated.h"
 
@@ -207,18 +208,42 @@ public:
 
 	static bool _bson_extract_child_ros_time(bson_t *b, FString key, FROSTime *time, bool LogOnErrors = true)
 	{
+		// TODO Check if rosbridge sends UINT64 or INT32 (there is no uint32 in bson)
 		bool KeyFound = false;
-		time->_Sec = GetInt32FromBSON(key + ".secs", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
-		time->_NSec = GetInt32FromBSON(key + ".nsecs", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		if (ROS_VERSION == 1)
+		{
+			time->_Sec = GetInt32FromBSON(key + ".secs", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+			time->_NSec = GetInt32FromBSON(key + ".nsecs", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		}
+		else if (ROS_VERSION == 2)
+		{
+			time->_Sec = GetInt32FromBSON(key + ".sec", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+			time->_NSec = GetInt32FromBSON(key + ".nanosec", b, KeyFound, LogOnErrors); if (!KeyFound) return false;
+		}
+		else
+		{
+			return false;
+		}
 		return true;
 	}
 
 	static void _bson_append_child_ros_time(bson_t *b, const char* key, const FROSTime* time)
 	{
-		bson_t child;
-		BSON_APPEND_DOCUMENT_BEGIN(b, key, &child);
-		BSON_APPEND_INT32(&child, "secs", time->_Sec);
-		BSON_APPEND_INT32(&child, "nsecs", time->_NSec);
-		bson_append_document_end(b, &child);
+		if (ROS_VERSION == 1)
+		{
+			bson_t child;
+			BSON_APPEND_DOCUMENT_BEGIN(b, key, &child);
+			BSON_APPEND_INT32(&child, "secs", time->_Sec);
+			BSON_APPEND_INT32(&child, "nsecs", time->_NSec);
+			bson_append_document_end(b, &child);
+		}
+		else if (ROS_VERSION == 2)
+		{
+			bson_t child;
+			BSON_APPEND_DOCUMENT_BEGIN(b, key, &child);
+			BSON_APPEND_INT32(&child, "sec", time->_Sec);
+			BSON_APPEND_INT32(&child, "nanosec", time->_NSec);
+			bson_append_document_end(b, &child);
+		}
 	}
 };
