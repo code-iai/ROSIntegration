@@ -13,7 +13,7 @@ static void UnsubscribeAndUnadvertiseAllTopics()
 	for (TObjectIterator<UTopic> It; It; ++It)
 	{
 		UTopic* Topic = *It;
-		Topic->Unadvertise(); // to make sure everything all topics are unadvertised on ROS side
+		Topic->Unadvertise(); // to make sure all topics are unadvertised on ROS side
 		Topic->Unsubscribe(); // to prevent messages arriving during shutdown from triggering subscription callbacks
 		Topic->MarkAsDisconnected();
 	}
