@@ -19,6 +19,10 @@ enum class EMessageType : uint8
 {
 	String = 0,
 	Float32 = 1,
+	PoseStamped = 2,
+	TwistStamped = 3,
+	Twist = 4,
+	HomePosition = 5
 };
 
 UCLASS(Blueprintable)
@@ -62,6 +66,18 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnFloat32Message(const float& Data);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnPoseStampedMessage(const FVector& Position, const FRotator& Rotation);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnTwistStampedMessage(const FVector& Linear, const FVector& Angular);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnTwistMessage(const FVector& Linear, const FVector& Angular);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnHomePositionMessage(const FVector& Geo, const FVector& Position, const FRotator& Orientation, const FVector& Approach);
+
 	UPROPERTY()
 	UROSIntegrationCore* _ROSIntegrationCore = nullptr;
 
@@ -88,6 +104,12 @@ private:
 
 	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
 	bool PublishStringMessage(const FString& Message);
+
+	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
+	bool PublishTwistStampedMessage(const FVector& Linear, const FVector& Angular);
+
+	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
+	bool PublishTwistMessage(const FVector& Linear, const FVector& Angular);
 
 	// Helper to keep track of self-destruction for async functions
 	TSharedPtr<UTopic, ESPMode::ThreadSafe> _SelfPtr;

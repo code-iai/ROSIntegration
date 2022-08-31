@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include <CoreMinimal.h>
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "std_msgs/Bool.h"
 #include "StdMsgsBoolConverter.generated.h"
