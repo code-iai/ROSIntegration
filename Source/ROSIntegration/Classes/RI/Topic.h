@@ -5,6 +5,7 @@
 #include <CoreMinimal.h>
 #include <UObject/ObjectMacros.h>
 #include <UObject/Object.h>
+#include "Math/Vector.h"
 #include "ROSBaseMsg.h"
 #include "ROSIntegrationCore.h"
 
@@ -19,6 +20,21 @@ enum class EMessageType : uint8
 {
 	String = 0,
 	Float32 = 1,
+	Bool = 3,
+	Float64 = 7,
+	Header = 8,
+	Int16 = 9,
+	Int32 = 11,
+	Int64 = 12,
+	UInt16 = 13,
+	UInt32 = 14,
+	UInt64 = 15,
+
+	Vector3 = 2,
+	Point = 17,
+	Pose = 16,
+	Quaternion = 18,
+	Twist = 19,
 };
 
 UCLASS(Blueprintable)
@@ -56,11 +72,43 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnConstruct();
 
+	// Std msgs
+
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnStringMessage(const FString& Data);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnFloat32Message(const float& Data);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnBoolMessage(const int& Data);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnFloat64Message(const double& Data);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnInt32Message(const int32& Data);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnInt64Message(const int64& Data);
+
+
+	// Geometry msgs
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnVector3Message(const FVector& Data);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnPointMessage(const FVector& Data);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnPoseMessage(const FVector& position, const FVector4& orientation);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnQuaternionMessage( const FVector4& quaternion);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	void OnTwistMessage(const FVector& linear, const FVector& angular);
 
 	UPROPERTY()
 	UROSIntegrationCore* _ROSIntegrationCore = nullptr;

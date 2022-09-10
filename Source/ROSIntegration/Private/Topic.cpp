@@ -4,6 +4,13 @@
 #include "rosbridge2cpp/ros_topic.h"
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "Conversion/Messages/std_msgs/StdMsgsStringConverter.h"
+#include "Conversion/Messages/std_msgs/StdMsgsBoolConverter.h"
+#include "Conversion/Messages/geometry_msgs/GeometryMsgsVector3Converter.h"
+#include "Conversion/Messages/geometry_msgs/GeometryMsgsPointConverter.h"
+#include "Conversion/Messages/geometry_msgs/GeometryMsgsPoseConverter.h"
+
+
+
 
 static TMap<FString, UBaseMessageConverter*> TypeConverterMap;
 static TMap<EMessageType, FString> SupportedMessageTypes;
@@ -174,8 +181,19 @@ UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
 
 	if (SupportedMessageTypes.Num() == 0)
 	{
-		SupportedMessageTypes.Add(EMessageType::String, TEXT("std_msgs/String"));
-		SupportedMessageTypes.Add(EMessageType::Float32, TEXT("std_msgs/Float32"));
+		SupportedMessageTypes.Add(EMessageType::String,      TEXT("std_msgs/String"));
+		SupportedMessageTypes.Add(EMessageType::Float32,     TEXT("std_msgs/Float32"));
+		SupportedMessageTypes.Add(EMessageType::Bool,        TEXT("std_msgs/Bool"));
+		SupportedMessageTypes.Add(EMessageType::Float64,     TEXT("std_msgs/Float64"));
+		SupportedMessageTypes.Add(EMessageType::Int32,       TEXT("std_msgs/Int32"));
+		SupportedMessageTypes.Add(EMessageType::Int64,       TEXT("std_msgs/Int64"));
+
+		SupportedMessageTypes.Add(EMessageType::Vector3, TEXT("geometry_msgs/Vector3"));
+		SupportedMessageTypes.Add(EMessageType::Point, TEXT("geometry_msgs/Point"));
+		SupportedMessageTypes.Add(EMessageType::Pose, TEXT("geometry_msgs/Pose"));
+		SupportedMessageTypes.Add(EMessageType::Quaternion, TEXT("geometry_msgs/Quaternion"));
+		SupportedMessageTypes.Add(EMessageType::Twist, TEXT("geometry_msgs/Twist"));
+
 	}
 }
 
@@ -341,6 +359,154 @@ bool UTopic::Subscribe()
 					{
 						if (!SelfPtr.IsValid()) return;
 						OnFloat32Message(Data);
+					});
+				}
+				break;
+			}
+			case EMessageType::Bool:
+			{
+				auto ConcreteBoolMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Bool>(msg);
+				if (ConcreteBoolMessage.IsValid())
+				{
+					const bool Data = ConcreteBoolMessage->_Data;
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnBoolMessage(Data);
+					});
+				}
+				break;
+			}
+			case EMessageType::Float64:
+			{
+				auto ConcreteDoubleMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Float32>(msg);
+				if (ConcreteDoubleMessage.IsValid())
+				{
+					const double Data = ConcreteDoubleMessage->_Data;
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnFloat64Message(Data);
+					});
+				}
+				break;
+			}
+			case EMessageType::Int32:
+			{
+				auto ConcreteInt32Message = StaticCastSharedPtr<ROSMessages::std_msgs::Int32>(msg);
+				if (ConcreteInt32Message.IsValid())
+				{
+					const int32 Data = ConcreteInt32Message->_Data;
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnInt32Message(Data);
+					});
+				}
+				break;
+			}
+			case EMessageType::Int64:
+			{
+				auto ConcreteInt64Message = StaticCastSharedPtr<ROSMessages::std_msgs::Int64>(msg);
+				if (ConcreteInt64Message.IsValid())
+				{
+					const int64 Data = ConcreteInt64Message->_Data;
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnInt64Message(Data);
+					});
+				}
+				break;
+			}
+			case EMessageType::Vector3:
+			{
+				auto ConcreteVectorMessage = StaticCastSharedPtr<ROSMessages::geometry_msgs::Vector3>(msg);
+				if (ConcreteVectorMessage.IsValid())
+				{
+					const float x = ConcreteVectorMessage->x;
+					const float y = ConcreteVectorMessage->y;
+					const float z = ConcreteVectorMessage->z;
+					FVector Data(x,y,z);
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnVector3Message(Data);
+					});
+				}
+				break;
+			}
+			case EMessageType::Point:
+			{
+				auto ConcreteVectorMessage = StaticCastSharedPtr<ROSMessages::geometry_msgs::Point>(msg);
+				if (ConcreteVectorMessage.IsValid())
+				{
+					const float x = ConcreteVectorMessage->x;
+					const float y = ConcreteVectorMessage->y;
+					const float z = ConcreteVectorMessage->z;
+					FVector Data(x, y, z);
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnPointMessage(Data);
+					});
+				}
+				break;
+			}
+			case EMessageType::Pose:
+			{
+				auto ConcreteVectorMessage = StaticCastSharedPtr<ROSMessages::geometry_msgs::Pose>(msg);
+				if (ConcreteVectorMessage.IsValid())
+				{
+					const auto p = ConcreteVectorMessage->position;
+					const auto q = ConcreteVectorMessage->orientation;
+					const FVector  position(p.x, p.y, p.z);
+					const FVector4 orientation(q.x,q.y,q.z,q.w);
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, position, orientation, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnPoseMessage(position, orientation);
+					});
+				}
+				break;
+			}
+			case EMessageType::Quaternion:
+			{
+				auto ConcreteVectorMessage = StaticCastSharedPtr<ROSMessages::geometry_msgs::Quaternion>(msg);
+				if (ConcreteVectorMessage.IsValid())
+				{
+					const auto q = ConcreteVectorMessage;
+					const FVector4 orientation(q->x, q->y, q->z, q->w);
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, orientation, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnQuaternionMessage(orientation);
+					});
+				}
+				break;
+			}
+			case EMessageType::Twist:
+			{
+				auto ConcreteVectorMessage = StaticCastSharedPtr<ROSMessages::geometry_msgs::Twist>(msg);
+				if (ConcreteVectorMessage.IsValid())
+				{
+					const auto p = ConcreteVectorMessage->linear;
+					const auto q = ConcreteVectorMessage->angular;
+					const FVector  linear(p.x, p.y, p.z);
+					const FVector angular(q.x, q.y, q.z);
+					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+					AsyncTask(ENamedThreads::GameThread, [this, linear, angular, SelfPtr]()
+					{
+						if (!SelfPtr.IsValid()) return;
+						OnTwistMessage(linear, angular);
 					});
 				}
 				break;
