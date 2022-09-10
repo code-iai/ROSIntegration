@@ -23,12 +23,8 @@ enum class EMessageType : uint8
 	Bool = 3,
 	Float64 = 7,
 	Header = 8,
-	Int16 = 9,
 	Int32 = 11,
 	Int64 = 12,
-	UInt16 = 13,
-	UInt32 = 14,
-	UInt64 = 15,
 
 	Vector3 = 2,
 	Point = 17,
