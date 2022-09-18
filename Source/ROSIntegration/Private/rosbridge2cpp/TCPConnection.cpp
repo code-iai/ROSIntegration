@@ -39,9 +39,19 @@ bool TCPConnection::Init(std::string ip_addr, int port)
 		std::cout << "Unable to set requested receiver buffer size" << std::endl;
 	}*/
 
-	if (!_sock->Connect(*addr))
+	bool bConnected = false;
+	_sock->SetNonBlocking(true);
+	bConnected = _sock->Connect(*addr);
+	_sock->SetNonBlocking(false);
+	// If using _sock->Wait also blocks
+	if (bConnected ) //&& _sock->Wait(ESocketWaitConditions::WaitForWrite, FTimespan::FromSeconds(2)))
+	{
+	// do nothing
+	}
+	else
+	{
 		return false;
-
+	}
 	// Setting up the receiver thread
 	UE_LOG(LogROS, Display, TEXT("Setting up receiver thread ..."));
 
