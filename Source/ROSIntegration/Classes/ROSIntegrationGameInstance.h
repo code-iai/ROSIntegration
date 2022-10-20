@@ -28,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	int32 ROSBridgeServerPort = 9090;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS", meta=(ClampMin = '1', ClampMax = '2'))
 	uint8 ROSVersion = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
