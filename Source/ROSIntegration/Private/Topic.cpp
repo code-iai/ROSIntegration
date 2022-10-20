@@ -378,21 +378,21 @@ bool UTopic::Subscribe()
 				}
 				break;
 			}
-			case EMessageType::Float64:
-			{
-				auto ConcreteDoubleMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Float32>(msg);
-				if (ConcreteDoubleMessage.IsValid())
-				{
-					const double Data = ConcreteDoubleMessage->_Data;
-					TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
-					AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
-					{
-						if (!SelfPtr.IsValid()) return;
-						OnFloat64Message(Data);
-					});
-				}
-				break;
-			}
+			// case EMessageType::Float64:
+			// {
+			// 	auto ConcreteDoubleMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Float32>(msg);
+			// 	if (ConcreteDoubleMessage.IsValid())
+			// 	{
+			// 		const double Data = ConcreteDoubleMessage->_Data;
+			// 		TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
+			// 		AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
+			// 		{
+			// 			if (!SelfPtr.IsValid()) return;
+			// 			OnFloat64Message(Data);
+			// 		});
+			// 	}
+			// 	break;
+			// }
 			case EMessageType::Int32:
 			{
 				auto ConcreteInt32Message = StaticCastSharedPtr<ROSMessages::std_msgs::Int32>(msg);

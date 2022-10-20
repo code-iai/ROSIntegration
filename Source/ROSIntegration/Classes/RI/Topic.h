@@ -79,8 +79,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnBoolMessage(const int& Data);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
-	void OnFloat64Message(const double& Data);
+	// UFUNCTION(BlueprintImplementableEvent, Category = ROS)
+	// void OnFloat64Message(const double& Data);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnInt32Message(const int32& Data);
