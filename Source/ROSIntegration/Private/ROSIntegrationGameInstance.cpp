@@ -11,6 +11,17 @@
 // Define ROS_VERSION here
 uint8 ROS_VERSION = 1;
 
+static void UnsubscribeAndUnadvertiseAllTopics()
+{
+	for (TObjectIterator<UTopic> It; It; ++It)
+	{
+		UTopic* Topic = *It;
+		Topic->Unadvertise(); // to make sure all topics are unadvertised on ROS side
+		Topic->Unsubscribe(); // to prevent messages arriving during shutdown from triggering subscription callbacks
+		Topic->MarkAsDisconnected();
+	}
+}
+
 static void MarkAllROSObjectsAsDisconnected()
 {
 	for (TObjectIterator<UTopic> It; It; ++It)
@@ -200,6 +211,7 @@ void UROSIntegrationGameInstance::Shutdown()
 			FWorldDelegates::OnWorldTickStart.RemoveAll(this);
 		}
 
+		UnsubscribeAndUnadvertiseAllTopics(); // make sure no subscription callbacks are fired during shutdown
 		MarkAllROSObjectsAsDisconnected(); // moved here from UROSIntegrationGameInstance::BeginDestroy()
 
 		UE_LOG(LogROS, Display, TEXT("ROS Game Instance - shutdown done"));
