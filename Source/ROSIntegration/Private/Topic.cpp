@@ -184,7 +184,6 @@ UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
 		SupportedMessageTypes.Add(EMessageType::String,      TEXT("std_msgs/String"));
 		SupportedMessageTypes.Add(EMessageType::Float32,     TEXT("std_msgs/Float32"));
 		SupportedMessageTypes.Add(EMessageType::Bool,        TEXT("std_msgs/Bool"));
-		SupportedMessageTypes.Add(EMessageType::Float64,     TEXT("std_msgs/Float64"));
 		SupportedMessageTypes.Add(EMessageType::Int32,       TEXT("std_msgs/Int32"));
 		SupportedMessageTypes.Add(EMessageType::Int64,       TEXT("std_msgs/Int64"));
 
@@ -378,21 +377,6 @@ bool UTopic::Subscribe()
 				}
 				break;
 			}
-			// case EMessageType::Float64:
-			// {
-			// 	auto ConcreteDoubleMessage = StaticCastSharedPtr<ROSMessages::std_msgs::Float32>(msg);
-			// 	if (ConcreteDoubleMessage.IsValid())
-			// 	{
-			// 		const double Data = ConcreteDoubleMessage->_Data;
-			// 		TWeakPtr<UTopic, ESPMode::ThreadSafe> SelfPtr(_SelfPtr);
-			// 		AsyncTask(ENamedThreads::GameThread, [this, Data, SelfPtr]()
-			// 		{
-			// 			if (!SelfPtr.IsValid()) return;
-			// 			OnFloat64Message(Data);
-			// 		});
-			// 	}
-			// 	break;
-			// }
 			case EMessageType::Int32:
 			{
 				auto ConcreteInt32Message = StaticCastSharedPtr<ROSMessages::std_msgs::Int32>(msg);
