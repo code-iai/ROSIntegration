@@ -14,6 +14,7 @@
 /**
 * @ingroup ROS Message Types
 * Which Message type to work with.
+* NOTE: UFUNCTIONS in UE4 do not support type 'double' (only UE5 supports this)
 */
 UENUM(BlueprintType, Category = "ROS")
 enum class EMessageType : uint8
@@ -21,7 +22,6 @@ enum class EMessageType : uint8
 	String = 0,
 	Float32 = 1,
 	Bool = 3,
-	Float64 = 7,
 	Header = 8,
 	Int32 = 11,
 	Int64 = 12,
@@ -78,9 +78,6 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnBoolMessage(const int& Data);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
-	void OnFloat64Message(const double& Data);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = ROS)
 	void OnInt32Message(const int32& Data);
