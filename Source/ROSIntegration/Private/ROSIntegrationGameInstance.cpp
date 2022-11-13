@@ -8,14 +8,20 @@
 #include "Kismet/GameplayStatics.h"
 
 
-static void UnsubscribeAndUnadvertiseAllTopics()
+static void ShutdownAllROSObjects()
 {
 	for (TObjectIterator<UTopic> It; It; ++It)
 	{
 		UTopic* Topic = *It;
-		Topic->Unadvertise(); // to make sure all topics are unadvertised on ROS side
-		Topic->Unsubscribe(); // to prevent messages arriving during shutdown from triggering subscription callbacks
+		Topic->Unadvertise(); // Must come before unsubscribe becasue unsubscribe can potentially set _ROSTopic to null
+		Topic->Unsubscribe();
 		Topic->MarkAsDisconnected();
+	}
+	for (TObjectIterator<UService> It; It; ++It)
+	{
+		UService* Service = *It;
+		Service->Unadvertise();
+		Service->MarkAsDisconnected();   
 	}
 }
 
@@ -198,7 +204,7 @@ void UROSIntegrationGameInstance::Shutdown()
 			FWorldDelegates::OnWorldTickStart.RemoveAll(this);
 		}
 
-		UnsubscribeAndUnadvertiseAllTopics(); // make sure no subscription callbacks are fired during shutdown
+		ShutdownAllROSObjects(); // Stop all ROS objects from advertising, publishing, and subscribing
 		MarkAllROSObjectsAsDisconnected(); // moved here from UROSIntegrationGameInstance::BeginDestroy()
 
 		UE_LOG(LogROS, Display, TEXT("ROS Game Instance - shutdown done"));
