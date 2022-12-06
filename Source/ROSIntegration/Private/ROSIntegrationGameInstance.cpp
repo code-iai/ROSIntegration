@@ -8,39 +8,6 @@
 #include "Kismet/GameplayStatics.h"
 
 
-static void ShutdownAllROSObjects()
-{
-	for (TObjectIterator<UTopic> It; It; ++It)
-	{
-		UTopic* Topic = *It;
-		Topic->Unadvertise(); // Must come before unsubscribe becasue unsubscribe can potentially set _ROSTopic to null
-		Topic->Unsubscribe();
-		Topic->MarkAsDisconnected();
-	}
-	for (TObjectIterator<UService> It; It; ++It)
-	{
-		UService* Service = *It;
-		Service->Unadvertise();
-		Service->MarkAsDisconnected();   
-	}
-}
-
-static void MarkAllROSObjectsAsDisconnected()
-{
-	for (TObjectIterator<UTopic> It; It; ++It)
-	{
-		UTopic* Topic = *It;
-
-		Topic->MarkAsDisconnected();  
-	}
-	for (TObjectIterator<UService> It; It; ++It)
-	{
-		UService* Service = *It;
-
-		Service->MarkAsDisconnected();   
-	}
-}
-
 void UROSIntegrationGameInstance::Init()
 {
 	Super::Init();
@@ -97,6 +64,10 @@ void UROSIntegrationGameInstance::Init()
 
 		if (bIsConnected)
 		{
+			if (OnROSConnectionChange.IsBound())
+			{
+				OnROSConnectionChange.Broadcast(true); // Notify bound functions that we are connected to rosbridge
+			}
 			UWorld* CurrentWorld = GetWorld();
 			if (CurrentWorld)
 			{
@@ -123,7 +94,11 @@ void UROSIntegrationGameInstance::Init()
 			FROSTime::SetUseSimTime(true);
 			FROSTime::SetSimTime(now);
 
-			FWorldDelegates::OnWorldTickStart.AddUObject(this, &UROSIntegrationGameInstance::OnWorldTickStart);
+			if (!bAddedOnWorldTickDelegate)
+			{
+				FWorldDelegates::OnWorldTickStart.AddUObject(this, &UROSIntegrationGameInstance::OnWorldTickStart);
+				bAddedOnWorldTickDelegate = true;
+			}
 
 			ClockTopic = NewObject<UTopic>(UTopic::StaticClass()); // ORIGINAL
 
@@ -146,6 +121,10 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 	if (bIsConnected)
 	{
 		UE_LOG(LogROS, Error, TEXT("Connection to rosbridge %s:%u was interrupted."), *ROSBridgeServerHost, ROSBridgeServerPort);
+		if (OnROSConnectionChange.IsBound())
+		{
+			OnROSConnectionChange.Broadcast(false); // Notify bound functions that we lost rosbridge connection
+		}
 	}
 
 	// reconnect again
@@ -189,6 +168,49 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 	}
 
 	UE_LOG(LogROS, Display, TEXT("Successfully reconnected to rosbridge %s:%u."), *ROSBridgeServerHost, ROSBridgeServerPort);
+	if (OnROSConnectionChange.IsBound())
+	{
+		OnROSConnectionChange.Broadcast(true); // Notify bound functions that we are connected to rosbridge again
+	}
+}
+
+void UROSIntegrationGameInstance::ShutdownAllROSObjects()
+{
+	for (TObjectIterator<UTopic> It; It; ++It)
+	{
+		UTopic* Topic = *It;
+		if (bIsConnected)
+		{
+			Topic->Unadvertise(); // Must come before unsubscribe becasue unsubscribe can potentially set _ROSTopic to null
+			Topic->Unsubscribe();
+		}
+		Topic->MarkAsDisconnected();
+	}
+	for (TObjectIterator<UService> It; It; ++It)
+	{
+		UService* Service = *It;
+		if (bIsConnected)
+		{
+			Service->Unadvertise();
+		}
+		Service->MarkAsDisconnected();   
+	}
+}
+
+void UROSIntegrationGameInstance::MarkAllROSObjectsAsDisconnected()
+{
+	for (TObjectIterator<UTopic> It; It; ++It)
+	{
+		UTopic* Topic = *It;
+
+		Topic->MarkAsDisconnected();  
+	}
+	for (TObjectIterator<UService> It; It; ++It)
+	{
+		UService* Service = *It;
+
+		Service->MarkAsDisconnected();   
+	}
 }
 
 // N.B.: from log, first comes Shutdown() and then BeginDestroy()
