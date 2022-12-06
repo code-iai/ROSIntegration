@@ -49,6 +49,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	bool bCheckHealth = true;
 
+	FOnROSConnectionChange OnROSConnectionChange;
+
 protected:
 	void CheckROSBridgeHealth();
 
@@ -73,8 +75,6 @@ protected:
 	class UTopic* ClockTopic = nullptr;
 
 	bool bAddedOnWorldTickDelegate = false;
-
-	FOnROSConnectionChange OnROSConnectionChange;
 };
 
 
