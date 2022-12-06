@@ -9,7 +9,7 @@
 #include "ROSIntegrationGameInstance.generated.h"
 
 // Lets the game instance share with any bound delegates that the ROS connection status has changed
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnROSConnectionChange, bool /*IsConnected*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnROSConnectionStatus, bool /*IsConnected*/);
 
 UCLASS()
 class ROSINTEGRATION_API UROSIntegrationGameInstance : public UGameInstance
@@ -49,7 +49,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	bool bCheckHealth = true;
 
-	FOnROSConnectionChange OnROSConnectionChange;
+	FOnROSConnectionStatus OnROSConnectionStatus;
+
+	bool IsROSBridgeHealthy() const;
 
 protected:
 	void CheckROSBridgeHealth();

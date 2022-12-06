@@ -64,10 +64,6 @@ void UROSIntegrationGameInstance::Init()
 
 		if (bIsConnected)
 		{
-			if (OnROSConnectionChange.IsBound())
-			{
-				OnROSConnectionChange.Broadcast(true); // Notify bound functions that we are connected to rosbridge
-			}
 			UWorld* CurrentWorld = GetWorld();
 			if (CurrentWorld)
 			{
@@ -109,21 +105,30 @@ void UROSIntegrationGameInstance::Init()
 	}
 }
 
+bool UROSIntegrationGameInstance::IsROSBridgeHealthy() const
+{
+	return bIsConnected && ROSIntegrationCore->IsHealthy();
+}
+
 void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 {
 	if (!bCheckHealth) return; 
 
 	if (bIsConnected && ROSIntegrationCore->IsHealthy())
 	{
+		if (OnROSConnectionStatus.IsBound())
+		{
+			OnROSConnectionStatus.Broadcast(true); // Notify bound functions that we are connected to rosbridge
+		}
 		return;
 	}
 
 	if (bIsConnected)
 	{
 		UE_LOG(LogROS, Error, TEXT("Connection to rosbridge %s:%u was interrupted."), *ROSBridgeServerHost, ROSBridgeServerPort);
-		if (OnROSConnectionChange.IsBound())
+		if (OnROSConnectionStatus.IsBound())
 		{
-			OnROSConnectionChange.Broadcast(false); // Notify bound functions that we lost rosbridge connection
+			OnROSConnectionStatus.Broadcast(false); // Notify bound functions that we lost rosbridge connection
 		}
 	}
 
@@ -168,10 +173,6 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 	}
 
 	UE_LOG(LogROS, Display, TEXT("Successfully reconnected to rosbridge %s:%u."), *ROSBridgeServerHost, ROSBridgeServerPort);
-	if (OnROSConnectionChange.IsBound())
-	{
-		OnROSConnectionChange.Broadcast(true); // Notify bound functions that we are connected to rosbridge again
-	}
 }
 
 void UROSIntegrationGameInstance::ShutdownAllROSObjects()
