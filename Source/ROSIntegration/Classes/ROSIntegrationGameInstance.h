@@ -51,8 +51,6 @@ public:
 
 	FOnROSConnectionStatus OnROSConnectionStatus;
 
-	bool IsROSBridgeHealthy() const;
-
 protected:
 	void CheckROSBridgeHealth();
 
