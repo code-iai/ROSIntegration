@@ -117,14 +117,6 @@ void UROSIntegrationGameInstance::Init()
 	}
 }
 
-bool UROSIntegrationGameInstance::IsROSBridgeHealthy() const
-{
-	if (bIsConnected && ROSIntegrationCore->IsHealthy())
-		return true;
-	else
-		return false;
-}
-
 void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 {
 	if (!bCheckHealth) return; 
