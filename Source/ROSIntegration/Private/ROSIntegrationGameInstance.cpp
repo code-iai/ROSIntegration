@@ -54,6 +54,7 @@ void UROSIntegrationGameInstance::Init()
 				bUseFixedUpdateInterval = OverrideParams->bUseFixedUpdateInterval;
 				FixedUpdateInterval = OverrideParams->FixedUpdateInterval;
 				bCheckHealth = OverrideParams->bCheckHealth;
+				ClockTopicName = OverrideParams->ClockTopicName;
 			}
 			else
 			{
@@ -110,7 +111,7 @@ void UROSIntegrationGameInstance::Init()
 
 			ClockTopic = NewObject<UTopic>(UTopic::StaticClass()); // ORIGINAL
 
-			ClockTopic->Init(ROSIntegrationCore, FString(TEXT("/clock")), FString(TEXT("rosgraph_msgs/Clock")), 3);
+			ClockTopic->Init(ROSIntegrationCore, ClockTopicName, FString(TEXT("rosgraph_msgs/Clock")), 3);
 
 			ClockTopic->Advertise();
 		}

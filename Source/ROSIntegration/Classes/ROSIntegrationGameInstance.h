@@ -52,6 +52,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	bool bCheckHealth = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	FString ClockTopicName = "/clock";
+
 	FOnROSConnectionStatus OnROSConnectionStatus;
 
 protected:
