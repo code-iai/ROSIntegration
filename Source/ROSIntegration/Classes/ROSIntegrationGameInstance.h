@@ -8,6 +8,9 @@
 
 #include "ROSIntegrationGameInstance.generated.h"
 
+// Lets the game instance share with any bound delegates that the ROS connection status has changed
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnROSConnectionStatus, bool /*IsConnected*/);
+
 UCLASS()
 class ROSINTEGRATION_API UROSIntegrationGameInstance : public UGameInstance
 {
@@ -46,8 +49,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	bool bCheckHealth = true;
 
+	FOnROSConnectionStatus OnROSConnectionStatus;
+
 protected:
 	void CheckROSBridgeHealth();
+
+	void ShutdownAllROSObjects();
+
+	void MarkAllROSObjectsAsDisconnected();
 
 #if ENGINE_MINOR_VERSION > 23 || ENGINE_MAJOR_VERSION >4
 	virtual void OnWorldTickStart(UWorld * World, ELevelTick TickType, float DeltaTime);
@@ -64,6 +73,8 @@ protected:
 
 	UPROPERTY()
 	class UTopic* ClockTopic = nullptr;
+
+	bool bAddedOnWorldTickDelegate = false;
 };
 
 

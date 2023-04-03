@@ -12,6 +12,9 @@ public:
 	static void SetUseSimTime(bool bUseSimTime);
 	static void SetSimTime(const FROSTime& time);
 
+	// Get the time difference from Time1 to Time2
+	static double GetTimeDelta(const FROSTime& Time1, const FROSTime& Time2);
+
 	unsigned long _Sec;
 	unsigned long _NSec;
 };
