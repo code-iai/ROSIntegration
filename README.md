@@ -4,7 +4,7 @@ Currently, Windows and Linux are directly supported.
 
 The connection to the ROS world will be accomplished through http://wiki.ros.org/rosbridge_suite and https://github.com/sanic/rosbridge2cpp
 
-UE 4.23 support has been recently added by Luigi Freda (see tested versions below)
+This plugin is currently mainly maintained for Unreal Engine 4. Even though functionality might work under UE5, we see UE4 as a first class citizen on our master branch.
 
 ## Description
 

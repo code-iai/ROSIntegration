@@ -54,6 +54,12 @@ bool TCPConnection::Init(std::string ip_addr, int port)
 
 bool TCPConnection::SendMessage(std::string data)
 {
+	if (!_sock)
+	{
+		UE_LOG(LogROS, Error, TEXT("TCPConnection::SendMessage() - Trying to send string message when socket is nullptr."));
+		return false;
+	}
+
 	// std::string msg = "{\"args\":{\"a\":1,\"b\":2},\"id\":\"call_service:/add_two_ints:23\",\"op\":\"call_service\",\"service\":\"/add_two_ints\"}";
 	const uint8 *byte_msg = reinterpret_cast<const uint8*>(data.c_str());
 	int32 bytes_sent = 0;
@@ -68,6 +74,12 @@ bool TCPConnection::SendMessage(std::string data)
 
 bool TCPConnection::SendMessage(const uint8_t *data, unsigned int length)
 {
+	if (!_sock)
+	{
+		UE_LOG(LogROS, Error, TEXT("TCPConnection::SendMessage() - Trying to send binary message when socket is nullptr."));
+		return false;
+	}
+	
 	// Simple checksum
 	//uint16_t checksum = Fletcher16(data, length);
 

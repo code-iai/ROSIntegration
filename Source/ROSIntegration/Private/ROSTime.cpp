@@ -25,3 +25,10 @@ void FROSTime::SetSimTime(const FROSTime& time)
 	ROSTime::sim_time.sec_ = time._Sec;
 	ROSTime::sim_time.nsec_ = time._NSec;
 }
+
+double FROSTime::GetTimeDelta(const FROSTime& Time1, const FROSTime& Time2)
+{
+	double SecDelta = std::chrono::duration_cast<std::chrono::duration<double> >(std::chrono::seconds(Time2._Sec) - std::chrono::seconds(Time1._Sec)).count();
+	double NsecDelta = std::chrono::duration_cast<std::chrono::duration<double> >(std::chrono::nanoseconds(Time2._NSec) - std::chrono::nanoseconds(Time1._NSec)).count();
+	return SecDelta + NsecDelta;
+}
