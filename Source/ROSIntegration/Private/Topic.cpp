@@ -152,7 +152,7 @@ public:
 		}
 		_Converter = *Converter;
 
-		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->Get()->_Ros, TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize);
+		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->Get()->GetBridge(), TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize);
 	}
 
 	void MessageCallback(const ROSBridgePublishMsg &message)

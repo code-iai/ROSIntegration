@@ -26,6 +26,9 @@ public:
 	UROSIntegrationCore* ROSIntegrationCore = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	FString ROSBridgeServerProtocol = "tcp";
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	FString ROSBridgeServerHost = "127.0.0.1";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
