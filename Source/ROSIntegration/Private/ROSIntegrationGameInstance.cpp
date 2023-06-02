@@ -60,7 +60,7 @@ void UROSIntegrationGameInstance::Init()
 		if (!bTimerSet)
 		{
 			bTimerSet = true; 
-			GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth, 1.0f, true, 5.0f);
+			GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth, 5.0f, true, 5.0f);
 		}
 
 		if (bIsConnected)
