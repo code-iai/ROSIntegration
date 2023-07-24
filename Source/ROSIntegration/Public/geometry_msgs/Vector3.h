@@ -14,6 +14,8 @@ namespace ROSMessages{
 
 			Vector3(FVector v) : Vector3(v.X, v.Y, v.Z) {}
 
+			FVector ToFVector() {return FVector(x, y, z);}
+
 			double x;
 			double y;
 			double z;

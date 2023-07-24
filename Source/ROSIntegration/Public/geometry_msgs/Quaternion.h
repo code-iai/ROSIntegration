@@ -14,6 +14,8 @@ namespace ROSMessages{
 
 			Quaternion(FQuat q) : Quaternion(q.X, q.Y, q.Z, q.W) {}
 
+			FQuat ToFQuat() {return FQuat(x, y, z, w);}
+
 			double x;
 			double y;
 			double z;
