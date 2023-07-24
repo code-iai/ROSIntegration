@@ -10,13 +10,13 @@ bool UStdMsgsColorRGBAConverter::ConvertIncomingMessage(const ROSBridgePublishMs
 {
 	auto msg = new ROSMessages::std_msgs::ColorRGBA();
 	BaseMsg = TSharedPtr<FROSBaseMsg>(msg);
-	return _bson_extract_child_header(message->full_msg_bson_, "msg", msg);
+	return _bson_extract_child_color_rgba(message->full_msg_bson_, "msg", msg);
 }
 
 bool UStdMsgsColorRGBAConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message)
 {
 	auto CastMsg = StaticCastSharedPtr<ROSMessages::std_msgs::ColorRGBA>(BaseMsg);
 	*message = bson_new();
-	_bson_append_header(*message, CastMsg.Get());
+	_bson_append_color_rgba(*message, CastMsg.Get());
 	return true;
 }
