@@ -16,6 +16,8 @@ namespace ROSMessages{
 				a = InA;
 			}
 
+			ColorRGBA(FColor Color) : ColorRGBA(Color.R, Color.G, Color.B, Color.A) {}
+
 			float r;
 			float g;
 			float b;
