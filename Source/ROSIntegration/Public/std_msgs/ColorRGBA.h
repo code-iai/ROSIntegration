@@ -16,8 +16,11 @@ namespace ROSMessages{
 				a = InA;
 			}
 
-			ColorRGBA(FColor Color) : ColorRGBA(Color.R, Color.G, Color.B, Color.A) {}
+			ColorRGBA(FLinearColor Color) : ColorRGBA(Color.R, Color.G, Color.B, Color.A) {}
 
+			FLinearColor ToFLinearColor() {return FLinearColor(r,g,b,a);}
+
+			// All values should be in the normalized range [0,1]
 			float r;
 			float g;
 			float b;
