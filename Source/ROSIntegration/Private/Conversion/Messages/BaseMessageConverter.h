@@ -151,6 +151,11 @@ public:
 	{
 		return GetTArrayFromBSON<bool>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetBoolFromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
 	}
+
+	static TArray<FString> GetFStringTArrayFromBSON(FString Key, bson_t* msg, bool &KeyFound, bool LogOnErrors = true)
+	{
+		return GetTArrayFromBSON<FString>(Key, msg, KeyFound, [](FString subKey, bson_t* subMsg, bool& subKeyFound) { return GetFStringFromBSON(subKey, subMsg, subKeyFound, false); }, LogOnErrors);
+	}
 	
 	template<class T>
 	static void _bson_append_tarray(bson_t *b, const char *key, const TArray<T>& tarray, const std::function<void(bson_t*, const char*, const T&)>& appendT)
@@ -203,6 +208,12 @@ public:
 	static void _bson_append_bool_tarray(bson_t *b, const char *key, const TArray<bool>& tarray)
 	{
 		_bson_append_tarray<bool>(b, key, tarray, [](bson_t *subb, const char *subKey, bool i) { BSON_APPEND_BOOL(subb, subKey, i); });
+	}
+
+	// Helper function to append a TArray<FString> to a bson_t
+	static void _bson_append_fstring_tarray(bson_t *b, const char *key, const TArray<FString>& tarray)
+	{
+		_bson_append_tarray<FString>(b, key, tarray, [](bson_t *subb, const char *subKey, FString str) { BSON_APPEND_UTF8(subb, subKey, TCHAR_TO_UTF8(*str)); });
 	}
 
 	static bool _bson_extract_child_ros_time(bson_t *b, FString key, FROSTime *time, bool LogOnErrors = true)
