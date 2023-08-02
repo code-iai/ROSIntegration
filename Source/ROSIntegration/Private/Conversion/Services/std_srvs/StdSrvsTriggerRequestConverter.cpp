@@ -12,7 +12,6 @@ bool UStdSrvsTriggerRequestConverter::ConvertOutgoingRequest(TSharedPtr<FROSBase
 	auto TriggerRequest = StaticCastSharedPtr<std_srvs::FTriggerRequest>(Request);
 	*BSONRequest = BCON_NEW();
 
-	UE_LOG(LogTemp, Verbose, TEXT("This is rospy tut req converter"));
 	return true;
 }
 
@@ -20,8 +19,6 @@ bool UStdSrvsTriggerRequestConverter::ConvertIncomingRequest(ROSBridgeCallServic
 {
 	//*Request = MakeShareable(new std_srvs::FTriggerRequest);
 	auto ServiceRequest = StaticCastSharedPtr<std_srvs::FTriggerRequest>(Request);
-	
-	UE_LOG(LogTemp, Verbose, TEXT("Received Trigger Request"));
 
 	return true;
 }
