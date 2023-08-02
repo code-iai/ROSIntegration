@@ -41,9 +41,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	bool bUseFixedUpdateInterval = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS", Meta = (EditCondition = "bUseFixedUpdateInterval"))
 	float FixedUpdateInterval = 0.01666666667;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	bool bCheckHealth = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS", Meta = (EditCondition = "bCheckHealth"))
+	float CheckHealthInterval = 1.0f;
 };
