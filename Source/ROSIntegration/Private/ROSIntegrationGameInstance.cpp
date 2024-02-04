@@ -43,6 +43,7 @@ void UROSIntegrationGameInstance::Init()
 			if (OverrideParams)
 			{
 				UE_LOG(LogROS, Display, TEXT("ROSIntegrationGameInstance::Init() - Found AROSBridgeParamOverride to override ROS connection parameters."));
+				ROSBridgeServerProtocol = OverrideParams->ROSBridgeServerProtocol;
 				ROSBridgeServerHost = OverrideParams->ROSBridgeServerHost;
 				ROSBridgeServerPort = OverrideParams->ROSBridgeServerPort;
 				bConnectToROS = OverrideParams->bConnectToROS;
@@ -50,16 +51,18 @@ void UROSIntegrationGameInstance::Init()
 				bUseFixedUpdateInterval = OverrideParams->bUseFixedUpdateInterval;
 				FixedUpdateInterval = OverrideParams->FixedUpdateInterval;
 				bCheckHealth = OverrideParams->bCheckHealth;
+				CheckHealthInterval = OverrideParams->CheckHealthInterval;
 			}
 		}
 
 		ROSIntegrationCore = NewObject<UROSIntegrationCore>(UROSIntegrationCore::StaticClass()); // ORIGINAL 
-		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerHost, ROSBridgeServerPort);
+		bIsConnected = ROSIntegrationCore->Init(ROSBridgeServerProtocol, ROSBridgeServerHost, ROSBridgeServerPort);
 
 		if (!bTimerSet)
 		{
 			bTimerSet = true; 
-			GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth, 1.0f, true, 5.0f);
+			GetTimerManager().SetTimer(TimerHandle_CheckHealth, this, &UROSIntegrationGameInstance::CheckROSBridgeHealth,
+				CheckHealthInterval, true, std::max(5.0f, CheckHealthInterval));
 		}
 
 		if (bIsConnected)
