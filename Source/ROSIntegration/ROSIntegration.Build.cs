@@ -24,6 +24,8 @@ public class ROSIntegration : ModuleRules
 
 		string BSONPath = Path.Combine(ThirdPartyPath, "bson");
 
+		bEnableExceptions = true; // Allows using try-catch blocks
+
 		// Console.WriteLine("");
 		Console.WriteLine("BSONPath: " + BSONPath);
 
@@ -56,7 +58,8 @@ public class ROSIntegration : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Sockets",
-				"Networking"
+				"Networking",
+				"WebSockets"
 				// ... add private dependencies that you statically link with here ...
 			}
 		);

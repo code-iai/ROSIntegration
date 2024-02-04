@@ -27,10 +27,10 @@ public:
 		msg->width = GetInt32FromBSON(key + ".width", b, KeyFound); if (!KeyFound) return false;
 		msg->distortion_model = GetFStringFromBSON(key + ".distortion_model", b, KeyFound); if (!KeyFound) return false;
 
-		msg->D = GetDoubleTArrayFromBSON(key + "d", b, KeyFound); if (!KeyFound) return false;
-		msg->K = GetDoubleTArrayFromBSON(key + "k", b, KeyFound); if (!KeyFound || msg->K.Num() != 9) return false;
-		msg->R = GetDoubleTArrayFromBSON(key + "r", b, KeyFound); if (!KeyFound || msg->R.Num() != 9) return false;
-		msg->P = GetDoubleTArrayFromBSON(key + "p", b, KeyFound); if (!KeyFound || msg->P.Num() != 12) return false;
+		msg->D = GetDoubleTArrayFromBSON(key + "D", b, KeyFound); if (!KeyFound) return false;
+		msg->K = GetDoubleTArrayFromBSON(key + "K", b, KeyFound); if (!KeyFound || msg->K.Num() != 9) return false;
+		msg->R = GetDoubleTArrayFromBSON(key + "R", b, KeyFound); if (!KeyFound || msg->R.Num() != 9) return false;
+		msg->P = GetDoubleTArrayFromBSON(key + "P", b, KeyFound); if (!KeyFound || msg->P.Num() != 12) return false;
 		
 		msg->binning_x = GetInt32FromBSON(key + "binning_x", b, KeyFound); if (!KeyFound) return false;
 		msg->binning_y = GetInt32FromBSON(key + "binning_y", b, KeyFound); if (!KeyFound) return false;
@@ -58,10 +58,10 @@ public:
 		BSON_APPEND_INT32(b, "height", msg->height);
 		BSON_APPEND_INT32(b, "width", msg->width);
 		BSON_APPEND_UTF8(b, "distortion_model", TCHAR_TO_UTF8(*msg->distortion_model));
-		_bson_append_double_tarray(b, "d", msg->D);
-		_bson_append_double_tarray(b, "k", msg->K);
-		_bson_append_double_tarray(b, "r", msg->R);
-		_bson_append_double_tarray(b, "p", msg->P);	
+		_bson_append_double_tarray(b, "D", msg->D);
+		_bson_append_double_tarray(b, "K", msg->K);
+		_bson_append_double_tarray(b, "R", msg->R);
+		_bson_append_double_tarray(b, "P", msg->P);	
 		BSON_APPEND_INT32(b, "binning_x", msg->binning_x);
 		BSON_APPEND_INT32(b, "binning_y", msg->binning_y);
 		USensorMsgsRegionOfInterestConverter::_bson_append_child_roi(b, "roi", &msg->roi);
