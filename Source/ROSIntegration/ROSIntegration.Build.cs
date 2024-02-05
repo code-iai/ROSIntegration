@@ -24,6 +24,8 @@ public class ROSIntegration : ModuleRules
 
 		string BSONPath = Path.Combine(ThirdPartyPath, "bson");
 
+		bEnableExceptions = true; // Allows using try-catch blocks
+
 		// Console.WriteLine("");
 		Console.WriteLine("BSONPath: " + BSONPath);
 

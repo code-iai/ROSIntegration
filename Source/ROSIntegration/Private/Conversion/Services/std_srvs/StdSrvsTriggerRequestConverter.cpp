@@ -10,7 +10,7 @@ UStdSrvsTriggerRequestConverter::UStdSrvsTriggerRequestConverter()
 bool UStdSrvsTriggerRequestConverter::ConvertOutgoingRequest(TSharedPtr<FROSBaseServiceRequest> Request, bson_t** BSONRequest)
 {
 	auto TriggerRequest = StaticCastSharedPtr<std_srvs::FTriggerRequest>(Request);
-	*BSONRequest = BCON_NEW();
+	*BSONRequest = bson_new();
 
 	return true;
 }
