@@ -21,6 +21,7 @@ bool UTf2MsgsTFMessageConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> 
 		UE_LOG(LogTemp, Warning, TEXT("No transform saved in TFMessage. Can't convert message"));
 		return false;
 	}
+	*message = bson_new();
 	_bson_append_tf2_msg(*message, CastMsg.Get());
 	return true;
 }
