@@ -257,6 +257,8 @@ void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, 
 	_ROSIntegrationCore = Ric;
 	_ROSBridgeHost = Ric->GetROSBridgeHost();
 	_ROSBridgePort = Ric->GetROSBridgePort();
+	_Topic = Topic;
+	_MessageType = MessageType;
 	_Implementation->Init(Ric, Topic, MessageType, QueueSize);
 }
 
@@ -268,6 +270,16 @@ FString UTopic::GetROSBridgeHost() const
 int32 UTopic::GetROSBridgePort() const
 {
 	return _ROSBridgePort;
+}
+
+FString UTopic::GetTopicName() const
+{
+	return _Topic;
+}
+
+FString UTopic::GetMessageType() const
+{
+	return _MessageType;
 }
 
 void UTopic::MarkAsDisconnected()

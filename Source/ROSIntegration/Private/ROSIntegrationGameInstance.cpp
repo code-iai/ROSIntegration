@@ -248,16 +248,16 @@ void UROSIntegrationGameInstance::EstablishROSConnection(int32 ID)
 			FROSTime::SetUseSimTime(true);
 			FROSTime::SetSimTime(now);
 
-			// Ensures this only gets added once
+			// Only need to do this once
 			if (!bAddedOnWorldTickDelegate)
 			{
 				FWorldDelegates::OnWorldTickStart.AddUObject(this, &UROSIntegrationGameInstance::OnWorldTickStart);
 				bAddedOnWorldTickDelegate = true;
-			}
 
-			ClockTopic = NewObject<UTopic>(UTopic::StaticClass());
-			ClockTopic->Init(ROSConnections[0], FString(TEXT("/clock")), FString(TEXT("rosgraph_msgs/Clock")), 3);
-			ClockTopic->Advertise();
+				ClockTopic = NewObject<UTopic>(UTopic::StaticClass());
+				ClockTopic->Init(ROSConnections[0], FString(TEXT("/clock")), FString(TEXT("rosgraph_msgs/Clock")), 3);
+				ClockTopic->Advertise();
+			}
 		}
 	}
 }
@@ -335,7 +335,7 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 		else if (ConnectedToROSBridge[i])
 		{
 			ConnectedToROSBridge[i] = false;
-			UE_LOG(LogROS, Error, TEXT("Connection to rosbridge %s:%u (ID %i) was interrupted or failed to connect."), *ROSBridgeServerHosts[i], ROSBridgeServerPorts[i], i);
+			UE_LOG(LogROS, Error, TEXT("Connection to rosbridge %s:%u (ID %i) was interrupted."), *ROSBridgeServerHosts[i], ROSBridgeServerPorts[i], i);
 		}
 	}
 
@@ -350,8 +350,8 @@ void UROSIntegrationGameInstance::CheckROSBridgeHealth()
 	{
 		if (!ConnectedToROSBridge[i])
 		{
-			EstablishROSConnection(i);
 			MarkROSObjectsAsDisconnected(i);
+			EstablishROSConnection(i);
 			if (ConnectedToROSBridge[i])
 				ReconnectToROSObjects(i);
 		}
@@ -403,13 +403,13 @@ void UROSIntegrationGameInstance::MarkROSObjectsAsDisconnected(int32 ID)
 	for (TObjectIterator<UTopic> It; It; ++It)
 	{
 		UTopic* Topic = *It;
-		if (Topic->GetROSBridgeHost() == ROSBridgeServerHosts[ID] && Topic->GetROSBridgePort() == ROSBridgeServerPorts[ID])
+		if (Topic->GetROSBridgeHost().Compare(ROSBridgeServerHosts[ID]) == 0 && Topic->GetROSBridgePort() == ROSBridgeServerPorts[ID])
 			Topic->MarkAsDisconnected();
 	}
 	for (TObjectIterator<UService> It; It; ++It)
 	{
 		UService* Service = *It;
-		if (Service->GetROSBridgeHost() == ROSBridgeServerHosts[ID] && Service->GetROSBridgePort() == ROSBridgeServerPorts[ID])
+		if (Service->GetROSBridgeHost().Compare(ROSBridgeServerHosts[ID]) == 0 && Service->GetROSBridgePort() == ROSBridgeServerPorts[ID])
 			Service->MarkAsDisconnected();
 	}
 }
@@ -419,7 +419,7 @@ void UROSIntegrationGameInstance::ReconnectToROSObjects(int32 ID)
 	for (TObjectIterator<UTopic> It; It; ++It)
 	{
 		UTopic* Topic = *It;
-		if (Topic->GetROSBridgeHost() == ROSBridgeServerHosts[ID] && Topic->GetROSBridgePort() == ROSBridgeServerPorts[ID])
+		if (Topic->GetROSBridgeHost().Compare(ROSBridgeServerHosts[ID]) == 0 && Topic->GetROSBridgePort() == ROSBridgeServerPorts[ID])
 		{
 			bool success = Topic->Reconnect(ROSConnections[ID]);
 			if (!success)
@@ -432,7 +432,7 @@ void UROSIntegrationGameInstance::ReconnectToROSObjects(int32 ID)
 	for (TObjectIterator<UService> It; It; ++It)
 	{
 		UService* Service = *It;
-		if (Service->GetROSBridgeHost() == ROSBridgeServerHosts[ID] && Service->GetROSBridgePort() == ROSBridgeServerPorts[ID])
+		if (Service->GetROSBridgeHost().Compare(ROSBridgeServerHosts[ID]) == 0 && Service->GetROSBridgePort() == ROSBridgeServerPorts[ID])
 		{
 			bool success = Service->Reconnect(ROSConnections[ID]);
 			if (!success)
@@ -458,7 +458,7 @@ void UROSIntegrationGameInstance::Shutdown()
 		}
 
 		ShutdownAllROSObjects(); // Stop all ROS objects from advertising, publishing, and subscribing
-		MarkAllROSObjectsAsDisconnected(); // moved here from UROSIntegrationGameInstance::BeginDestroy()
+		MarkAllROSObjectsAsDisconnected(); // Moved here from UROSIntegrationGameInstance::BeginDestroy()
 
 		UE_LOG(LogROS, Display, TEXT("ROS Game Instance - shutdown done"));
 	}

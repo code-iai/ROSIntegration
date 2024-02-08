@@ -301,14 +301,13 @@ public:
 		if (bson_test_mode) {
 			_Ros->enable_bson_mode();
 		}
+		_ROSBridgeHost = ROSBridgeHost;
+		_ROSBridgePort = ROSBridgePort;
 
 		bool ConnectionSuccessful = _Ros->Init(TCHAR_TO_UTF8(*ROSBridgeHost), ROSBridgePort);
 		if (!ConnectionSuccessful) {
 			return false;
 		}
-
-		_ROSBridgeHost = ROSBridgeHost;
-		_ROSBridgePort = ROSBridgePort;
 
 		UE_LOG(LogROS, Log, TEXT("rosbridge2cpp init successful"));
 

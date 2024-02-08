@@ -58,6 +58,10 @@ public:
 
 	int32 GetROSBridgePort() const;
 
+	FString GetTopicName() const;
+
+	FString GetMessageType() const;
+
 	virtual void PostInitProperties() override;
 
 	void MarkAsDisconnected();
@@ -112,6 +116,9 @@ protected:
 
 	FString _ROSBridgeHost;
 	int32 _ROSBridgePort;
+
+	FString _Topic;
+	FString _MessageType;
 
 private:
 
