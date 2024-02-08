@@ -4,7 +4,6 @@
 #include <Engine/GameInstance.h>
 #include <Engine/EngineTypes.h>
 #include <Runtime/Launch/Resources/Version.h>
-// #include "ROSIntegrationCore.h"
 
 #include "ROSIntegrationGameInstance.generated.h"
 
@@ -37,12 +36,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	FString ROSBridgeServerProtocol = "tcp";
 
-	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	// FString ROSBridgeServerHost = "127.0.0.1";
-
-	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	// int32 ROSBridgeServerPort = 9090;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	// Array of IP adresses to connect to. Each element pairs with the corresponding element in ROSBridgeServerPorts
 	TArray<FString> ROSBridgeServerHosts = {"127.0.0.1"};
@@ -53,9 +46,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	bool bConnectToROS = true;
-
-	// UPROPERTY(BlueprintReadOnly, Category = "ROS")
-	// bool bIsConnected = false;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ROS")
 	TArray<bool> ConnectedToROSBridge;
@@ -91,8 +81,10 @@ protected:
 
 	void MarkAllROSObjectsAsDisconnected();
 
+	// Mark ROS objects as disconnected if associated with the given rosbridge server's index (ID)
 	void MarkROSObjectsAsDisconnected(int32 ID);
 
+	// Reconnect to all ROS objects associated with the given rosbridge server's index (ID)
 	void ReconnectToROSObjects(int32 ID);
 
 #if ENGINE_MINOR_VERSION > 23 || ENGINE_MAJOR_VERSION >4
