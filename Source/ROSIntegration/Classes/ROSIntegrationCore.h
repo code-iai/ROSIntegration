@@ -68,7 +68,11 @@ public:
 
 	bool IsHealthy() const;
 
-	// You must call Init() before using this method to set upthe Implmentation correctly
+	FString GetROSBridgeHost() const;
+
+	int32 GetROSBridgePort() const;
+
+	// You must call Init() before using this method to set up the Implmentation correctly
 	void SetWorld(UWorld* World);
 
 	void InitSpawnManager();

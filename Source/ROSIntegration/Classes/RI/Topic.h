@@ -54,6 +54,10 @@ public:
 
 	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize = 10);
 
+	FString GetROSBridgeHost() const;
+
+	int32 GetROSBridgePort() const;
+
 	virtual void PostInitProperties() override;
 
 	void MarkAsDisconnected();
@@ -105,6 +109,9 @@ protected:
 
 	UPROPERTY()
 	UROSIntegrationCore* _ROSIntegrationCore = nullptr;
+
+	FString _ROSBridgeHost;
+	int32 _ROSBridgePort;
 
 private:
 

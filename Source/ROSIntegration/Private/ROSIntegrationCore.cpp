@@ -40,6 +40,10 @@ public:
 
 	std::unique_ptr<rosbridge2cpp::ROSTopic> _SpawnArrayMessageListener;
 
+private:
+	FString _ROSBridgeHost;
+	int32 _ROSBridgePort;
+
 public: 
 
 	void SpawnArrayMessageCallback(const ROSBridgePublishMsg& message)
@@ -303,11 +307,23 @@ public:
 			return false;
 		}
 
+		_ROSBridgeHost = ROSBridgeHost;
+		_ROSBridgePort = ROSBridgePort;
+
 		UE_LOG(LogROS, Log, TEXT("rosbridge2cpp init successful"));
 
 		return true;
 	}
 
+	FString GetROSBridgeHost() const
+	{
+		return _ROSBridgeHost;
+	}
+
+	int32 GetROSBridgePort() const
+	{
+		return _ROSBridgePort;
+	}
 
 	void InitSpawnManager()
 	{
@@ -403,6 +419,16 @@ bool UROSIntegrationCore::Init(FString protocol, FString ROSBridgeHost, int32 RO
 bool UROSIntegrationCore::IsHealthy() const
 {
 	return _Implementation->Get()->IsHealthy();
+}
+
+FString UROSIntegrationCore::GetROSBridgeHost() const
+{
+	return _Implementation->Get()->GetROSBridgeHost();
+}
+
+int32 UROSIntegrationCore::GetROSBridgePort() const
+{
+	return _Implementation->Get()->GetROSBridgePort();
 }
 
 void UROSIntegrationCore::SetWorld(UWorld* World)
