@@ -190,9 +190,16 @@ ExampleTopic->Subscribe(SubscribeCallback);
 
 ### C++: Connecting to a Specific rosbridge Server
 
-The above C++ examples pass the `ROSIntegrationCore` pointer in the topic's `Init` function. Since multiple ROS connections are now allowed, you can configure each topic/service to use a different rosbridge server (if desired). To do so, simply replace `rosinst->ROSIntegrationCore` in the above examples with `rosinst->GetROSConnectionFromID(i)`, where `i` denotes the index of the rosbridge server as determined by the `ROSBridgeServerHosts` and `ROSBridgeServerPorts` arrays. The `GetROSConnectionFromID` function will return the pointer to the appropriate rosbridge server if `i` is valid, otherwise it will to return the pointer to the first rosbridge server created.
+The above C++ examples pass the `ROSIntegrationCore` pointer in the topic's `Init` function. Since multiple ROS connections are now allowed, you can configure each topic/service to use a different rosbridge server (if desired). To do so, simply replace `rosinst->ROSIntegrationCore` in the above examples with 
+```
+rosinst->GetROSConnectionFromID(i)
+```
+where `i` denotes the index of the rosbridge server as determined by the `ROSBridgeServerHosts` and `ROSBridgeServerPorts` arrays. The `GetROSConnectionFromID` function will return the pointer to the appropriate rosbridge server if `i` is valid, otherwise it will to return the pointer to the first rosbridge server in the list at index 0.
 
-For legacy purposes, using `rosinst->ROSIntegrationCore` will still work and will point to the same object as `rosinst->GetROSConnectionFromID(0)`.
+For legacy purposes, using `rosinst->ROSIntegrationCore` will still work and will point to the same object as
+```
+rosinst->GetROSConnectionFromID(0)
+```
 
 
 ### Blueprint Topic Subscribe Example
