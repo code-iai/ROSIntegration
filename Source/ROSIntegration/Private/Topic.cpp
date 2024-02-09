@@ -75,7 +75,7 @@ public:
 	bool Unsubscribe()
 	{
 		if (!_ROSTopic) {
-			UE_LOG(LogROS, Error, TEXT("Rostopic hasn't been initialized before Unsubscribe() call"));
+			// UE_LOG(LogROS, Error, TEXT("Rostopic hasn't been initialized before Unsubscribe() call")); // Removing, as this warning as annoying
 			return false;
 		}
 
@@ -98,7 +98,7 @@ public:
 
 	bool Unadvertise()
 	{
-		if (!_ROSTopic) UE_LOG(LogROS, Warning, TEXT("Trying to unadvertise on an un-initialized topic."))
+		// if (!_ROSTopic) UE_LOG(LogROS, Warning, TEXT("Trying to unadvertise on an un-initialized topic.")) // Removing, as this warning as annoying
 		return _ROSTopic && _ROSTopic->Unadvertise();
 	}
 
@@ -255,7 +255,31 @@ bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg)
 void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize)
 {
 	_ROSIntegrationCore = Ric;
+	_ROSBridgeHost = Ric->GetROSBridgeHost();
+	_ROSBridgePort = Ric->GetROSBridgePort();
+	_Topic = Topic;
+	_MessageType = MessageType;
 	_Implementation->Init(Ric, Topic, MessageType, QueueSize);
+}
+
+FString UTopic::GetROSBridgeHost() const
+{
+	return _ROSBridgeHost;
+}
+
+int32 UTopic::GetROSBridgePort() const
+{
+	return _ROSBridgePort;
+}
+
+FString UTopic::GetTopicName() const
+{
+	return _Topic;
+}
+
+FString UTopic::GetMessageType() const
+{
+	return _MessageType;
 }
 
 void UTopic::MarkAsDisconnected()
@@ -267,6 +291,8 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 {
 	bool success = true;
 	_ROSIntegrationCore = ROSIntegrationCore;
+	_ROSBridgeHost = ROSIntegrationCore->GetROSBridgeHost();
+	_ROSBridgePort = ROSIntegrationCore->GetROSBridgePort();
 
 	Impl* oldImplementation = _Implementation;
 	_Implementation = new UTopic::Impl();

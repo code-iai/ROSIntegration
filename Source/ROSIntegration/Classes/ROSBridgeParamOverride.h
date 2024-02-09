@@ -24,13 +24,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	FString ROSBridgeServerProtocol = "tcp";
 
-    // IP address of the rosbridge websocket server
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	FString ROSBridgeServerHost = "127.0.0.1";
+    // // IP address of the rosbridge websocket server
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	// FString ROSBridgeServerHost = "127.0.0.1";
 
-	// Port number to access the rosbridge websocket server
+	// // Port number to access the rosbridge websocket server
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	// int32 ROSBridgeServerPort = 9090;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	int32 ROSBridgeServerPort = 9090;
+	// Array of IP addresses to connect to. Each element pairs with the corresponding element in ROSBridgePorts
+	TArray<FString> ROSBridgeServerHosts = {"127.0.0.1"};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	// Array of ports to connect to. Each element pairs with the corresponding element in ROSBridgeHosts
+	TArray<int32> ROSBridgeServerPorts = {9090};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS", meta=(ClampMin = '1', ClampMax = '2'))
 	uint8 ROSVersion = 1;

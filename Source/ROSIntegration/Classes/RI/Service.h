@@ -17,6 +17,11 @@ class ROSINTEGRATION_API UService : public UObject
 	GENERATED_UCLASS_BODY()
 public:
 	void Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType);
+
+	FString GetROSBridgeHost() const;
+
+	int32 GetROSBridgePort() const;
+
 	void BeginDestroy() override;
 
 	bool Advertise(std::function<void(TSharedPtr<FROSBaseServiceRequest>, TSharedPtr<FROSBaseServiceResponse>)> ServiceHandler, bool HandleRequestsInGameThread);
@@ -43,6 +48,9 @@ protected:
 
 	UPROPERTY()
 	UROSIntegrationCore* _ROSIntegrationCore = nullptr;
+
+	FString _ROSBridgeHost;
+	int32 _ROSBridgePort;
 
 private:
 
