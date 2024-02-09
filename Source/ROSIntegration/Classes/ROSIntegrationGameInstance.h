@@ -34,6 +34,7 @@ public:
 	TArray<class UROSIntegrationCore*> ROSConnections;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	// Protocol for connecting to the rosbridge server, use "tcp" or "ws"
 	FString ROSBridgeServerProtocol = "tcp";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
