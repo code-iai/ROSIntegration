@@ -19,6 +19,8 @@ ROS Functionality can be added to UObjects or AActors by using functions like Ad
 This currently includes an ActorComponent that can be added to AActors to easily publish their coordinates to TF.
 If you need Vision Support in your Unreal Project, you can also add the ROSIntegrationVision Plugin (https://github.com/code-iai/ROSIntegrationVision/) which is compatible with this Plugin.
 
+Communication with ROS is achieved by communicating with [rosbridge_suite](https://github.com/RobotWebTools/rosbridge_suite) (Unreal Engine <--> rosbridge <--> ROS Nodes). This plugin supports using both TCP and websocket protocols to communicate with rosbridge.
+
 ## Citations
 If you are using this Plugin in an academic context and you want to cite us, we would be happy if you could use the following reference:
 <pre>
@@ -94,10 +96,15 @@ Please note that this list is a tracker of which UE4 versions have been previous
 
     ![Create a new GameInstance](Documentation/ue4-setup-01.png)
 
-  * Open your new C++ class / Blueprint object and change the values of `ROSBridgeSeverHost` and `ROSBridgeServerPort`
-
-    ![Change host and port to match your server](Documentation/ue4-setup-02.png)
-
+  * Open your new C++ class / Blueprint object and configure the rosbridge connection properties:
+    * `ROSBridgeServerProtocol`: The communication protocol to use with rosbridge. Options are "tcp" or "ws".
+    * `ROSBridgeSeverHosts`: A list of rosbridge server IP addresses. Each element pairs with the corresponding element in `ROSBridgeSeverPorts`.
+      * Note 1: In an older version, this was just a single value `ROSBridgeSeverHost`. Now, you can connect to any number of rosbridge servers.
+      * Note 2: If the number of elements in this array differs from the length of `ROSBridgeSeverPorts`, then the unpaired elements will be skipped. And if you remove all entries in this array, then the plugin will use a default value of "127.0.0.1".
+    * `ROSBridgeSeverPorts` A list of rosbridge server ports. Each element pairs with the corresponding element in `ROSBridgeSeverHosts`.
+      * Note 1: In an older version, this was just a single value `ROSBridgeSeverPort`. Now, you can connect to any number of rosbridge servers.
+      * Note 2: If the number of elements in this array differs from the length of `ROSBridgeSeverHosts`, then the unpaired elements will be skipped. And if you remove all entries in this array, then the plugin will use a default value of 9090.
+  
   * Open Project Settings > Maps and Modes, and set the GameInstance to match **your new GameInstance object**, not `ROSIntegrationGameInstance`
 
     ![Change host and port to match your server](Documentation/ue4-setup-03.png)
@@ -180,6 +187,13 @@ std::function<void(TSharedPtr<FROSBaseMsg>)> SubscribeCallback = [](TSharedPtr<F
 // Subscribe to the topic
 ExampleTopic->Subscribe(SubscribeCallback);
 ```
+
+### C++: Connecting to a Specific rosbridge Server
+
+The above C++ examples pass the `ROSIntegrationCore` pointer in the topic's `Init` function. Since multiple ROS connections are now allowed, you can configure each topic/service to use a different rosbridge server (if desired). To do so, simply replace `rosinst->ROSIntegrationCore` in the above examples with `rosinst->GetROSConnectionFromID(i)`, where `i` denotes the index of the rosbridge server as determined by the `ROSBridgeServerHosts` and `ROSBridgeServerPorts` arrays. The `GetROSConnectionFromID` function will return the pointer to the appropriate rosbridge server if `i` is valid, otherwise it will to return the pointer to the first rosbridge server created.
+
+For legacy purposes, using `rosinst->ROSIntegrationCore` will still work and will point to the same object as `rosinst->GetROSConnectionFromID(0)`.
+
 
 ### Blueprint Topic Subscribe Example
 
@@ -269,6 +283,23 @@ Then you can create the message definition and the converter in your own project
 You can now add a `ROSBridgeParamOverride` actor to a level, allowing you to use different rosbridge connection settings for that level only (compared to what is defined in the ROSIntegrationGameInstance settings).
 
 When might this be useful? Say you have a powerful enough computer that can handle multiple independent UE4 simulations at the same time, and you want to run as many simulations as possible to collect data effeciently (perhaps you are training a reinforcement learning algorithm). If you create copies of your main level (saved with different names) and use different ROS topic names within each level, then you can launch each level in a new UE4 editor on the same computer. If using a single rosbridge node for all of these UE4 instances results in considerable delays, then you can then add the `ROSBridgeParamOverride` actor to each level so that each level uses its own rosbridge node.
+
+### Accesssing the ROS Connection State from Your Code
+
+The `UROSIntegrationGameInstance` class contains a delegate called `OnROSConnectionStatus` that broadcasts the state of the ROS connection to any bound delegates, should your code need to know this information. The delegate provides the number of healthy connections and the number of unhealthy/disconnected connections. If there are 0 disconnected connections, then everything is fine. To gain access to this information, add the following function declaration in your header file:
+```
+void OnROSConnectionStatus(int32 NumConnectedServers, int32 NumDisconnectedServers);
+```
+Then, in your `BeginPlay` function, bind this local function to the delegate:
+```
+ROSInst = Cast<UROSIntegrationGameInstance>(GetGameInstance());
+if (ROSInst && ROSInst->bConnectToROS)
+{
+    ROSInst->OnROSConnectionStatus.AddUObject(this, &AMyClass::OnROSConnectionStatus);
+    // Other code
+}
+```
+Then define the `OnROSConnectionStatus` in your cpp file to respond as desired. Again, everything is fine if `NumDisconnectedServers` is 0.
 
 ### FAQ
 * Question: My Topic/Service gets closed/unadvertised or my UE4 crashes around one minute after Begin Play.
