@@ -19,7 +19,7 @@ ROS Functionality can be added to UObjects or AActors by using functions like Ad
 This currently includes an ActorComponent that can be added to AActors to easily publish their coordinates to TF.
 If you need Vision Support in your Unreal Project, you can also add the ROSIntegrationVision Plugin (https://github.com/code-iai/ROSIntegrationVision/) which is compatible with this Plugin.
 
-Communication with ROS is achieved by communicating with [rosbridge_suite](https://github.com/RobotWebTools/rosbridge_suite) (Unreal Engine <--> rosbridge <--> ROS Nodes). This plugin supports using both TCP and websocket protocols to communicate with rosbridge.
+Communication with ROS is achieved by communicating with [rosbridge_suite](https://github.com/RobotWebTools/rosbridge_suite) (Unreal Engine <--> rosbridge <--> ROS Nodes). This plugin supports using both TCP and websocket protocols to communicate with rosbridge. The plugin also supports both ROS1 and ROS2 connections.
 
 ## Citations
 If you are using this Plugin in an academic context and you want to cite us, we would be happy if you could use the following reference:
@@ -104,6 +104,7 @@ Please note that this list is a tracker of which UE4 versions have been previous
     * `ROSBridgeSeverPorts` A list of rosbridge server ports. Each element pairs with the corresponding element in `ROSBridgeSeverHosts`.
       * Note 1: In an older version, this was just a single value `ROSBridgeSeverPort`. Now, you can connect to any number of rosbridge servers.
       * Note 2: If the number of elements in this array differs from the length of `ROSBridgeSeverHosts`, then the unpaired elements will be skipped. And if you remove all entries in this array, then the plugin will use a default value of 9090.
+    * `ROSVersion`: Indicate the ROS version that you are using. Only options are 1 or 2.
   
   * Open Project Settings > Maps and Modes, and set the GameInstance to match **your new GameInstance object**, not `ROSIntegrationGameInstance`
 
