@@ -36,6 +36,7 @@ void UROSIntegrationGameInstance::Init()
 			FixedUpdateInterval = OverrideParams->FixedUpdateInterval;
 			bCheckHealth = OverrideParams->bCheckHealth;
 			CheckHealthInterval = OverrideParams->CheckHealthInterval;
+			ClockTopicName = OverrideParams->ClockTopicName;
 		}
 	}		
 
@@ -162,7 +163,7 @@ void UROSIntegrationGameInstance::EstablishROSConnection(int32 ID)
 				bAddedOnWorldTickDelegate = true;
 
 				ClockTopic = NewObject<UTopic>(UTopic::StaticClass());
-				ClockTopic->Init(ROSConnections[0], FString(TEXT("/clock")), FString(TEXT("rosgraph_msgs/Clock")), 3);
+				ClockTopic->Init(ROSConnections[0], ClockTopicName, FString(TEXT("rosgraph_msgs/Clock")), 3);
 				ClockTopic->Advertise();
 			}
 		}
