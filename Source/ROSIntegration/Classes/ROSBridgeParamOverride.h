@@ -20,17 +20,20 @@ public:
         PrimaryActorTick.bCanEverTick = false; // No need to tick
     }
 
-	// Protocol for connecting to rosbridge websocket server, use "tcp" or "ws"
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	// Protocol for connecting to the rosbridge server, use "tcp" or "ws"
 	FString ROSBridgeServerProtocol = "tcp";
 
-    // IP address of the rosbridge websocket server
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	FString ROSBridgeServerHost = "127.0.0.1";
+	// Array of IP addresses to connect to. Each element pairs with the corresponding element in ROSBridgePorts
+	TArray<FString> ROSBridgeServerHosts = {"127.0.0.1"};
 
-	// Port number to access the rosbridge websocket server
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	int32 ROSBridgeServerPort = 9090;
+	// Array of ports to connect to. Each element pairs with the corresponding element in ROSBridgeHosts
+	TArray<int32> ROSBridgeServerPorts = {9090};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS", meta=(ClampMin = '1', ClampMax = '2'))
+	uint8 ROSVersion = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	bool bConnectToROS = true;
@@ -46,7 +49,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS")
 	bool bCheckHealth = true;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS", Meta = (EditCondition = "bCheckHealth"))
 	float CheckHealthInterval = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	FString ClockTopicName = "/clock";
 };
