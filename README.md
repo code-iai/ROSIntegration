@@ -98,12 +98,12 @@ Please note that this list is a tracker of which UE4 versions have been previous
 
   * Open your new C++ class / Blueprint object and configure the rosbridge connection properties:
     * `ROSBridgeServerProtocol`: The communication protocol to use with rosbridge. Options are "tcp" or "ws".
-    * `ROSBridgeSeverHosts`: A list of rosbridge server IP addresses. Each element pairs with the corresponding element in `ROSBridgeSeverPorts`.
-      * Note 1: In an older version, this was just a single value `ROSBridgeSeverHost`. Now, you can connect to any number of rosbridge servers.
-      * Note 2: If the number of elements in this array differs from the length of `ROSBridgeSeverPorts`, then the unpaired elements will be skipped. And if you remove all entries in this array, then the plugin will use a default value of "127.0.0.1".
-    * `ROSBridgeSeverPorts` A list of rosbridge server ports. Each element pairs with the corresponding element in `ROSBridgeSeverHosts`.
-      * Note 1: In an older version, this was just a single value `ROSBridgeSeverPort`. Now, you can connect to any number of rosbridge servers.
-      * Note 2: If the number of elements in this array differs from the length of `ROSBridgeSeverHosts`, then the unpaired elements will be skipped. And if you remove all entries in this array, then the plugin will use a default value of 9090.
+    * `ROSBridgeServerHosts`: A list of rosbridge server IP addresses. Each element pairs with the corresponding element in `ROSBridgeServerPorts`.
+      * Note 1: In an older version, this was just a single value `ROSBridgeServerHost`. Now, you can connect to any number of rosbridge servers.
+      * Note 2: If the number of elements in this array differs from the length of `ROSBridgeServerPorts`, then the unpaired elements will be skipped. And if you remove all entries in this array, then the plugin will use a default value of "127.0.0.1".
+    * `ROSBridgeServerPorts` A list of rosbridge server ports. Each element pairs with the corresponding element in `ROSBridgeServerHosts`.
+      * Note 1: In an older version, this was just a single value `ROSBridgeServerPort`. Now, you can connect to any number of rosbridge servers.
+      * Note 2: If the number of elements in this array differs from the length of `ROSBridgeServerHosts`, then the unpaired elements will be skipped. And if you remove all entries in this array, then the plugin will use a default value of 9090.
     * `ROSVersion`: Indicate the ROS version that you are using. Only options are 1 or 2.
   
   * Open Project Settings > Maps and Modes, and set the GameInstance to match **your new GameInstance object**, not `ROSIntegrationGameInstance`
