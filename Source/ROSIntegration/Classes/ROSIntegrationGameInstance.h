@@ -4,12 +4,12 @@
 #include <Engine/GameInstance.h>
 #include <Engine/EngineTypes.h>
 #include <Runtime/Launch/Resources/Version.h>
-#include "ROSIntegrationCore.h"
 
 #include "ROSIntegrationGameInstance.generated.h"
 
 // Lets the game instance share with any bound delegates that the ROS connection status has changed
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnROSConnectionStatus, bool /*IsConnected*/);
+// DECLARE_MULTICAST_DELEGATE_OneParam(FOnROSConnectionStatus, bool /*IsConnected*/); // OLD
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnROSConnectionStatus, int32 /*NumConnectedServers*/,  int32 /*NumDisconnectedServers*/);
 
 UCLASS()
 class ROSINTEGRATION_API UROSIntegrationGameInstance : public UGameInstance
@@ -21,24 +21,40 @@ public:
 	virtual void Shutdown() override;
 	virtual void BeginDestroy() override;
 
+	// Return a pointer to the ROS connection based on the index
+	class UROSIntegrationCore* GetROSConnectionFromID(int32 ID);
+
 public:
 	UPROPERTY()
-	UROSIntegrationCore* ROSIntegrationCore = nullptr;
+	// Orginal object for connecting to rosbridge. Keeping for legacy reasons. Will be equivalent to ROSConnection[0].
+	class UROSIntegrationCore* ROSIntegrationCore = nullptr;
+
+	UPROPERTY()
+	// Array of UROSIntegrationCore pointers that create the connections to rosbridge
+	TArray<class UROSIntegrationCore*> ROSConnections;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	// Protocol for connecting to the rosbridge server, use "tcp" or "ws"
 	FString ROSBridgeServerProtocol = "tcp";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	FString ROSBridgeServerHost = "127.0.0.1";
+	// Array of IP adresses to connect to. Each element pairs with the corresponding element in ROSBridgeServerPorts
+	TArray<FString> ROSBridgeServerHosts = {"127.0.0.1"};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
-	int32 ROSBridgeServerPort = 9090;
+	// Array of ports to connect to. Each element pairs with the corresponding element in ROSBridgeServerHosts
+	TArray<int32> ROSBridgeServerPorts = {9090};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS", meta=(ClampMin = '1', ClampMax = '2'))
+	uint8 ROSVersion = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	bool bConnectToROS = true;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ROS")
-	bool bIsConnected = false;
+	TArray<bool> ConnectedToROSBridge;
+
+	int32 NumROSBridgeServers = 0;
 
 	UPROPERTY(EditAnywhere, Category = "ROS")
 	bool bSimulateTime = true;
@@ -55,14 +71,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ROS", Meta = (EditCondition = "bCheckHealth"))
 	float CheckHealthInterval = 1.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
+	FString ClockTopicName = "/clock";
+
 	FOnROSConnectionStatus OnROSConnectionStatus;
 
+	bool bUsingOverrideParameters = false;
+
 protected:
+	// Attempt to make a ROS connection to the given server's index (ID)
+	void EstablishROSConnection(int32 ID);
+	
 	void CheckROSBridgeHealth();
 
 	void ShutdownAllROSObjects();
 
 	void MarkAllROSObjectsAsDisconnected();
+
+	// Mark ROS objects as disconnected if associated with the given rosbridge server's index (ID)
+	void MarkROSObjectsAsDisconnected(int32 ID);
+
+	// Reconnect to all ROS objects associated with the given rosbridge server's index (ID)
+	void ReconnectToROSObjects(int32 ID);
 
 #if ENGINE_MINOR_VERSION > 23 || ENGINE_MAJOR_VERSION >4
 	virtual void OnWorldTickStart(UWorld * World, ELevelTick TickType, float DeltaTime);

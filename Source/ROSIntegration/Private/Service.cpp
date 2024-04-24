@@ -234,7 +234,19 @@ void UService::BeginDestroy() {
 
 void UService::Init(UROSIntegrationCore *Ric, FString ServiceName, FString ServiceType) {
 	_ROSIntegrationCore = Ric;
+	_ROSBridgeHost = Ric->GetROSBridgeHost();
+	_ROSBridgePort = Ric->GetROSBridgePort();
 	_Implementation->Init(Ric, ServiceName, ServiceType);
+}
+
+FString UService::GetROSBridgeHost() const
+{
+	return _ROSBridgeHost;
+}
+
+int32 UService::GetROSBridgePort() const
+{
+	return _ROSBridgePort;
 }
 
 void UService::MarkAsDisconnected()
@@ -246,6 +258,8 @@ bool UService::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 {
 	bool success = true;
 	_ROSIntegrationCore = ROSIntegrationCore;
+	_ROSBridgeHost = ROSIntegrationCore->GetROSBridgeHost();
+	_ROSBridgePort = ROSIntegrationCore->GetROSBridgePort();
 
 	Impl* oldImplementation = _Implementation;
 	_Implementation = new UService::Impl();

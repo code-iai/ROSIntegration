@@ -40,6 +40,10 @@ public:
 
 	std::unique_ptr<rosbridge2cpp::ROSTopic> _SpawnArrayMessageListener;
 
+private:
+	FString _ROSBridgeHost;
+	int32 _ROSBridgePort;
+
 public: 
 
 	void SpawnArrayMessageCallback(const ROSBridgePublishMsg& message)
@@ -297,6 +301,8 @@ public:
 		if (bson_test_mode) {
 			_Ros->enable_bson_mode();
 		}
+		_ROSBridgeHost = ROSBridgeHost;
+		_ROSBridgePort = ROSBridgePort;
 
 		bool ConnectionSuccessful = _Ros->Init(TCHAR_TO_UTF8(*ROSBridgeHost), ROSBridgePort);
 		if (!ConnectionSuccessful) {
@@ -308,6 +314,15 @@ public:
 		return true;
 	}
 
+	FString GetROSBridgeHost() const
+	{
+		return _ROSBridgeHost;
+	}
+
+	int32 GetROSBridgePort() const
+	{
+		return _ROSBridgePort;
+	}
 
 	void InitSpawnManager()
 	{
@@ -387,6 +402,7 @@ UROSIntegrationCore::~UROSIntegrationCore()
 bool UROSIntegrationCore::Init(FString protocol, FString ROSBridgeHost, int32 ROSBridgePort) {
 	UE_LOG(LogROS, Verbose, TEXT("CALLING INIT ON RIC IMPL()!"));
 
+	// ROSVersion = ROSVersionIn;
 	if(!_SpawnManager)	_SpawnManager = NewObject<USpawnManager>(USpawnManager::StaticClass()); // moved here from UImpl::Init()
 
 	//_Implementation = new UImpl::Impl;
@@ -399,10 +415,19 @@ bool UROSIntegrationCore::Init(FString protocol, FString ROSBridgeHost, int32 RO
 	return _Implementation->Get()->Init(protocol, ROSBridgeHost, ROSBridgePort, _bson_test_mode);
 }
 
-
 bool UROSIntegrationCore::IsHealthy() const
 {
 	return _Implementation->Get()->IsHealthy();
+}
+
+FString UROSIntegrationCore::GetROSBridgeHost() const
+{
+	return _Implementation->Get()->GetROSBridgeHost();
+}
+
+int32 UROSIntegrationCore::GetROSBridgePort() const
+{
+	return _Implementation->Get()->GetROSBridgePort();
 }
 
 void UROSIntegrationCore::SetWorld(UWorld* World)

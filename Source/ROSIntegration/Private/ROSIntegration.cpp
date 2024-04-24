@@ -15,4 +15,5 @@ void FROSIntegrationModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FROSIntegrationModule, ROSIntegration)
+// IMPLEMENT_MODULE(FROSIntegrationModule, ROSIntegration)
+IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, ROSIntegration, "ROSIntegration" )
