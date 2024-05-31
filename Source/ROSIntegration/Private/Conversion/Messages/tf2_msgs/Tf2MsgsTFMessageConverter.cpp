@@ -16,6 +16,7 @@ bool UTf2MsgsTFMessageConverter::ConvertIncomingMessage(const ROSBridgePublishMs
 bool UTf2MsgsTFMessageConverter::ConvertOutgoingMessage(TSharedPtr<FROSBaseMsg> BaseMsg, bson_t** message) 
 {
 	auto CastMsg = StaticCastSharedPtr<ROSMessages::tf2_msgs::TFMessage>(BaseMsg);
+	*message = bson_new();
 	if (CastMsg->transforms.Num() == 0) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No transform saved in TFMessage. Can't convert message"));
