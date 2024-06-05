@@ -6,8 +6,6 @@ The connection to the ROS world will be accomplished through http://wiki.ros.org
 
 This plugin is currently mainly maintained for Unreal Engine 4. Even though functionality might work under UE5, we see UE4 as a first class citizen on our master branch.
 
-_Note from Yasja: Edited TCPConnection.cpp to compile on UE5 (tested on linux only)_
-
 ## Description
 
 This Plugin contains the basic data structures to enable the user to communicate with a running roscore.
