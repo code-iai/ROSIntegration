@@ -52,7 +52,7 @@ public:
 
 	void BeginDestroy() override;
 
-	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize = 10);
+	void Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize = 10, bool Latch = false);
 
 	FString GetROSBridgeHost() const;
 
@@ -133,7 +133,7 @@ private:
 
 
 	UFUNCTION(BlueprintCallable, Category = "ROS|Topic")
-	void Init(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1);
+	void Init(const FString& TopicName, EMessageType MessageType, int32 QueueSize = 1, bool Latch = false);
 
 	/**
 	 * Subscribe to the given topic
