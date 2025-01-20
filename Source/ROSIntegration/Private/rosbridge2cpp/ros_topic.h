@@ -23,8 +23,8 @@ namespace rosbridge2cpp{
 		: ros_(ros)
 		, topic_name_(topic_name)
 		, message_type_(message_type)
-		, queue_size_(queue_size)
 		, latch_(latch)
+		, queue_size_(queue_size)
 		{
 		}
 
