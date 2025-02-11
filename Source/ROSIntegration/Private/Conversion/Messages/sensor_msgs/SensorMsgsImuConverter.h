@@ -59,7 +59,7 @@ public:
 		UGeometryMsgsQuaternionConverter::_bson_append_child_quaternion(b, "orientation", &msg->orientation);
 		_bson_append_double_tarray(b, "orientation_covariance", msg->orientation_covariance);
 		UGeometryMsgsVector3Converter::_bson_append_child_vector3(b, "angular_velocity", &msg->angular_velocity);
-		_bson_append_double_tarray(b, "angular_velocity_covariance", msg->orientation_covariance);
+		_bson_append_double_tarray(b, "angular_velocity_covariance", msg->angular_velocity_covariance);
 		UGeometryMsgsVector3Converter::_bson_append_child_vector3(b, "linear_acceleration", &msg->linear_acceleration);
 		_bson_append_double_tarray(b, "linear_acceleration_covariance", msg->linear_acceleration_covariance);
 	}

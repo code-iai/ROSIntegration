@@ -40,6 +40,7 @@ public:
 	FString _Topic;
 	FString _MessageType;
 	int32 _QueueSize;
+	bool _Latch;
 	rosbridge2cpp::ROSTopic* _ROSTopic = nullptr;
 	UBaseMessageConverter* _Converter;
 	rosbridge2cpp::ROSCallbackHandle<rosbridge2cpp::FunVrROSPublishMsg> _CallbackHandle;
@@ -116,7 +117,7 @@ public:
 		}
 	}
 
-	void Init(UROSIntegrationCore *Ric, const FString& Topic, const FString& MessageType, int32 QueueSize)
+	void Init(UROSIntegrationCore *Ric, const FString& Topic, const FString& MessageType, int32 QueueSize, bool Latch)
 	{
 		// Construct static ConverterMap
 		if (TypeConverterMap.Num() == 0)
@@ -138,6 +139,7 @@ public:
 		_Topic = Topic;
 		_MessageType = MessageType;
 		_QueueSize = QueueSize;
+		_Latch = Latch;
 
 		UBaseMessageConverter** Converter = TypeConverterMap.Find(MessageType);
 		if (!Converter)
@@ -152,7 +154,7 @@ public:
 		}
 		_Converter = *Converter;
 
-		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->Get()->GetBridge(), TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize);
+		_ROSTopic = new rosbridge2cpp::ROSTopic(Ric->_Implementation->Get()->GetBridge(), TCHAR_TO_UTF8(*Topic), TCHAR_TO_UTF8(*MessageType), QueueSize, Latch);
 	}
 
 	void MessageCallback(const ROSBridgePublishMsg &message)
@@ -252,14 +254,14 @@ bool UTopic::Publish(TSharedPtr<FROSBaseMsg> msg)
 	return _State.Connected && _Implementation->Publish(msg);
 }
 
-void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize)
+void UTopic::Init(UROSIntegrationCore *Ric, FString Topic, FString MessageType, int32 QueueSize, bool Latch)
 {
 	_ROSIntegrationCore = Ric;
 	_ROSBridgeHost = Ric->GetROSBridgeHost();
 	_ROSBridgePort = Ric->GetROSBridgePort();
 	_Topic = Topic;
 	_MessageType = MessageType;
-	_Implementation->Init(Ric, Topic, MessageType, QueueSize);
+	_Implementation->Init(Ric, Topic, MessageType, QueueSize, Latch);
 }
 
 FString UTopic::GetROSBridgeHost() const
@@ -296,7 +298,7 @@ bool UTopic::Reconnect(UROSIntegrationCore* ROSIntegrationCore)
 
 	Impl* oldImplementation = _Implementation;
 	_Implementation = new UTopic::Impl();
-	_Implementation->Init(ROSIntegrationCore, oldImplementation->_Topic, oldImplementation->_MessageType, oldImplementation->_QueueSize);
+	_Implementation->Init(ROSIntegrationCore, oldImplementation->_Topic, oldImplementation->_MessageType, oldImplementation->_QueueSize, oldImplementation->_Latch);
 
 	_State.Connected = true;
 	if (_State.Subscribed)
@@ -327,7 +329,7 @@ FString UTopic::GetDetailedInfoInternal() const
 	return _Implementation->_Topic;
 }
 
-void UTopic::Init(const FString& TopicName, EMessageType MessageType, int32 QueueSize)
+void UTopic::Init(const FString& TopicName, EMessageType MessageType, int32 QueueSize, bool Latch)
 {
 	_State.Blueprint = true;
 	_State.BlueprintMessageType = MessageType;
@@ -337,7 +339,7 @@ void UTopic::Init(const FString& TopicName, EMessageType MessageType, int32 Queu
 	{
 		if (ROSInstance->bConnectToROS && _State.Connected)
 		{
-			Init(ROSInstance->ROSIntegrationCore, TopicName, SupportedMessageTypes[MessageType], QueueSize);
+			Init(ROSInstance->ROSIntegrationCore, TopicName, SupportedMessageTypes[MessageType], QueueSize, Latch);
 		}
 	}
 	else

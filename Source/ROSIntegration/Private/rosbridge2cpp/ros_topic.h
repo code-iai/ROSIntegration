@@ -19,10 +19,11 @@ namespace rosbridge2cpp{
 
 	class ROSTopic {
 	public:
-		ROSTopic(ROSBridge &ros, std::string topic_name, std::string message_type, int queue_size = 10)
+		ROSTopic(ROSBridge &ros, std::string topic_name, std::string message_type, int queue_size = 10, bool latch = false)
 		: ros_(ros)
 		, topic_name_(topic_name)
 		, message_type_(message_type)
+		, latch_(latch)
 		, queue_size_(queue_size)
 		{
 		}
