@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "TFBroadcastComponent.h"
 
 #include "ROSIntegrationGameInstance.h"
