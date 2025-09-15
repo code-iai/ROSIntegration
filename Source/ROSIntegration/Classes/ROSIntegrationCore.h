@@ -29,6 +29,7 @@ class ROSINTEGRATION_API UImpl : public UObject
 protected:
 
 	// PIMPL
+	// pointer to the impl class
 	class Impl;
 	TSharedPtr<Impl> impl_ = nullptr;
 
@@ -82,6 +83,7 @@ public:
 private:
 
 	UPROPERTY()
+	// forward declaration of a class?
 	class UImpl* _Implementation = nullptr; // N.B: here there was the private implementation: a standard pointer which contained the USpawnManager.
 											// This was manually added inside the GargageCollector by using the UObject::AddToRoot() method.
 											// After its creation, USpawnManager object was never destroyed. Now, with this change,

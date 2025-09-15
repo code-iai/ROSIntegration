@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Components/ActorComponent.h>
+#include <cassert>
 #include "RI/Topic.h"
 
 #include "TFBroadcastComponent.generated.h"

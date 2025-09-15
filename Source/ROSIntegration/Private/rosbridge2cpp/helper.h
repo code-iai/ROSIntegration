@@ -93,7 +93,7 @@ namespace rosbridge2cpp {
 			if (bson_iter_init(&iter, &b) &&
 				bson_iter_find_descendant(&iter, dot_notation, &val)) {
 				if (!BSON_ITER_HOLDS_DOUBLE(&val)) {
-					std::cout << "Key found, but not double typed" << std::endl;
+					UE_LOG(LogTemp, Warning, TEXT("Key found, but not double typed"));
 				}
 				else {
 					//std::cout << "Key " << dot_notation << " found. success is = " << success << std::endl;
@@ -103,7 +103,7 @@ namespace rosbridge2cpp {
 					return bson_iter_double(&val);
 				}
 			}
-			std::cout << "Couldn't find descendant" << std::endl;
+			UE_LOG(LogTemp, Warning, TEXT("Couldn't find descendant"));
 			success = false;
 			return -1.0;
 		}

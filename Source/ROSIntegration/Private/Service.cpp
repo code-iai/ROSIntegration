@@ -2,11 +2,15 @@
 
 #include "rosbridge2cpp/ros_bridge.h"
 #include "rosbridge2cpp/ros_service.h"
+#include "ROSIntegrationCore.h"
+#include "ROSIntegrationCore_Impl.h"
+#include "ROSIntegrationGameInstance.h"
 #include "Conversion/Services/BaseRequestConverter.h"
 #include "Conversion/Services/BaseResponseConverter.h"
 
 static TMap<FString, UBaseRequestConverter*> RequestConverterMap;
 static TMap<FString, UBaseResponseConverter*> ResponseConverterMap;
+
 
 
 // PIMPL

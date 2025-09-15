@@ -5,6 +5,7 @@
 #include <Tickable.h>
 #include "SpawnableObject.h"
 #include "SpawnObjectMessage.h"
+#include <cassert>
 #include <EngineUtils.h>
 
 #include "SpawnManager.generated.h"

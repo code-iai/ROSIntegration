@@ -4,7 +4,7 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <unordered_map>
-
+#include <iostream>
 #include <bson.h>
 
 #include "helper.h"
@@ -84,6 +84,7 @@ public:
 	bool FromJSON(const rapidjson::Document &data)
 	{
 		if (!data.HasMember("op")) {
+			UE_LOG(LogTemp, Error, TEXT("[ROSBridgeMsg] Received message without 'op' field"));
 			std::cerr << "[ROSBridgeMsg] Received message without 'op' field" << std::endl;
 			return false;
 		}
