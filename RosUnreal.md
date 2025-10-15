@@ -16,7 +16,7 @@
 
 ## HOW TO RUN:
 
-## Unreal
+### Unreal
 1. Make sure connected to same wifi as rosbridge server
 2. Run ipconfig on rosbridge server computer
 3. Plug that value into RosIntegrationGameInstance.h ROSBridgeServerHosts, as well as RosInstance.cpp ROSBridgeServerHosts
@@ -26,7 +26,7 @@
     `Ros2 topic info /topic_name --verbose`
 6. Insert data type into ExampleTopic->Init in ARosActor.cpp
 
-## Running Rosbridge Server
+### Running Rosbridge Server
 1. Source environment:
     - `source /opt/ros/humble/setup.bash`
     - `source ~/arm_publisher_test/install/setup.bash`
@@ -39,20 +39,25 @@
 
  Make sure you have your publisher and bridge server environment variables ROS_DOMAIN_ID set to the same domain
 
-## Running Publisher
+### Running Publisher
 1. Source your environment `source /opt/ros/humble/setup.bash` `source ~/arm_publisher_test/install/setup.bash`
 2. `ros2 run go2_d1_demo arm_command_node`
 
-## Positives
+
+___
+# Analysis
+
+### Positives
 - Allows you to build the Unreal game on Windows
 - Just a websocket connection with the Rosbridge server so not much of a burden on the Unreal game itself (doesn't need to actually connect to Ros2)
 - Minimal lag involved, Unreal doesn't have to wait for actual robot to move first (unlike OPC UA). Both Unreal and the robot are reading them at the same time, since so mirroring within the digital world should be near instantaneous
 - Can also publish to Ros2, so you can control the robot in real life from the game if you want
 - Can connect to any version of Ros2 (Humble, Foxy), all you need is that version of Rosbridge
 
-## Drawbacks
-Need to run a RosBridge server in a separate process from the Unreal instance. Can potentially look into ways to ease this by having the Unreal game trigger the server to start, but you still need to maintain it separately. RosBridge needs to be run on Linux.
+### Drawbacks
+- Need to run a RosBridge server in a separate process from the Unreal instance. Can potentially look into ways to ease this by having the Unreal game trigger the server to start, but you still need to maintain it separately. RosBridge needs to be run on Linux.
 
+___
 # Changes Made to Plugin
 ### Upgraded Plugin from UE4 to UE5
 Original issues that caused plugin to not compile in UE5 (honestly not even sure how it compiled in UE4 but i digress)
@@ -103,40 +108,5 @@ Each new data type required its own converter class so that Unreal could know ho
     Type: unitree_arm::msg::dds_::ArmString_
     arm_string, is just a json you can parse
 
-
-# Configuring Plugin
-
-## Running pixi test publisher
-    1. Cd into directory
-    2. pixi run ros2 run my_package my_node
-        - my_package is project, my_node is node name
-
-
-
-## Todo
-
-
-## Connecting to Topic
-
-    
-    Callback handle stored here: 		
-         _CallbackHandle = _ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
-    
-    Callback function stored in _func, need to check what that's actually doing, however if you're not actually subscribed it doesn't really matter
-
-    Potential issue: topic type it's trying to connect to is std_msgs/String, but the topic being published is a std_msgs/msg/String
-
-
-Fixed receive thread so that it actually receives data from the rosbridge server now, may need to adjust frequency with which it checks but as of now it's not causing any problems
-
-Data type: Custom type from Unitree: Unitree arm::message/arm-tree-publisher
-
-type: moveit_msgs/msg/
-
-unitree_arm::msg::dds_::ArmString_
-
-Only publish to one topic so that's good, but need to adjust so that plugin can handle the Unitree type
-
-Unitree GitHub
 
 
