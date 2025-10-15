@@ -9,6 +9,7 @@
 #include <Sockets.h>
 #include "itransport_layer.h"
 #include "types.h"
+#include "WebsocketOverride.h"
 //
 
 #include "rapidjson/document.h"

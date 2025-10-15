@@ -35,18 +35,21 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	// Protocol for connecting to the rosbridge server, use "tcp" or "ws"
-	FString ROSBridgeServerProtocol = "tcp";
+	FString ROSBridgeServerProtocol = "ws";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	// Array of IP adresses to connect to. Each element pairs with the corresponding element in ROSBridgeServerPorts
-	TArray<FString> ROSBridgeServerHosts = {"127.0.0.1"};
+//	TArray<FString> ROSBridgeServerHosts = {"192.168.0.23"};
+	TArray<FString> ROSBridgeServerHosts = {"192.168.131.8"};
+//	TArray<FString> ROSBridgeServerHosts = {"10.0.0.22"};
 
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	// Array of ports to connect to. Each element pairs with the corresponding element in ROSBridgeServerHosts
 	TArray<int32> ROSBridgeServerPorts = {9090};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS", meta=(ClampMin = '1', ClampMax = '2'))
-	uint8 ROSVersion = 1;
+	uint8 ROSVersion = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	bool bConnectToROS = true;

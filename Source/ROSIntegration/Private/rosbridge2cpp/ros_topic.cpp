@@ -5,13 +5,15 @@ namespace rosbridge2cpp {
 	ROSCallbackHandle<FunVrROSPublishMsg> ROSTopic::Subscribe(FunVrROSPublishMsg callback)
 	{
 		++subscription_counter_;
-
+		UE_LOG(LogTemp, Display, TEXT("Subscribe being called"));
 		// Only send subscribe when this ROSTopic hasn't sent this command before
 		if (subscribe_id_ == "") {
 			subscribe_id_.append("subscribe:");
 			subscribe_id_.append(topic_name_);
 			subscribe_id_.append(":");
 			subscribe_id_.append(std::to_string(++ros_.id_counter));
+			UE_LOG(LogTemp, Display, TEXT("Topic being subscribed to: %s"), *FString(topic_name_.c_str()));
+			UE_LOG(LogTemp, Display, TEXT("Subscribe id: %s"), *FString(subscribe_id_.c_str()));
 
 			ROSBridgeSubscribeMsg cmd(true);
 			cmd.id_ = subscribe_id_;
@@ -30,9 +32,13 @@ namespace rosbridge2cpp {
 		if (subscribe_id_ != "")
 		{
 			// Register callback in ROSBridge
+			UE_LOG(LogTemp, Display, TEXT("Subscriber id not blank"));
 			ROSCallbackHandle<FunVrROSPublishMsg> handle(callback);
 			ros_.RegisterTopicCallback(topic_name_, handle); // Register callback in ROSBridge
 			return handle;
+		} else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Subscriber id blank"));
 		}
 
 		subscribe_id_ = "";
@@ -156,6 +162,7 @@ namespace rosbridge2cpp {
 
 	bool ROSTopic::Publish(bson_t *message)
 	{
+
 		if (!is_advertised_) {
 			if (!Advertise()) {
 				return false;
@@ -177,6 +184,7 @@ namespace rosbridge2cpp {
 
 	std::string ROSTopic::GeneratePublishID()
 	{
+
 		std::string publish_id;
 		publish_id.append("publish:");
 		publish_id.append(topic_name_);

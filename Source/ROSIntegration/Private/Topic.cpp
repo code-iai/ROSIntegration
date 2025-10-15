@@ -5,6 +5,7 @@
 #include "rosbridge2cpp/ros_topic.h"
 #include "ROSIntegrationCore_Impl.h"
 #include "ROSIntegrationGameInstance.h"
+#include "MessageConverter.h"
 #include "Conversion/Messages/std_msgs/StdMsgsInt32Converter.h"
 #include "Conversion/Messages/std_msgs/StdMsgsInt64Converter.h"
 #include "Conversion/Messages/std_msgs/StdMsgsFloat32Converter.h"
@@ -76,14 +77,25 @@ public:
 			UE_LOG(LogROS, Warning, TEXT("Rostopic was already subscribed"));
 			Unsubscribe();
 		}
-
+		UE_LOG(LogROS, Display, TEXT("Attempting to connect to topic"));
+		// stores your callback handle (if subscription fails, check this function call)
+		// Where the subscription is actually occurring
 		_CallbackHandle = _ROSTopic->Subscribe(std::bind(&UTopic::Impl::MessageCallback, this, std::placeholders::_1));
 		_Callback = func;
-		return _CallbackHandle.IsValid();
+		bool callback_valid = _CallbackHandle.IsValid();
+		if (callback_valid)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Callback Valid, Topic successfully subscribed"));
+		} else
+		{
+			UE_LOG(LogTemp, Log, TEXT("Callback Invalid"));
+		}
+		return callback_valid;
 	}
 
 	bool Unsubscribe()
 	{
+		UE_LOG(LogROS, Display, TEXT("Unsubscribe being called"));
 		if (!_ROSTopic) {
 			// UE_LOG(LogROS, Error, TEXT("Rostopic hasn't been initialized before Unsubscribe() call")); // Removing, as this warning as annoying
 			return false;
@@ -193,6 +205,8 @@ UTopic::UTopic(const FObjectInitializer& ObjectInitializer)
 	if (SupportedMessageTypes.Num() == 0)
 	{
 		SupportedMessageTypes.Add(EMessageType::String,      TEXT("std_msgs/String"));
+		SupportedMessageTypes.Add(EMessageType::String,      TEXT("std_msgs/msg/String"));
+		SupportedMessageTypes.Add(EMessageType::String,      TEXT("unitree_arm/msg/ArmString"));
 		SupportedMessageTypes.Add(EMessageType::Float32,     TEXT("std_msgs/Float32"));
 		SupportedMessageTypes.Add(EMessageType::Bool,        TEXT("std_msgs/Bool"));
 		SupportedMessageTypes.Add(EMessageType::Int32,       TEXT("std_msgs/Int32"));

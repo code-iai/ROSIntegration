@@ -79,7 +79,6 @@ UROSIntegrationCore* UROSIntegrationGameInstance::GetROSConnectionFromID(int32 I
 		return ROSConnections[ID];
 	else
 	{
-		UE_LOG(LogROS, Warning, TEXT("UROSIntegrationGameInstance::GetROSConnectionFromID() - rosbridge server ID %i does not exist, returning ID 0 instead"), ID);
 		return ROSConnections[0];
 	}
 }

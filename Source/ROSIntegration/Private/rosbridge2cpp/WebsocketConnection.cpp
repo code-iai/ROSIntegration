@@ -9,7 +9,6 @@
 #include <IPAddress.h>
 #endif
 #include <Serialization/ArrayReader.h>
-#include <SocketSubsystem.h>
 
 WebsocketConnection::WebsocketConnection() : _incoming_message_callback(nullptr), incoming_message_callback_bson_(nullptr), _error_callback(nullptr) {
 }
@@ -49,23 +48,28 @@ bool WebsocketConnection::Init(std::string ip_addr, int port)
 
 
 	//Connect to Websocket
+	// TODO: Unnecessary with new Websocket implementation, delete later
 	TArray< FStringFormatArg > args;
 	args.Add(FStringFormatArg(ip_addr.c_str()));
 	args.Add(FStringFormatArg(port));
 	const FString ServerURL = FString::Format(TEXT("ws://{0}:{1}"), args);
+
 	UE_LOG(LogROS, Display, TEXT("Connecting to: %s"), *ServerURL);
-
-	WebSocket = FWebSocketsModule::Get().CreateWebSocket(ServerURL);
-
+	
+	// replaced UE web socket implementation with custom implementation
+	WebSocket = MakeShareable(new WebsocketOverride(ip_addr, port));
+	
+	// TODO: implement callbacks
+	// 
 	//Set up callbacks
-	WebSocket->OnConnectionError().AddRaw(this, &WebsocketConnection::OnConnectionError);
-	WebSocket->OnClosed().AddRaw(this, &WebsocketConnection::OnClosed);
-	WebSocket->OnMessage().AddRaw(this, &WebsocketConnection::OnMessage);
-	WebSocket->OnRawMessage().AddRaw(this, &WebsocketConnection::OnRawMessage);
-
+	 WebSocket->OnConnectionError().AddRaw(this, &WebsocketConnection::OnConnectionError);
+	 WebSocket->OnClosed().AddRaw(this, &WebsocketConnection::OnClosed);
+	 WebSocket->OnMessage().AddRaw(this, &WebsocketConnection::OnMessage);
+	 WebSocket->OnRawMessage().AddRaw(this, &WebsocketConnection::OnRawMessage);
+	
 	WebSocket->Connect();
 
-	return true;
+	return WebSocket->IsConnected();
 }
 
 void WebsocketConnection::OnConnectionError(const FString& Error) {
@@ -81,12 +85,16 @@ void WebsocketConnection::OnClosed(int32 StatusCode, const FString& Reason, bool
 bool WebsocketConnection::SendMessage(std::string data)
 {
 	//Data is already UTF-8, no conversion to UE4 string is necessary
-	WebSocket->Send(data.c_str(), data.size(), false);
+	UE_LOG(LogROS, Display, TEXT("Calling string send message from websocket connection"));
+	// WebSocket->Send(data.c_str(), data.size(), false);
+	FString convertedData = UTF8_TO_TCHAR(data.c_str());
+	WebSocket->Send(convertedData);
 	return true;
 }
 
 bool WebsocketConnection::SendMessage(const uint8_t* data, unsigned int length)
 {
+	UE_LOG(LogROS, Display, TEXT("Calling binary send message from websocket connection"));
 	WebSocket->Send(data, length, true);
 	return true;
 }
@@ -121,11 +129,19 @@ void WebsocketConnection::OnMessage(const FString& msg) {
 void WebsocketConnection::RegisterIncomingMessageCallback(std::function<void(json&)> fun)
 {
 	_incoming_message_callback = fun;
+	if (WebSocket.IsValid())
+	{
+		StaticCastSharedPtr<WebsocketOverride>(WebSocket)->RegisterIncomingMessageCallback(fun);
+	}
 }
 
 void WebsocketConnection::RegisterIncomingMessageCallback(std::function<void(bson_t&)> fun)
 {
 	incoming_message_callback_bson_ = fun;
+	if (WebSocket.IsValid())
+	{
+		StaticCastSharedPtr<WebsocketOverride>(WebSocket)->RegisterIncomingMessageCallback(fun);
+	}
 }
 
 void WebsocketConnection::RegisterErrorCallback(std::function<void(rosbridge2cpp::TransportError)> fun)
@@ -158,3 +174,5 @@ bool WebsocketConnection::IsHealthy() const
 {
 	return WebSocket->IsConnected();
 }
+
+

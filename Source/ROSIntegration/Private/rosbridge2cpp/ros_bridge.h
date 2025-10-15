@@ -100,7 +100,8 @@ namespace rosbridge2cpp {
 
 		// Returns true if the bson only mode is activated
 		bool bson_only_mode() {
-			return bson_only_mode_;
+			return false;
+			// return bson_only_mode_;
 		}
 
 		// Enable the BSON only mode.

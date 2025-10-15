@@ -22,7 +22,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	// Protocol for connecting to the rosbridge server, use "tcp" or "ws"
-	FString ROSBridgeServerProtocol = "tcp";
+	FString ROSBridgeServerProtocol = "ws";
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ROS")
 	// Array of IP addresses to connect to. Each element pairs with the corresponding element in ROSBridgePorts
