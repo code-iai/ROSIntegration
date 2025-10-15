@@ -44,14 +44,14 @@
 2. `ros2 run go2_d1_demo arm_command_node`
 
 ## Positives
-    - Allows you to build the Unreal game on Windows
-    - Just a websocket connection with the Rosbridge server so not much of a burden on the Unreal game itself (doesn't need to actually connect to Ros2)
-    - Minimal lag involved, Unreal doesn't have to wait for actual robot to move first (unlike OPC UA). Both Unreal and the robot are reading them at the same time, since so mirroring within the digital world should be near instantaneous
-    - Can also publish to Ros2, so you can control the robot in real life from the game if you want
-    - Can connect to any version of Ros2 (Humble, Foxy), all you need is that version of Rosbridge
+- Allows you to build the Unreal game on Windows
+- Just a websocket connection with the Rosbridge server so not much of a burden on the Unreal game itself (doesn't need to actually connect to Ros2)
+- Minimal lag involved, Unreal doesn't have to wait for actual robot to move first (unlike OPC UA). Both Unreal and the robot are reading them at the same time, since so mirroring within the digital world should be near instantaneous
+- Can also publish to Ros2, so you can control the robot in real life from the game if you want
+- Can connect to any version of Ros2 (Humble, Foxy), all you need is that version of Rosbridge
 
 ## Drawbacks
-    Need to run a RosBridge server in a separate process from the Unreal instance. Can potentially look into ways to ease this by having the Unreal game trigger the server to start, but you still need to maintain it separately. RosBridge needs to be run on Linux.
+Need to run a RosBridge server in a separate process from the Unreal instance. Can potentially look into ways to ease this by having the Unreal game trigger the server to start, but you still need to maintain it separately. RosBridge needs to be run on Linux.
 
 # Changes Made to Plugin
 ### Upgraded Plugin from UE4 to UE5
@@ -125,20 +125,6 @@ Each new data type required its own converter class so that Unreal could know ho
     Callback function stored in _func, need to check what that's actually doing, however if you're not actually subscribed it doesn't really matter
 
     Potential issue: topic type it's trying to connect to is std_msgs/String, but the topic being published is a std_msgs/msg/String
-
-
-    - How do you switch the message type?
-        Checking if its a child of ubasemessageconverter class, so you need to make a class that inherits from that 
-        - only question is where is that class initialized?
-
-    - Do you need to send the message via the socket handle, or does it have another way of sending?
-    
-    - What is subscribe id? Do I need to set that to anything special?
-
-    - May need to override transport layer's sendMessage, because that could just not work
-
-    Need to know how to swap message types regardless
-
 
 
 Fixed receive thread so that it actually receives data from the rosbridge server now, may need to adjust frequency with which it checks but as of now it's not causing any problems
