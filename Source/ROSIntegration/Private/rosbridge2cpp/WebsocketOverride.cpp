@@ -5,10 +5,6 @@
 // #include <openssl/evp.h>
 #include "ROSIntegrationCore.h"
 
-// TODO: make generate random key actually generate a random key (just hard coded right now)
-
-
-
 WebsocketOverride::WebsocketOverride(std::string ip_address, int port_num) : URI(""),
 isConnected(false),
 port(port_num),

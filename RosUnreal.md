@@ -37,7 +37,11 @@
     - `netsh advfirewall firewall add rule name="RosBridge 9090" dir=in action=allow protocol=TCP localport=9090`
 3. Run `ros2 launch rosbridge_server rosbridge_websocket_launch.xml`
 
- Make sure you have your publisher and bridge server environment variables ROS_DOMAIN_ID set to the same domain
+ * Make sure you have your publisher and bridge server environment variables ROS_DOMAIN_ID set to the same domain
+
+ * Note: When installing Rosbridge, need to create a message generation package within your publisher workspace and add a .msg file so that your message type in C++ can be accessible in Python, which is what Rosbridge runs in
+    * example: `ros2 pkg create --build-type ament_cmake my_custom_msgs --dependencies std_msgs`
+
 
 ### Running Publisher
 1. Source your environment `source /opt/ros/humble/setup.bash` `source ~/arm_publisher_test/install/setup.bash`

@@ -1,10 +1,19 @@
 ﻿#include "MessageConverter.h"
 
+/**
+ * Constructor, set _MessageType to the type that you want to be accessible
+ */
 UMessageConverter::UMessageConverter()
 {
 	_MessageType = TEXT("std_msgs/msg/String");
 }
 
+/**
+ * how the incoming message is parsed within Unreal
+ * @param message The incoming message
+ * @param BaseMsg 
+ * @return 
+ */
 bool UMessageConverter::ConvertIncomingMessage(const ROSBridgePublishMsg* message, TSharedPtr<FROSBaseMsg>& BaseMsg)
 {
 	bool KeyFound = false;
