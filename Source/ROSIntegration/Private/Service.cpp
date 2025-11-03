@@ -5,6 +5,9 @@
 #include "Conversion/Services/BaseRequestConverter.h"
 #include "Conversion/Services/BaseResponseConverter.h"
 
+#include "ROSIntegrationCore_Impl.h"
+#include "ROSIntegrationGameInstance.h"
+
 static TMap<FString, UBaseRequestConverter*> RequestConverterMap;
 static TMap<FString, UBaseResponseConverter*> ResponseConverterMap;
 

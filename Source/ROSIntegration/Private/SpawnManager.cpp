@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "SpawnManager.h"
 #include "ROSIntegrationCore.h"
 

@@ -5,11 +5,16 @@
 #include "Conversion/Messages/BaseMessageConverter.h"
 #include "Conversion/Messages/std_msgs/StdMsgsStringConverter.h"
 #include "Conversion/Messages/std_msgs/StdMsgsBoolConverter.h"
+#include "Conversion/Messages/std_msgs/StdMsgsInt32Converter.h"
+#include "Conversion/Messages/std_msgs/StdMsgsInt64Converter.h"
+#include "Conversion/Messages/std_msgs/StdMsgsFloat32Converter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsVector3Converter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsPointConverter.h"
 #include "Conversion/Messages/geometry_msgs/GeometryMsgsPoseConverter.h"
+#include "Conversion/Messages/geometry_msgs/GeometryMsgsTwistConverter.h"
 
-
+#include "ROSIntegrationCore_Impl.h"
+#include "ROSIntegrationGameInstance.h"
 
 
 static TMap<FString, UBaseMessageConverter*> TypeConverterMap;
